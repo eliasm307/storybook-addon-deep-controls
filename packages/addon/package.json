@@ -1,0 +1,36 @@
+{
+  "name": "storybook-addon-deep-controls",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
+    "buildw": "tsc -p tsconfig.build.json -w",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliasm307/storybook-addon-deep-controls.git"
+  },
+  "keywords": [],
+  "author": "Elias Mangoro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eliasm307/storybook-addon-deep-controls/issues"
+  },
+  "files": [
+    "dist/utils/",
+    "dist/preview.js",
+    "preset.js"
+  ],
+  "homepage": "https://github.com/eliasm307/storybook-addon-deep-controls#readme",
+  "peerDependencies": {
+    "storybook": "7.x.x"
+  },
+  "devDependencies": {
+    "storybook": "^7.3.2",
+    "typescript": "^5.1.6",
+    "vitest": "^0.34.4"
+  }
+}

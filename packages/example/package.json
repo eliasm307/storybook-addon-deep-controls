@@ -1,0 +1,35 @@
+{
+  "name": "example-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
+    "storybook": "echo 'Starting storybook' && npm run addon:build && npx storybook dev -p 6006 --no-open",
+    "storybook:watch": "nodemon --delay 5000ms --watch ../addon/src --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json",
+    "build-storybook": "npm run addon:build && storybook build",
+    "pretest": "npm run addon:build",
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui",
+    "test:codegen": "npx playwright codegen http://localhost:6006/"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.38.0",
+    "@storybook/addon-controls": "^7.4.2",
+    "@storybook/nextjs": "^7.4.2",
+    "@storybook/react": "^7.4.2",
+    "@types/node": "^18.12.1",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "next": "13.4.19",
+    "nodemon": "^3.0.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "storybook": "^7.4.2",
+    "storybook-addon-deep-controls": "workspace:*",
+    "typescript": "^5.2.2"
+  }
+}
