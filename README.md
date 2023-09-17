@@ -8,11 +8,11 @@ This addon tries to simplify this by splitting objects into multiple primitive c
 
 Generally, it turns this:
 
-![Alt text](./public/media/simple-example-without-addon.png)
+![Basic example of nested args object without addon](./public/media/simple-example-without-addon.png)
 
 into this:
 
-![Alt text](./public/media/simple-example-with-addon.png)
+![Basic example of nested args object with addon](./public/media/simple-example-with-addon.png)
 
 ## Getting Started
 
@@ -22,10 +22,10 @@ First, install the addon:
 npm i -D storybook-addon-deep-controls
 ```
 
-Then add it to your `.storybook/main.*` file addons array:
+Then add it to your `.storybook/main.*` file in the `addons` array:
 
 ```js
-module.exports = {
+export default {
   addons: ["storybook-addon-deep-controls"],
 };
 ```
@@ -89,7 +89,7 @@ export default {
 Below are some examples of what this looks like in the UI. This is for a story that generally serialises and displays the config it receives.
 
 Example with/without the addon and some editing:
-![Alt text](./public/media/complex-example.gif)
+![Gif showing the difference after enabling the addon and how editing works](./public/media/complex-example.gif)
 
 ## Usage
 
@@ -110,6 +110,7 @@ export const SomeStory = {
     },
   },
   argTypes: {
+    // so we define an argType for the property to use a radio control with specific values
     "someObject.enumString": {
       control: "radio",
       options: ["value1", "value2", "value3"],
@@ -120,12 +121,13 @@ export const SomeStory = {
 
 Which produces the following:
 
-![Alt text](./public/media/simple-example-with-custom-control.png)
+![Example with custom control for deep property](./public/media/simple-example-with-custom-control.png)
 
 ## Notes
 
 Some notes about the functionality of this addon:
 
 - It only splits plain objects into multiple controls, it does not split other objects, e.g. class instances, and controls wont be shown for these
-- It does not support splitting arrays and they will be displayed using the default control
 - It hides redundant controls for things that cant really be edited by a control e.g. functions, classes, class instances, symbols etc
+- It does not support splitting arrays and they will be displayed using the default control e.g.:
+  ![Example with array values shown using default control](./public/media/example-with-arrays.png)

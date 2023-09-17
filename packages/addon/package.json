@@ -1,7 +1,7 @@
 {
   "name": "storybook-addon-deep-controls",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Storybook addon that extends @storybook/addon-controls and provides an alternative to interacting with object arguments",
   "scripts": {
     "prepare": "npm run build",
     "build": "tsc -p tsconfig.build.json",
