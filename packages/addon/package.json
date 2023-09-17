@@ -26,8 +26,8 @@
   ],
   "homepage": "https://github.com/eliasm307/storybook-addon-deep-controls#readme",
   "peerDependencies": {
-    "storybook": "7.x.x",
-    "@storybook/addon-controls": "7.x.x"
+    "@storybook/addon-controls": "7.x.x",
+    "storybook": "7.x.x"
   },
   "devDependencies": {
     "storybook": "^7.3.2",

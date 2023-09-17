@@ -1623,9 +1623,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eliasm307/config@npm:^0.36.0":
-  version: 0.36.0
-  resolution: "@eliasm307/config@npm:0.36.0"
+"@eliasm307/config@npm:^0.37.0":
+  version: 0.37.0
+  resolution: "@eliasm307/config@npm:0.37.0"
   dependencies:
     eslint-config-airbnb: ^19.0.4
     eslint-config-airbnb-base: ^15.0.0
@@ -1644,7 +1644,7 @@ __metadata:
     "@typescript-eslint/parser": ">=6"
     eslint: ">=8"
     typescript: ">=5"
-  checksum: ac0ab474d981da8102bfdc5423ebf7c761a36bd5b3cded729116152a9392c8ec822d0cd937b7e112d125ee29afb85cc0c9bb813f554def853d5c96f4043739ac
+  checksum: 6e44b5ed309c384dc748964303f2b3a8100966494c74580fa60851c6c701f6e06b24dba37228a55ec2e5f72684d62d1909056c8ffb3770d0e45d8dbc3f7f0ca5
   languageName: node
   linkType: hard
 
@@ -10186,7 +10186,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "mono-repo-root@workspace:."
   dependencies:
-    "@eliasm307/config": ^0.36.0
+    "@eliasm307/config": ^0.37.0
     "@types/node": ^18.12.1
     "@typescript-eslint/eslint-plugin": ^6.7.0
     "@typescript-eslint/parser": ^6.7.0
@@ -12566,6 +12566,7 @@ __metadata:
     typescript: ^5.1.6
     vitest: ^0.34.4
   peerDependencies:
+    "@storybook/addon-controls": 7.x.x
     storybook: 7.x.x
   languageName: unknown
   linkType: soft
