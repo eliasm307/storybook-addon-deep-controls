@@ -315,7 +315,6 @@ describe("Story utils", function () {
         createFlattenedArgTypes({
           initialArgs: {
             ref: class {},
-            array: [1, 2, 3],
             func: () => {},
             nullValue: null,
             undefinedValue: undefined,
@@ -325,7 +324,6 @@ describe("Story utils", function () {
         }),
         {
           ref: { name: "ref", table: { disable: true } },
-          array: { name: "array", table: { disable: true } },
           func: { name: "func", table: { disable: true } },
           nullValue: { name: "nullValue", table: { disable: true } },
           undefinedValue: { name: "undefinedValue", table: { disable: true } },
@@ -338,16 +336,16 @@ describe("Story utils", function () {
       assert.deepStrictEqual(
         createFlattenedArgTypes({
           initialArgs: {
-            array: [1, 2, 3],
-            array2: [1, 2, 3],
+            complex: class {},
+            complex2: class {},
           },
           argTypes: {
-            array: { name: "array", control: "object" },
+            complex: { name: "complex", control: "object" },
           },
         }),
         {
-          array: { name: "array", control: "object" },
-          array2: { name: "array2", table: { disable: true } },
+          complex: { name: "complex", control: "object" },
+          complex2: { name: "complex2", table: { disable: true } },
         },
         "does not overwrite existing argTypes even if the value should be hidden",
       );
@@ -381,6 +379,25 @@ describe("Story utils", function () {
         "output should have 3 argTypes not the initial 1",
       );
       assert.deepStrictEqual(originalContext, createOriginalContext(), "context not mutated");
+    });
+
+    it("uses object argTypes for arrays so they are editable using the existing experience", function () {
+      assert.deepStrictEqual(
+        createFlattenedArgTypes({
+          initialArgs: {
+            array: [1, 2, 3],
+            nested: {
+              array: [1, 2, 3],
+            },
+          },
+          argTypes: {},
+        }),
+        {
+          array: { name: "array", control: { type: "object" } },
+          nested: { name: "nested", table: { disable: true } },
+          "nested.array": { name: "nested.array", control: { type: "object" } },
+        },
+      );
     });
   });
 });

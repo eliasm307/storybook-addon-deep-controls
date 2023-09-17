@@ -63,6 +63,13 @@ export function flattenObject(
   return context.flatObjectOut;
 }
 
+function createObjectArgType(argName: string): StrictInputType {
+  return {
+    name: argName,
+    control: { type: "object" },
+  };
+}
+
 function createPrimitiveArgInputTypeConfig(arg: {
   name: string;
   value: PrimitiveValue;
@@ -138,6 +145,11 @@ export function createFlattenedArgTypes(
   for (const [argPath, argValue] of Object.entries(flatInitialArgs)) {
     if (argTypes[argPath]) {
       continue; // existing argType defined, don't override
+    }
+
+    if (Array.isArray(argValue)) {
+      argTypes[argPath] = createObjectArgType(argPath);
+      continue;
     }
 
     // only show editable controls, remove controls for non-primitive args

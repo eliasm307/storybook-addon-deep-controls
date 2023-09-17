@@ -21,6 +21,15 @@ export const Enabled: Story = {
   args: createNestedObject(),
 };
 
+export const Disabled: Story = {
+  args: createNestedObject(),
+  parameters: {
+    deepControls: {
+      enabled: false,
+    },
+  },
+};
+
 export const WithCustomControls: Story = {
   args: {
     someObject: {
@@ -43,15 +52,6 @@ export const RawObject: Story = {
       enumString: "string",
     },
   },
-  parameters: {
-    deepControls: {
-      enabled: false,
-    },
-  },
-};
-
-export const Disabled: Story = {
-  args: createNestedObject(),
   parameters: {
     deepControls: {
       enabled: false,
