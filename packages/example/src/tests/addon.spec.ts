@@ -74,6 +74,8 @@ const DEFAULT_VISIBLE_CONTROLS = {
   "nested.nested.number": -3,
   "nested.nested.infinity": Infinity,
   "nested.nested.NaNValue": NaN,
+  "nested.nested.numberArray": [], // just need an array to say its a complex control
+  "nested.nested.complexArray": [], // just need an array to say its a complex control
 };
 
 test("supports checking and unchecking root level boolean control", async ({ page }) => {
@@ -85,7 +87,7 @@ test("supports checking and unchecking root level boolean control", async ({ pag
   const newVisibleControls = clone(DEFAULT_VISIBLE_CONTROLS);
 
   // uncheck control
-  const controlInput = storybookPage.getInputForControl("bool");
+  const controlInput = storybookPage.getInputLocatorForControl("bool");
   await controlInput.click();
   newConfig.bool = false;
   newVisibleControls.bool = false;
@@ -118,7 +120,7 @@ test("supports checking and unchecking nested boolean control", async ({ page })
   const newVisibleControls = clone(DEFAULT_VISIBLE_CONTROLS);
 
   // check control
-  const controlInput = storybookPage.getInputForControl("nested.bool");
+  const controlInput = storybookPage.getInputLocatorForControl("nested.bool");
   await controlInput.click();
   newConfig.nested.bool = true;
   newVisibleControls["nested.bool"] = true;
@@ -151,7 +153,7 @@ test("supports checking and unchecking deep nested boolean control", async ({ pa
   const expectedControls = clone(DEFAULT_VISIBLE_CONTROLS);
 
   // uncheck control
-  const controlInput = storybookPage.getInputForControl("nested.nested.bool");
+  const controlInput = storybookPage.getInputLocatorForControl("nested.nested.bool");
   await controlInput.click();
   expectedConfig.nested.nested.bool = false;
   expectedControls["nested.nested.bool"] = false;
@@ -184,7 +186,7 @@ test("supports resetting controls", async ({ page }) => {
   const expectedControls = clone(DEFAULT_VISIBLE_CONTROLS);
 
   // uncheck root control
-  let controlInput = storybookPage.getInputForControl("bool");
+  let controlInput = storybookPage.getInputLocatorForControl("bool");
   await controlInput.click();
   expectedConfig.bool = false;
   expectedControls.bool = false;
@@ -194,7 +196,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // change root string control
-  controlInput = storybookPage.getInputForControl("string");
+  controlInput = storybookPage.getInputLocatorForControl("string");
   await controlInput.fill("new string");
   expectedConfig.string = "new string";
   expectedControls.string = "new string";
@@ -204,7 +206,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // change root number control
-  controlInput = storybookPage.getInputForControl("number");
+  controlInput = storybookPage.getInputLocatorForControl("number");
   await controlInput.fill("905");
   expectedConfig.number = 905;
   expectedControls.number = 905;
@@ -214,7 +216,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // uncheck deeply nested boolean control
-  controlInput = storybookPage.getInputForControl("nested.nested.bool");
+  controlInput = storybookPage.getInputLocatorForControl("nested.nested.bool");
   await controlInput.click();
   expectedConfig.nested.nested.bool = false;
   expectedControls["nested.nested.bool"] = false;
@@ -224,7 +226,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested string control
-  controlInput = storybookPage.getInputForControl("nested.nested.string");
+  controlInput = storybookPage.getInputLocatorForControl("nested.nested.string");
   await controlInput.fill("new deeply nested string");
   expectedConfig.nested.nested.string = "new deeply nested string";
   expectedControls["nested.nested.string"] = "new deeply nested string";
@@ -234,7 +236,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested number control
-  controlInput = storybookPage.getInputForControl("nested.nested.number");
+  controlInput = storybookPage.getInputLocatorForControl("nested.nested.number");
   await controlInput.fill("-99");
   expectedConfig.nested.nested.number = -99;
   expectedControls["nested.nested.number"] = -99;
@@ -244,7 +246,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested number control with infinity value (make sure we can restore this)
-  controlInput = storybookPage.getInputForControl("nested.nested.infinity");
+  controlInput = storybookPage.getInputLocatorForControl("nested.nested.infinity");
   await controlInput.fill("-42");
   expectedConfig.nested.nested.infinity = -42;
   expectedControls["nested.nested.infinity"] = -42;
@@ -254,7 +256,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested number control with NaN value (make sure we can restore this)
-  controlInput = storybookPage.getInputForControl("nested.nested.NaNValue");
+  controlInput = storybookPage.getInputLocatorForControl("nested.nested.NaNValue");
   await controlInput.fill("-82");
   expectedConfig.nested.nested.NaNValue = -82;
   expectedControls["nested.nested.NaNValue"] = -82;
@@ -264,7 +266,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(expectedControls);
 
   // reset controls
-  await storybookPage.resetControlsButton.click();
+  await storybookPage.resetControlsButtonLocator.click();
 
   // assert change
   await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);

@@ -70,6 +70,25 @@ function createObjectArgType(argName: string): StrictInputType {
   };
 }
 
+/**
+ * Removes control from the UI
+ *
+ * @remark We do this instead of setting "parameters.controls.exclude"
+ * as that would overwrite the default excluded controls config
+ *
+ * @remark Not having an argType defined does not mean a control is not shown,
+ * it just means the default one is used which could be a blank one
+ * if the value doesn't have a relevant control
+ *
+ * @see https://storybook.js.org/docs/react/essentials/controls#disable-controls-for-specific-properties
+ */
+function createHiddenArgType(argPath: string) {
+  return {
+    name: argPath,
+    table: { disable: true },
+  };
+}
+
 function createPrimitiveArgInputTypeConfig(arg: {
   name: string;
   value: PrimitiveValue;
@@ -168,25 +187,6 @@ export function createFlattenedArgTypes(
   }
 
   return argTypes;
-}
-
-/**
- * Removes control from the UI
- *
- * @remark We do this instead of setting "parameters.controls.exclude"
- * as that would overwrite the default excluded controls config
- *
- * @remark Not having an argType defined does not mean a control is not shown,
- * it just means the default one is used which could be a blank one
- * if the value doesn't have a relevant control
- *
- * @see https://storybook.js.org/docs/react/essentials/controls#disable-controls-for-specific-properties
- */
-function createHiddenArgType(argPath: string) {
-  return {
-    name: argPath,
-    table: { disable: true },
-  };
 }
 
 /**
