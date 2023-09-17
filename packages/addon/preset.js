@@ -1,1 +1,1 @@
-export const previewAnnotations = [require.resolve("./dist/preview")];
+module.exports.previewAnnotations = [require.resolve("./dist/preview")];

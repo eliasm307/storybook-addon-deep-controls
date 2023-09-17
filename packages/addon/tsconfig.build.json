@@ -4,7 +4,9 @@
     "outDir": "dist",
     "noEmit": false,
     "incremental": false,
-    "stripInternal": true
+    "stripInternal": true,
+    "module": "commonjs",
+    "moduleResolution": "node"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

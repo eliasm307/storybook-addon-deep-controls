@@ -7737,6 +7737,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"example-app-prod@workspace:packages/example-prod":
+  version: 0.0.0-use.local
+  resolution: "example-app-prod@workspace:packages/example-prod"
+  dependencies:
+    storybook-addon-deep-controls: ^0.1.1
+  languageName: unknown
+  linkType: soft
+
 "example-app@workspace:packages/example":
   version: 0.0.0-use.local
   resolution: "example-app@workspace:packages/example"
@@ -12571,7 +12579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook-addon-deep-controls@workspace:*, storybook-addon-deep-controls@workspace:packages/addon":
+"storybook-addon-deep-controls@^0.1.1, storybook-addon-deep-controls@workspace:*, storybook-addon-deep-controls@workspace:packages/addon":
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls@workspace:packages/addon"
   dependencies:
