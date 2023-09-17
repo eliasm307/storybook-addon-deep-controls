@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Dev } from "./Dev";
 
+// More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {
   component: Dev,
@@ -16,9 +17,37 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Enabled: Story = {
   args: createNestedObject(),
+};
+
+export const WithCustomControls: Story = {
+  args: {
+    someObject: {
+      anyString: "string",
+      enumString: "string",
+    },
+  },
+  argTypes: {
+    "someObject.enumString": {
+      control: "radio",
+      options: ["value1", "value2", "value3"],
+    },
+  },
+};
+
+export const RawObject: Story = {
+  args: {
+    someObject: {
+      anyString: "string",
+      enumString: "string",
+    },
+  },
+  parameters: {
+    deepControls: {
+      enabled: false,
+    },
+  },
 };
 
 export const Disabled: Story = {
