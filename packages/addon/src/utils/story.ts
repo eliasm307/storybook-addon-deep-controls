@@ -18,25 +18,25 @@ function isNullish(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }
 
-type FlattenObjectRecursionContext = {
+interface FlattenObjectRecursionContext {
   currentPath: string;
   flatObjectOut: Record<string, unknown>;
-};
+}
 
 /**
  * @remark When a key is flattened its key wont exist in the new object e.g.
  * "{key: {nestedKey: value}}" becomes "{key.nestedKey: value}" ie the "key" key is removed
  */
 export function flattenObject(
-  nestedObject: unknown,
+  nestedObject: object,
   context?: FlattenObjectRecursionContext,
 ): Record<string, unknown>;
 export function flattenObject(
-  nestedObject: unknown | undefined,
+  nestedObject: object | undefined,
   context?: FlattenObjectRecursionContext,
 ): Record<string, unknown> | undefined;
 export function flattenObject(
-  nestedObject: unknown | undefined,
+  nestedObject: object | undefined,
   context: FlattenObjectRecursionContext = {
     currentPath: "",
     flatObjectOut: {},

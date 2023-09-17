@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 import { describe, it, assert } from "vitest";
 import type { DeepControlsStorybookContext } from "../../../src/utils/story";
 import { createFlattenedArgTypes, expandObject, flattenObject } from "../../../src/utils/story";
