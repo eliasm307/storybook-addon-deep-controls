@@ -1,3 +1,5 @@
+[![npm version](https://img.shields.io/npm/v/storybook-addon-deep-controls.svg)](https://www.npmjs.com/package/storybook-addon-deep-controls)
+
 # Storybook Deep Controls Addon
 
 This addon extends the functionality of the [@storybook/addon-controls](https://storybook.js.org/docs/react/essentials/controls) addon and provides an alternative to interact with object arguments.
