@@ -1,21 +1,6 @@
 import { test } from "@playwright/test";
-import { cloneDeep } from "lodash";
 import StorybookPageObject from "./utils/StorybookPage";
-
-function localHostPortIsInUse(port: number): Promise<boolean> {
-  return new Promise((resolve) => {
-    const server = require("http").createServer();
-    server.on("error", () => {
-      server.close();
-      resolve(true);
-    });
-    server.on("listening", () => {
-      server.close();
-      resolve(false);
-    });
-    server.listen(port);
-  });
-}
+import { clone, localHostPortIsInUse } from "./utils";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -73,7 +58,8 @@ const DEFAULT_OUTPUT_CONFIG = {
   },
 };
 
-// NOTE: Some controls not included here intentionally as they should be hidden e.g. function controls
+// NOTE: Some controls not included here intentionally as they should be hidden
+// e.g. function controls
 const DEFAULT_VISIBLE_CONTROLS = {
   bool: true,
   string: "string1234",
@@ -89,10 +75,6 @@ const DEFAULT_VISIBLE_CONTROLS = {
   "nested.nested.infinity": Infinity,
   "nested.nested.NaNValue": NaN,
 };
-
-function clone<T extends Record<string, unknown>>(obj: T): T {
-  return cloneDeep(obj); // maintains value as is, e.g. NaN, Infinity, etc. which JSON.stringify does not
-}
 
 test("supports checking and unchecking root level boolean control", async ({ page }) => {
   const storybookPage = new StorybookPageObject(page);
