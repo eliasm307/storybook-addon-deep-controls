@@ -132,4 +132,4 @@ Some notes about the functionality of this addon:
 - It only splits plain objects into multiple controls, it does not split other objects, e.g. class instances, and controls wont be shown for these
 - It hides redundant controls for things that cant really be edited by a control e.g. functions, classes, class instances, symbols etc
 - It does not support splitting arrays and they will be displayed using the default control e.g.:
-  ![Example with array values shown using default control](/public/media/example-with-arrays.p
+  ![Example with array values shown using default control](/public/media/example-with-arrays.png)
