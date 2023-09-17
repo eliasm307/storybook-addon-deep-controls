@@ -1,0 +1,1 @@
+./packages/addon/LICENSE.md

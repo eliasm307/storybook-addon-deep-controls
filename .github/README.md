@@ -1,0 +1,1 @@
+./packages/addon/README.md
