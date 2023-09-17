@@ -3,12 +3,13 @@
   "private": true,
   "scripts": {
     "storybook": "echo 'Starting storybook' && npx storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "update-deps": "npx npm-upgrade '!@types/node' && yarn"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
   },
   "dependencies": {
-    "storybook-addon-deep-controls": "^0.1.1"
+    "storybook-addon-deep-controls": "^0.2.0"
   }
 }

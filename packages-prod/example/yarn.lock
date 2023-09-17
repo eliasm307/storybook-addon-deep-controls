@@ -9,16 +9,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-app-prod@workspace:."
   dependencies:
-    storybook-addon-deep-controls: ^0.1.1
+    storybook-addon-deep-controls: ^0.2.0
   languageName: unknown
   linkType: soft
 
-"storybook-addon-deep-controls@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "storybook-addon-deep-controls@npm:0.1.1"
+"storybook-addon-deep-controls@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "storybook-addon-deep-controls@npm:0.2.0"
   peerDependencies:
     "@storybook/addon-controls": 7.x.x
     storybook: 7.x.x
-  checksum: 46e507a6f03712f592b4dfabbab853721d9ab549a622c7c829c830aa2faf366647abb8102b2faf1fee9ffd1df98c2951da2e7a920cd6a5b8839f172f44e94e4e
+  checksum: eda032f8ae19eefe07675c5f8dfade6a533a78b55eb637aaee4d17eefedf39a46151cf5251eab66dc3923f789ae8a3bcfc01aaccb7f9a61c524f93c9af601641
   languageName: node
   linkType: hard
