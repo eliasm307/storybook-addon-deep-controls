@@ -88,13 +88,7 @@ export default {
 
 Below are some examples of what this looks like in the UI. This is for a story that generally serialises and displays the config it receives.
 
-With the addon disabled:
-![Alt text](./public/media/complex-example-without-addon.png)
-
-With the addon enabled:
-![Alt text](./public/media/complex-example-with-addon.png)
-
-Example of editing:
+Example with/without the addon and some editing:
 ![Alt text](./public/media/complex-example.gif)
 
 ## Usage
@@ -134,4 +128,4 @@ Some notes about the functionality of this addon:
 
 - It only splits plain objects into multiple controls, it does not split other objects, e.g. class instances, and controls wont be shown for these
 - It does not support splitting arrays and they will be displayed using the default control
-- It hides redundant controls for things that cant really be edited by a control e.g. functions, classes etc
+- It hides redundant controls for things that cant really be edited by a control e.g. functions, classes, class instances, symbols etc
