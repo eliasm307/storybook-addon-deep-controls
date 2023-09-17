@@ -2,13 +2,13 @@
 
 # Storybook Deep Controls Addon
 
-This addon extends the functionality of the [@storybook/addon-controls](https://storybook.js.org/docs/react/essentials/controls) addon and provides an alternative to interact with object arguments.
+This addon extends functionality of the [@storybook/addon-controls](https://storybook.js.org/docs/react/essentials/controls) addon and provides an alternative to interact with object arguments.
 
-The default JSON control used for objects provides an interface to interact with the JSON representation of the arg value which can be useful, however it can be difficult for deeply nested objects.
+The default JSON control used for objects and arrays provides an interface to interact with the JSON representation of the arg value which can be useful, however it can be difficult for deeply nested objects as the object needs to be expanded to be useful which affects its usability and it also doesnt have some of the benefits of standalone controls such as being able to customise the control and the options a user is given for that control e.g. a dropdown with fixed items.
 
-This addon tries to simplify this by splitting objects into multiple primitive controls for each deep primitive property. This allows you to interact with the object arg value and also benefit from general controls functionality e.g. defining different controls for different deep properties.
+This addon tries to simplify the object argument interface by splitting objects into multiple primitive controls for each deep primitive property. This allows you to interact with the object arg value and also benefit from general controls functionality e.g. defining different controls for different deep properties.
 
-Generally, it turns this:
+Generally, it allows turning this:
 
 ![Basic example of nested args object without addon](./public/media/simple-example-without-addon.png)
 
