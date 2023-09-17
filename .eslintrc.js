@@ -1,26 +1,19 @@
-const ecmConfig = require("@eliasm307/config/eslint")({ withPrettier: true, withReact: true });
+const ecmConfig = require("@eliasm307/config/eslint")({ withPrettier: true, withReact: false });
 
 module.exports = {
   ...ecmConfig,
-  plugins: [...ecmConfig.plugins].filter((plugin) => plugin !== "react-hooks"),
-  extends: [...ecmConfig.extends, "next/core-web-vitals"],
   root: true,
+  extends: [...ecmConfig.extends, "plugin:storybook/recommended"],
+  // plugins: [...ecmConfig.plugins].filter((plugin) => plugin !== "react-hooks"),
   rules: {
     ...ecmConfig.rules,
-    "functional-core/purity": [
-      "warn",
-      {
-        allowThrow: true,
-      },
-    ],
-    "react/no-unused-prop-types": "off",
-    "import/no-unresolved": "off",
-    "@typescript-eslint/no-throw-literal": "off",
-    "no-continue": "off",
+    "import/prefer-default-export": "off",
   },
-  settings: {
-    "functional-core": {
-      purePaths: [".*"],
+  overrides: [
+    ...ecmConfig.overrides,
+    {
+      files: ["*.ts", "*.tsx"],
+      rules: {},
     },
-  },
+  ],
 };
