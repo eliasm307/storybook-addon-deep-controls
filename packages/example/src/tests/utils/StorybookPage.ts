@@ -1,4 +1,5 @@
-import { Page, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 
 class Assertions {
   constructor(private object: StorybookPageObject) {}
@@ -21,7 +22,7 @@ class Assertions {
     );
 
     // check control values
-    for (let [controlName, expectedRawValue] of expectedControlEntries) {
+    for (const [controlName, expectedRawValue] of expectedControlEntries) {
       const controlInput = this.object.getInputForControl(controlName);
       if (typeof expectedRawValue === "boolean") {
         expect(await controlInput.isChecked(), `control "${controlName}" is checked`).toEqual(
@@ -54,6 +55,7 @@ function getEquivalentValueForInput(rawValue: unknown): string {
 
 export default class StorybookPageObject {
   private readonly PREVIEW_IFRAME_SELECTOR = `iframe[title="storybook-preview-iframe"]`;
+
   assert: Assertions;
 
   constructor(public page: Page) {

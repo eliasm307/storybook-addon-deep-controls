@@ -1,7 +1,7 @@
 import React from "react";
 import { stringify } from "storybook-addon-deep-controls/src/utils/general";
 
-export const Dev = (config: object) => {
+export function Dev(config: object) {
   return (
     <div>
       <h1>Config received by Component:</h1>
@@ -16,4 +16,4 @@ export const Dev = (config: object) => {
       </pre>
     </div>
   );
-};
+}
