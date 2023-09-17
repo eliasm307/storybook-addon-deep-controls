@@ -4,17 +4,17 @@
 
 This addon extends functionality of the [@storybook/addon-controls](https://storybook.js.org/docs/react/essentials/controls) addon and provides an alternative to interact with object arguments.
 
-The default JSON control used for objects and arrays provides an interface to interact with the JSON representation of the arg value which can be useful, however it can be difficult for deeply nested objects as the object needs to be expanded to be useful which affects its usability and it also doesnt have some of the benefits of standalone controls such as being able to customise the control and the options a user is given for that control e.g. a dropdown with fixed items.
+The default JSON control used for objects and arrays provides an interface to interact with the JSON representation of the arg value which can be useful, however it can be difficult for deeply nested objects as the object needs to be expanded to be useful which affects its usability and it also doesn't have some of the benefits of standalone controls such as being able to customise the control and the options a user is given for that control e.g. a dropdown with fixed items.
 
 This addon tries to simplify the object argument interface by splitting objects into multiple primitive controls for each deep primitive property. This allows you to interact with the object arg value and also benefit from general controls functionality e.g. defining different controls for different deep properties.
 
 Generally, it allows turning this:
 
-![Basic example of nested args object without addon](https://github.com/eliasm307/storybook-addon-deep-controls/tree/main/public/media/simple-example-without-addon.png)
+![Basic example of nested args object without addon](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-without-addon.png)
 
 into this:
 
-![Basic example of nested args object with addon](https://github.com/eliasm307/storybook-addon-deep-controls/tree/main/public/media/simple-example-with-addon.png)
+![Basic example of nested args object with addon](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-with-addon.png)
 
 ## Getting Started
 
@@ -91,7 +91,7 @@ export default {
 Below are some examples of what this looks like in the UI. This is for a story that generally serialises and displays the config it receives.
 
 Example with/without the addon and some editing:
-![Gif showing the difference after enabling the addon and how editing works](https://github.com/eliasm307/storybook-addon-deep-controls/tree/main/public/media/complex-example.gif)
+![Gif showing the difference after enabling the addon and how editing works](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/complex-example.gif)
 
 ## Usage
 
@@ -123,7 +123,7 @@ export const SomeStory = {
 
 Which produces the following:
 
-![Example with custom control for deep property](https://github.com/eliasm307/storybook-addon-deep-controls/tree/main/public/media/simple-example-with-custom-control.png)
+![Example with custom control for deep property](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-with-custom-control.png)
 
 ## Notes
 
@@ -132,4 +132,4 @@ Some notes about the functionality of this addon:
 - It only splits plain objects into multiple controls, it does not split other objects, e.g. class instances, and controls wont be shown for these
 - It hides redundant controls for things that cant really be edited by a control e.g. functions, classes, class instances, symbols etc
 - It does not support splitting arrays and they will be displayed using the default control e.g.:
-  ![Example with array values shown using default control](https://github.com/eliasm307/storybook-addon-deep-controls/tree/main/public/media/example-with-arrays.png)
+  ![Example with array values shown using default control](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/example-with-arrays.png)
