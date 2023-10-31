@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "upgrade": "yarn upgrade-interactive",
     "test": "npm run test --workspaces",
     "lint": "eslint --report-unused-disable-directives --cache --fix --quiet --ext .ts,.tsx --ignore-path .gitignore .",
     "build:addon": "npm --prefix packages/addon run build",
