@@ -12,7 +12,7 @@
     "check": "npm run lint && npm run check-types",
     "build:addon": "npm --prefix packages/addon run build",
     "prepublish:base": "npm run check && npm run test && npm run build:addon",
-    "publish:base": "cross-env GIT_RELATIVE_CWD=. NPM_RELATIVE_CWD=./packages/addon node ./node_modules/@eliasm307/config/dist/scripts/publish.js",
+    "publish:base": "node ./node_modules/@eliasm307/config/dist/scripts/publish.js relativeGitPath=. relativeNpmPath=./packages/addon commitChanges=true",
     "publish:patch": "npm run publish:base -- patch",
     "publish:minor": "npm run publish:base -- minor",
     "publish:major": "npm run publish:base -- major"
@@ -22,7 +22,6 @@
     "@types/node": "^18.18.8",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
-    "cross-env": "^7.0.3",
     "eslint": "^8.52.0",
     "eslint-config-next": "13.5.6",
     "eslint-plugin-import": "^2.29.0",
