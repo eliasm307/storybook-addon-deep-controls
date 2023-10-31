@@ -2,10 +2,6 @@
   "name": "example-app",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "storybook": "echo 'Starting storybook' && npm run addon:build && npx storybook dev -p 6006 --no-open",
     "storybook:watch": "nodemon --delay 5000ms --watch ../addon/src --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json",

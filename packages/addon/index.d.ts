@@ -6,14 +6,14 @@ import type {
 } from "@storybook/types";
 
 declare module "@storybook/types" {
-  interface Parameters {
+  type Parameters = {
     deepControls?: DeepControlsAddonParameters;
-  }
+  };
 }
 
-interface DeepControlsAddonParameters {
+type DeepControlsAddonParameters = {
   enabled?: boolean;
-}
+};
 
 export type TypeWithDeepControls<T extends Pick<BaseAnnotations, "argTypes">> = T & {
   argTypes: ArgTypes<Record<string, unknown>>;

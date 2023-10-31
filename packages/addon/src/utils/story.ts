@@ -10,7 +10,7 @@ type PrimitiveValue = bigint | boolean | number | string | undefined | null;
 
 const PRIMITIVE_TYPE_NAMES = new Set(["bigint", "boolean", "number", "string", "undefined"]);
 function isPrimitive(value: unknown): value is PrimitiveValue {
-  // eslint-disable-next-line functional-core/purity
+
   return PRIMITIVE_TYPE_NAMES.has(typeof value) || value === null;
 }
 
@@ -18,10 +18,10 @@ function isNullish(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }
 
-interface FlattenObjectRecursionContext {
+type FlattenObjectRecursionContext = {
   currentPath: string;
   flatObjectOut: Record<string, unknown>;
-}
+};
 
 /**
  * @remark When a key is flattened its key wont exist in the new object e.g.
@@ -52,7 +52,7 @@ export function flattenObject(
     }
     if (!isPojo(value)) {
       // we have reached the last value we can flatten in this branch
-      // eslint-disable-next-line functional-core/purity
+
       context.flatObjectOut[key] = value;
       return;
     }
@@ -222,7 +222,7 @@ export function expandObject(
   const flattenedRootArgKeys = getRootKeysThatWereFlattened(flatObject);
   return (
     Object.entries(flatObject)
-      // eslint-disable-next-line functional-core/purity
+
       .filter(([key]) => !flattenedRootArgKeys.has(key))
       .reduce((out, [key, value]) => {
         return setProperty(out, key, value);

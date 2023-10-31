@@ -80,7 +80,7 @@ export default class StorybookPageObject {
   }
 
   async openPage() {
-    const STORYBOOK_URL = "http://localhost:6006/";
+    const STORYBOOK_URL = "http://localhost:6006/?path=/story/stories-dev--enabled";
     await this.page.goto(STORYBOOK_URL);
     await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, {
       state: "visible",
