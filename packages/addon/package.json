@@ -36,8 +36,7 @@
     "storybook": "7.x.x"
   },
   "devDependencies": {
-    "storybook": "^7.3.2",
-    "typescript": "^5.1.6",
-    "vitest": "^0.34.4"
+    "storybook": "^7.5.2",
+    "vitest": "^0.34.6"
   }
 }

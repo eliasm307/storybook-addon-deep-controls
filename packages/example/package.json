@@ -16,19 +16,18 @@
     "test:codegen": "npx playwright codegen http://localhost:6006/"
   },
   "devDependencies": {
-    "@playwright/test": "^1.38.0",
-    "@storybook/addon-controls": "^7.4.2",
-    "@storybook/nextjs": "^7.4.2",
-    "@storybook/react": "^7.4.2",
-    "@types/react": "^18.2.21",
-    "@types/react-dom": "^18.2.7",
+    "@playwright/test": "^1.39.0",
+    "@storybook/addon-controls": "^7.5.2",
+    "@storybook/nextjs": "^7.5.2",
+    "@storybook/react": "^7.5.2",
+    "@types/react": "^18.2.33",
+    "@types/react-dom": "^18.2.14",
     "lodash-es": "^4.17.21",
-    "next": "13.4.19",
+    "next": "13.5.6",
     "nodemon": "^3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "storybook": "^7.4.2",
-    "storybook-addon-deep-controls": "workspace:*",
-    "typescript": "^5.2.2"
+    "storybook": "^7.5.2",
+    "storybook-addon-deep-controls": "workspace:*"
   }
 }

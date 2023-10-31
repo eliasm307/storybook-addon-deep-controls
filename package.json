@@ -16,14 +16,15 @@
     "publish:major": "npm run publish:base -- major"
   },
   "devDependencies": {
-    "@eliasm307/config": "^0.37.0",
-    "@types/node": "^18.12.1",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
+    "@eliasm307/config": "^0.44.2",
+    "@types/node": "^18.18.8",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.49.0",
-    "eslint-config-next": "13.4.19",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-storybook": "^0.6.13"
+    "eslint": "^8.52.0",
+    "eslint-config-next": "13.5.6",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-storybook": "^0.6.15",
+    "typescript": "^5.2.2"
   }
 }
