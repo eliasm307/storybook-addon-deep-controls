@@ -10,11 +10,11 @@ This addon tries to simplify this by splitting objects into multiple primitive c
 
 Generally, it turns this:
 
-![Basic example of nested args object without addon](/public/media/simple-example-without-addon.png)
+![Basic example of nested args object without addon](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-without-addon.png)
 
 into this:
 
-![Basic example of nested args object with addon](/public/media/simple-example-with-addon.png)
+![Basic example of nested args object with addon](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-with-addon.png)
 
 ## Getting Started
 
@@ -91,7 +91,7 @@ export default {
 Below are some examples of what this looks like in the UI. This is for a story that generally serialises and displays the config it receives.
 
 Example with/without the addon and some editing:
-![Gif showing the difference after enabling the addon and how editing works](/public/media/complex-example.gif)
+![Gif showing the difference after enabling the addon and how editing works](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/complex-example.gif)
 
 ## Usage
 
@@ -123,7 +123,32 @@ export const SomeStory = {
 
 Which produces the following:
 
-![Example with custom control for deep property](/public/media/simple-example-with-custom-control.png)
+![Example with custom control for deep property](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-with-custom-control.png)
+
+### Typescript
+
+If you are using Typescript, defining the `argTypes` for deep properties as above will produce a type error. To avoid this you can use the `TypeWithDeepControls` utility type from this addon which you can wrap over your `Meta` or `Story` types e.g. if your story type is called `StoryType` you can do the following:
+
+```ts
+import type { TypeWithDeepControls } from "storybook-addon-deep-controls";
+
+// Type is wrapped over the StoryType
+export const SomeStory: TypeWithDeepControls<StoryType> = {
+  args: {
+    someObject: {
+      anyString: "string",
+      enumString: "string",
+    },
+  },
+  argTypes: {
+    // no type error
+    "someObject.enumString": {
+      control: "radio",
+      options: ["value1", "value2", "value3"],
+    },
+  },
+};
+```
 
 ## Notes
 
@@ -132,4 +157,4 @@ Some notes about the functionality of this addon:
 - It only splits plain objects into multiple controls, it does not split other objects, e.g. class instances, and controls wont be shown for these
 - It hides redundant controls for things that cant really be edited by a control e.g. functions, classes, class instances, symbols etc
 - It does not support splitting arrays and they will be displayed using the default control e.g.:
-  ![Example with array values shown using default control](/public/media/example-with-arrays.png)
+  ![Example with array values shown using default control](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/example-with-arrays.png)
