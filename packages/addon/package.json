@@ -2,13 +2,6 @@
   "name": "storybook-addon-deep-controls",
   "version": "0.2.1",
   "description": "A Storybook addon that extends @storybook/addon-controls and provides an alternative to interacting with object arguments",
-  "scripts": {
-    "prepare": "npm run build",
-    "build": "tsc -p tsconfig.build.json",
-    "buildw": "tsc -p tsconfig.build.json -w",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/eliasm307/storybook-addon-deep-controls.git"
@@ -23,12 +16,21 @@
   "bugs": {
     "url": "https://github.com/eliasm307/storybook-addon-deep-controls/issues"
   },
+  "homepage": "https://github.com/eliasm307/storybook-addon-deep-controls#readme",
   "files": [
     "dist/utils/",
     "dist/preview.js",
-    "preset.js"
+    "preset.js",
+    "index.d.ts"
   ],
-  "homepage": "https://github.com/eliasm307/storybook-addon-deep-controls#readme",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
+    "buildw": "tsc -p tsconfig.build.json -w",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "peerDependencies": {
     "@storybook/addon-controls": "7.x.x",
     "storybook": "7.x.x"
