@@ -127,3 +127,5 @@ dist
 **/*.pnp.*
 
 **/storybook-static/
+# Local Netlify folder
+.netlify

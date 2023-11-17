@@ -1,5 +1,5 @@
 {
-  "name": "example-app",
+  "name": "storybook-addon-deep-controls-example",
   "private": true,
   "scripts": {
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
@@ -9,7 +9,8 @@
     "pretest": "npm run addon:build",
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui",
-    "test:codegen": "npx playwright codegen http://localhost:6006/"
+    "test:codegen": "npx playwright codegen http://localhost:6006/",
+    "deploy": "npm run build-storybook && npx netlify-cli@latest deploy --prod"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",

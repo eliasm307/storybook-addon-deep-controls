@@ -16,6 +16,8 @@ into this:
 
 ![Basic example of nested args object with addon](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/simple-example-with-addon.png)
 
+See an interactive example [here](https://storybook-addon-deep-controls-example.netlify.app/?path=/story/stories-dev--enabled).
+
 ## Getting Started
 
 First, install the addon:
@@ -92,6 +94,8 @@ Below are some examples of what this looks like in the UI. This is for a story t
 
 Example with/without the addon and some editing:
 ![Gif showing the difference after enabling the addon and how editing works](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/complex-example.gif)
+
+See an interactive example [here](https://storybook-addon-deep-controls-example.netlify.app/?path=/story/stories-dev--enabled).
 
 ## Usage
 
