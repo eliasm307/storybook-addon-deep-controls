@@ -10,7 +10,10 @@
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui",
     "test:codegen": "npx playwright codegen http://localhost:6006/",
-    "deploy": "npm run build-storybook && npx netlify-cli@latest deploy --prod"
+    "deploy": "npm run build-storybook && netlify deploy --prod"
+  },
+  "scriptsNotes": {
+    "deploy": "Need to run deploy locally as netlify cant handle symlinks in .github folder"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
@@ -20,6 +23,7 @@
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
     "lodash-es": "^4.17.21",
+    "netlify-cli": "^17.5.1",
     "next": "13.5.6",
     "nodemon": "^3.0.1",
     "react": "18.2.0",
