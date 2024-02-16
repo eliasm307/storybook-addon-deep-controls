@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-deep-controls",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A Storybook addon that extends @storybook/addon-controls and provides an alternative to interacting with object arguments",
   "repository": {
     "type": "git",
