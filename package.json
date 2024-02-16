@@ -20,14 +20,14 @@
     "publish:major": "npm run publish:base -- level=major"
   },
   "devDependencies": {
-    "@eliasm307/config": "^0.44.2",
-    "@types/node": "^18.18.8",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
-    "eslint": "^8.52.0",
+    "@eliasm307/config": "^0.45.0",
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
     "eslint-config-next": "13.5.6",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-storybook": "^0.6.15",
-    "typescript": "^5.2.2"
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-storybook": "^0.8.0",
+    "typescript": "^5.3.3"
   }
 }
