@@ -21,6 +21,7 @@
     "dist/utils/",
     "dist/preview.js",
     "preset.js",
+    "register.js",
     "index.d.ts"
   ],
   "types": "index.d.ts",
