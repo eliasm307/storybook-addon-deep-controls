@@ -319,7 +319,6 @@ export function expandObject(
   // but it didn't work for some reason so opted to just filter them out instead
   const flattenedRootArgKeys = getRootKeysThatWereFlattened(flatObject);
   return Object.entries(flatObject)
-
     .filter(([key]) => !flattenedRootArgKeys.has(key))
     .reduce((out, [key, value]) => {
       return setProperty(out, key, value);
