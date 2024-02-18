@@ -2,9 +2,9 @@
   "name": "storybook-addon-deep-controls-example",
   "private": true,
   "scripts": {
-    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "storybook": "echo 'Starting storybook' && npm run addon:build && npx storybook dev -p 6006 --no-open",
     "storybook:watch": "nodemon --delay 5000ms --watch ../addon/src --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json",
+    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build-storybook": "npm run addon:build && storybook build",
     "pretest": "npm run addon:build",
     "test": "npx playwright test",
@@ -17,9 +17,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.41.2",
-    "@storybook/addon-controls": "^7.6.16",
-    "@storybook/nextjs": "^7.6.16",
-    "@storybook/react": "^7.6.16",
+    "@storybook/addon-essentials": "7.6.16",
+    "@storybook/nextjs": "7.6.16",
+    "@storybook/react": "7.6.16",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "lodash-es": "^4.17.21",
@@ -28,7 +28,7 @@
     "nodemon": "^3.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "storybook": "^7.6.16",
+    "storybook": "7.6.16",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }
