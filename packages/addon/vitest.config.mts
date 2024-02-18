@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -5,6 +6,10 @@ export default defineConfig({
     chaiConfig: {
       showDiff: true,
       truncateThreshold: 0,
+    },
+    coverage: {
+      enabled: true,
+      exclude: ["**/*.d.ts", "**/*.js"],
     },
   },
 });
