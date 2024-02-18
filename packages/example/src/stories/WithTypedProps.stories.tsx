@@ -34,6 +34,8 @@ export const WithArgs: Story = {
       anyString: "string",
       enumString: "string",
     },
+    someArray: ["string1", "string2"],
+    // NOTE: we inherit the "someString" control from docs without an arg value
   },
 };
 
@@ -43,6 +45,7 @@ export const WithCustomControls: TypeWithDeepControls<Story> = {
       anyString: "string",
       enumString: "string",
     },
+    someArray: ["string1", "string2"],
   },
   argTypes: {
     "someObject.enumString": {
