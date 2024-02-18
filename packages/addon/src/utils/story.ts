@@ -151,6 +151,13 @@ export function createFlattenedArgTypes(
   const argTypes = { ...(context.argTypes ?? {}) }; // shallow clone to avoid mutating original arg types object
   const userDefinedArgTypeNames = getUserDefinedArgTypeNames(context);
 
+  /*
+  NOTE: if the docs addon injected argTypes at the top level and the user didn't define an arg value for them,
+  then they wont be checked in the following loops which look at the initial args and they will be shown with the default control (ie basically falls back to default behaviour).
+  We would need to infer types etc in order to show deep controls in that case so we don't support it for now as it would add a lot of complexity.
+  Will see if its something people actually need first (ie is it commonly requested) before supporting this.
+  */
+
   // remove argTypes for args that were flattened and don't exist now
   for (const flattenedRootArgKey of getRootKeysThatWereFlattened(flatInitialArgs)) {
     if (!userDefinedArgTypeNames.has(flattenedRootArgKey)) {
@@ -195,13 +202,14 @@ function getUserDefinedArgTypeNames({
   parameters,
 }: DeepControlsStorybookContext): Set<string> {
   if (!parameters.docs) {
+    // there are no generated argTypes to filter out so we assume all of them are user defined
     return new Set(Object.keys(argTypes));
   }
 
-  // NOTE: the docs addon will inject some argTypes so we need to filter them out to only have those explicitly defined by the user
+  // the docs addon will inject some argTypes so we need to filter them out to only have those explicitly defined by the user
   const userDefinedArgTypeNames = new Set<string>();
   for (const [argName, argType] of Object.entries(argTypes)) {
-    if (!argName.includes(".") && !isArgTypeLikelyGeneratedByDocs(argType)) {
+    if (!isArgTypeLikelyGeneratedByDocs(argType)) {
       userDefinedArgTypeNames.add(argName);
     }
   }
