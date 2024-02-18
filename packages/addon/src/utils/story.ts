@@ -3,8 +3,12 @@ import { isPojo, setProperty } from "./general";
 
 export type DeepControlsStorybookContext = Pick<
   StoryContextForEnhancers,
-  "argTypes" | "initialArgs" | "parameters"
->;
+  "argTypes" | "initialArgs"
+> & {
+  parameters: {
+    docs?: unknown;
+  };
+};
 
 type PrimitiveValue = bigint | boolean | number | string | undefined | null;
 
@@ -202,6 +206,7 @@ function getUserDefinedArgTypeNames({
   parameters,
 }: DeepControlsStorybookContext): Set<string> {
   if (!parameters.docs) {
+    // NOTE: we assume this being truthy means the docs addon is enabled
     // there are no generated argTypes to filter out so we assume all of them are user defined
     return new Set(Object.keys(argTypes));
   }
