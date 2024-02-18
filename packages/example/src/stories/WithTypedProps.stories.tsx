@@ -31,8 +31,8 @@ export const DefaultDisabled: Story = {
 export const WithArgs: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "enumString",
     },
     someArray: ["string1", "string2"],
     // NOTE: we inherit the "someString" control from docs without an arg value
@@ -42,8 +42,8 @@ export const WithArgs: Story = {
 export const WithCustomControls: TypeWithDeepControls<Story> = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "enumString",
     },
     someArray: ["string1", "string2"],
   },
@@ -51,6 +51,10 @@ export const WithCustomControls: TypeWithDeepControls<Story> = {
     "someObject.enumString": {
       control: "radio",
       options: ["value1", "value2", "value3"],
+    },
+    someString: {
+      control: "radio",
+      options: ["string1", "string2", "string3"],
     },
   },
 };

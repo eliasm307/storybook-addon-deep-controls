@@ -1,6 +1,17 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
+type ControlExpectation =
+  | string
+  | number
+  | boolean
+  | undefined
+  | unknown[]
+  | {
+      type: "radio";
+      options: string[];
+    };
+
 class Assertions {
   constructor(private object: StorybookPageObject) {}
 
@@ -11,7 +22,14 @@ class Assertions {
     expect(JSON.parse(actualConfigText), "output config equals").toEqual(expectedConfig);
   }
 
-  async controlsMatch(expectedControlsMap: Record<string, unknown>) {
+  /**
+   * Map of control names to their expected values.
+   * - Primitive values are asserted to be equal to the given value
+   * - Arrays are asserted to just show an array control but the value is not asserted
+   *
+   * @remark `undefined` means the control exists but no value is set
+   */
+  async controlsMatch(expectedControlsMap: Record<string, ControlExpectation>) {
     // check controls count to make sure we are not missing any
     const actualControlsAddonTabTitle = await this.object.page
       .locator("#tabbutton-addon-controls")
@@ -23,10 +41,27 @@ class Assertions {
 
     // check control values
     for (const [controlName, expectedRawValue] of expectedControlEntries) {
-      const controlInput = this.object.getInputLocatorForControl(controlName);
+      // handle unset controls
+      if (expectedRawValue === undefined) {
+        const setControlButton = this.object.getLocatorForSetControlButton(controlName);
+        await expect(setControlButton, `control "${controlName}" exists`).toBeVisible();
+        continue;
+      }
+
+      // handle radio controls
+      const isArray = Array.isArray(expectedRawValue);
+      if (!isArray && typeof expectedRawValue === "object" && expectedRawValue.type === "radio") {
+        const actualOptions = await this.object.getOptionsForRadioControl(controlName);
+        expect(actualOptions, `control "${controlName}" radio input options`).toEqual(
+          expectedRawValue.options,
+        );
+        continue;
+      }
+
+      const controlInput = this.object.getLocatorForControlInput(controlName);
 
       // handle arrays
-      if (Array.isArray(expectedRawValue)) {
+      if (isArray) {
         const controlNameLocator = this.object.addonsPanelLocator.getByText(controlName, {
           exact: true,
         });
@@ -39,19 +74,48 @@ class Assertions {
         continue;
       }
 
+      // handle boolean toggles
       if (typeof expectedRawValue === "boolean") {
         expect(await controlInput.isChecked(), `control "${controlName}" is checked`).toEqual(
           expectedRawValue,
         );
-
-        // handle primitive values
-      } else {
-        const expectedValue = getEquivalentValueForInput(expectedRawValue);
-        await expect(controlInput, `control "${controlName}" value equals`).toHaveValue(
-          expectedValue,
-        );
+        continue;
       }
+
+      // handle primitive values
+      const expectedValue = getEquivalentValueForInput(expectedRawValue);
+      await expect(controlInput, `control "${controlName}" value equals`).toHaveValue(
+        expectedValue,
+      );
     }
+  }
+
+  async activeStoryIdEquals(expectedStoryId: string) {
+    const actualId = await this.object.storiesTreeLocator.getAttribute("data-highlighted-item-id");
+    expect(actualId, { message: "active story id" }).toEqual(expectedStoryId);
+  }
+}
+
+class Actions {
+  constructor(private object: StorybookPageObject) {}
+
+  /**
+   *
+   * @param id Story id, e.g. "stories-dev--enabled"
+   */
+  async clickStoryById(id: `${string}--${string}`) {
+    if (!id.includes("--")) {
+      throw new Error(
+        `Invalid story id, ${id}, it should include "--" to separate the component and story id`,
+      );
+    }
+    const componentId = id.split("--")[0];
+    const storyIsVisible = await this.object.storiesTreeLocator.locator(`#${id}`).isVisible();
+    if (!storyIsVisible) {
+      await this.object.storiesTreeLocator.locator(`#${componentId}`).click(); // make sure the component is expanded
+    }
+    await this.object.storiesTreeLocator.locator(`#${id}`).click();
+    await this.object.assert.activeStoryIdEquals(id);
   }
 }
 
@@ -73,18 +137,16 @@ function getEquivalentValueForInput(rawValue: unknown): string {
 export default class StorybookPageObject {
   private readonly PREVIEW_IFRAME_SELECTOR = `iframe[title="storybook-preview-iframe"]`;
 
-  assert: Assertions;
+  assert = new Assertions(this);
 
-  constructor(public page: Page) {
-    this.assert = new Assertions(this);
-  }
+  action = new Actions(this);
+
+  constructor(public page: Page) {}
 
   async openPage() {
     const STORYBOOK_URL = "http://localhost:6006/?path=/story/stories-dev--enabled";
     await this.page.goto(STORYBOOK_URL);
-    await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, {
-      state: "visible",
-    });
+    await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, { state: "visible" });
   }
 
   get previewIframeLocator() {
@@ -99,10 +161,27 @@ export default class StorybookPageObject {
     return this.page.locator("#storybook-panel-root");
   }
 
+  get storiesTreeLocator() {
+    return this.page.locator("#storybook-explorer-tree");
+  }
+
   /**
-   * @param controlName The name of the control as shown in the UI Controls panel in the "Name" column, e.g. "bool
+   * @param controlName The name of the control as shown in the UI Controls panel in the "Name" column, e.g. "bool"
    */
-  getInputLocatorForControl(controlName: string) {
-    return this.page.locator(`[id='control-${controlName}']`);
+  getLocatorForControlInput(controlName: string) {
+    return this.addonsPanelLocator.locator(`[id='control-${controlName}']`);
+  }
+
+  /**
+   * When a control doesn't have a value a button is shown to set the value
+   *
+   * @param controlName The name of the control as shown in the UI Controls panel in the "Name" column, e.g. "bool"
+   */
+  getLocatorForSetControlButton(controlName: string) {
+    return this.addonsPanelLocator.locator(`button[id='set-${controlName}']`);
+  }
+
+  async getOptionsForRadioControl(controlName: string) {
+    return this.addonsPanelLocator.locator(`label[for^='control-${controlName}']`).allInnerTexts();
   }
 }

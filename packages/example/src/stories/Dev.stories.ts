@@ -34,8 +34,8 @@ export const Disabled: Story = {
 export const WithCustomControls: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "enumString",
     },
   },
   argTypes: {
@@ -49,8 +49,8 @@ export const WithCustomControls: Story = {
 export const RawObject: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "enumString",
     },
   },
   parameters: {
