@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Dev } from "./Dev";
+import type { TypeWithDeepControls } from "storybook-addon-deep-controls";
+import Dev from "./Dev";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
@@ -33,8 +34,8 @@ export const Disabled: Story = {
 export const WithCustomControls: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "enumString",
     },
   },
   argTypes: {
@@ -48,8 +49,8 @@ export const WithCustomControls: Story = {
 export const RawObject: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "enumString",
     },
   },
   parameters: {
@@ -103,3 +104,18 @@ function createNestedObject() {
     },
   };
 }
+
+export const TextExample: TypeWithDeepControls<Story> = {
+  args: {
+    children: "Text",
+    strikeThrough: {
+      isActive: false,
+      color: "#000",
+    },
+  },
+  argTypes: {
+    foregroundStyle: { control: "color" },
+    "strikeThrough.isActive": { control: "boolean" },
+    "strikeThrough.color": { control: "color" },
+  },
+};

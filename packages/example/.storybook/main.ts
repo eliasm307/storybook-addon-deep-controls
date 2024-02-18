@@ -11,9 +11,9 @@ function getAbsolutePathToPackage(value: string): any {
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
-    getAbsolutePathToPackage("@storybook/addon-controls"),
-    getAbsolutePathToPackage("storybook-addon-deep-controls"),
-  ],
+    "@storybook/addon-essentials", // to get controls and docs addons and make sure we are compatible with any other essential addon
+    "storybook-addon-deep-controls",
+  ].map(getAbsolutePathToPackage),
   framework: {
     name: getAbsolutePathToPackage("@storybook/nextjs"),
     options: {},

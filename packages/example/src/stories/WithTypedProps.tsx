@@ -1,7 +1,17 @@
 import React from "react";
 import { stringify } from "storybook-addon-deep-controls/src/utils/general";
 
-export default function Dev(config: object) {
+// NOTE: the docs addon will try to create argTypes for this component's props based on this types that this addon needs to handle
+type Props = {
+  someString?: string;
+  someObject?: {
+    anyString: string;
+    enumString: string;
+  };
+  someArray?: string[];
+};
+
+export default function WithTypedProps(config: Props) {
   return (
     <div>
       <h1>Config received by Component:</h1>

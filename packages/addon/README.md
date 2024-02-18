@@ -131,6 +131,12 @@ Which produces the following:
 
 See interactive [example here](https://storybook-addon-deep-controls-example.netlify.app/?path=/story/stories-dev--with-custom-controls).
 
+### With the Docs Addon
+
+If you are using the `@storybook/addon-docs` addon, it will generate controls from the prop types of the component. For this to work properly with deep controls you will need to define explicit initial values for any object properties in `args` for the corresponding deep controls for those object properties to be added.
+
+ArgTypes added by the docs addon without an initial value are shown with default controls.
+
 ### Typescript
 
 If you are using Typescript, defining the `argTypes` for deep properties as above will produce a type error. To avoid this you can use the `TypeWithDeepControls` utility type from this addon which you can wrap over your `Meta` or `Story` types e.g. if your story type is called `StoryType` you can do the following:

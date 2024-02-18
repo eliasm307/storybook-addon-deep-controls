@@ -16,5 +16,5 @@ type DeepControlsAddonParameters = {
 };
 
 export type TypeWithDeepControls<T extends Pick<BaseAnnotations, "argTypes">> = T & {
-  argTypes: ArgTypes<Record<string, unknown>>;
+  argTypes?: ArgTypes<Record<string, unknown>>;
 };
