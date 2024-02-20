@@ -105,17 +105,19 @@ function createNestedObject() {
   };
 }
 
-export const TextExample: TypeWithDeepControls<Story> = {
-  args: {
-    children: "Text",
-    strikeThrough: {
-      isActive: false,
-      color: "#000",
+export const WithControlMatchers: TypeWithDeepControls<Story> = {
+  parameters: {
+    controls: {
+      // see https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers
+      matchers: {
+        color: /color/i,
+      },
     },
   },
-  argTypes: {
-    foregroundStyle: { control: "color" },
-    "strikeThrough.isActive": { control: "boolean" },
-    "strikeThrough.color": { control: "color" },
+  args: {
+    color: {
+      color: "#f00",
+      description: "Very red",
+    },
   },
 };
