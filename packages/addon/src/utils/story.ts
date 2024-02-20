@@ -7,6 +7,10 @@ export type DeepControlsStorybookContext = Pick<
 > & {
   parameters: {
     docs?: unknown;
+    controls?: {
+      /** @see https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers */
+      matchers?: Record<string, RegExp>;
+    };
   };
 };
 
@@ -154,6 +158,7 @@ export function createFlattenedArgTypes(
   const flatInitialArgs = flattenObject(context.initialArgs ?? {});
   const argTypes = { ...(context.argTypes ?? {}) }; // shallow clone to avoid mutating original arg types object
   const userDefinedArgTypeNames = getUserDefinedArgTypeNames(context);
+  const controlMatcherEntries = Object.entries(context.parameters.controls?.matchers ?? {});
 
   /*
   NOTE: if the docs addon injected argTypes at the top level and the user didn't define an arg value for them,
@@ -173,6 +178,12 @@ export function createFlattenedArgTypes(
   for (const [argPath, argValue] of Object.entries(flatInitialArgs)) {
     if (argTypes[argPath]) {
       continue; // existing argType defined, don't override
+    }
+
+    const matcherArgType = getArgTypeFromControlMatchers({ argPath, controlMatcherEntries });
+    if (matcherArgType) {
+      argTypes[argPath] = matcherArgType;
+      continue;
     }
 
     if (Array.isArray(argValue)) {
@@ -196,6 +207,25 @@ export function createFlattenedArgTypes(
   }
 
   return argTypes;
+}
+
+function getArgTypeFromControlMatchers({
+  argPath,
+  controlMatcherEntries,
+}: {
+  argPath: string;
+  controlMatcherEntries: [string, RegExp][];
+}): StrictInputType | undefined {
+  const lastSegment = argPath.substring(argPath.lastIndexOf(".") + 1);
+  for (const [controlType, matcherRegex] of controlMatcherEntries) {
+    // we only want to match on the last segment of the argPath, ie the actual property name
+    if (matcherRegex.test(lastSegment)) {
+      return {
+        name: argPath,
+        control: { type: controlType },
+      };
+    }
+  }
 }
 
 /**
