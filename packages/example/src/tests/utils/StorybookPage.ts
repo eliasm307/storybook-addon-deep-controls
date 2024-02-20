@@ -10,6 +10,10 @@ type ControlExpectation =
   | {
       type: "radio";
       options: string[];
+    }
+  | {
+      type: "color";
+      value: string;
     };
 
 class Assertions {
@@ -48,20 +52,10 @@ class Assertions {
         continue;
       }
 
-      // handle radio controls
-      const isArray = Array.isArray(expectedRawValue);
-      if (!isArray && typeof expectedRawValue === "object" && expectedRawValue.type === "radio") {
-        const actualOptions = await this.object.getOptionsForRadioControl(controlName);
-        expect(actualOptions, `control "${controlName}" radio input options`).toEqual(
-          expectedRawValue.options,
-        );
-        continue;
-      }
-
       const controlInput = this.object.getLocatorForControlInput(controlName);
 
       // handle arrays
-      if (isArray) {
+      if (Array.isArray(expectedRawValue)) {
         const controlNameLocator = this.object.addonsPanelLocator.getByText(controlName, {
           exact: true,
         });
@@ -72,6 +66,26 @@ class Assertions {
           `simple input for control "${controlName}" does not exist`,
         ).not.toBeVisible();
         continue;
+      }
+
+      if (typeof expectedRawValue === "object") {
+        // handle radio controls
+        if (expectedRawValue.type === "radio") {
+          const actualOptions = await this.object.getOptionsForRadioControl(controlName);
+          expect(actualOptions, `control "${controlName}" radio input options`).toEqual(
+            expectedRawValue.options,
+          );
+          continue;
+        }
+
+        // handle color inputs
+        if (expectedRawValue.type === "color") {
+          const actualValue = await this.object.getValueForColorInput(controlName);
+          expect(actualValue, `control "${controlName}" color value`).toEqual(
+            expectedRawValue.value,
+          );
+          continue;
+        }
       }
 
       // handle boolean toggles
@@ -181,7 +195,11 @@ export default class StorybookPageObject {
     return this.addonsPanelLocator.locator(`button[id='set-${controlName}']`);
   }
 
-  async getOptionsForRadioControl(controlName: string) {
+  getOptionsForRadioControl(controlName: string) {
     return this.addonsPanelLocator.locator(`label[for^='control-${controlName}']`).allInnerTexts();
+  }
+
+  getValueForColorInput(controlName: string) {
+    return this.getLocatorForControlInput(controlName).inputValue();
   }
 }

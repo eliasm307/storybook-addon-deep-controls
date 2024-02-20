@@ -292,3 +292,24 @@ test("supports customising controls with initial values", async ({ page }) => {
     },
   });
 });
+
+test("supports control matchers", async ({ page }) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById("stories-dev--with-control-matchers");
+  await storybookPage.assert.controlsMatch({
+    // control matched correctly
+    "color.color": {
+      type: "color",
+      value: "#f00",
+    },
+    // path includes "color" but the property doesn't, it should not match
+    "color.description": "Very red",
+  });
+
+  await storybookPage.assert.actualConfigMatches({
+    color: {
+      color: "#f00",
+      description: "Very red",
+    },
+  });
+});
