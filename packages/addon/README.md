@@ -131,7 +131,37 @@ Which produces the following:
 
 See interactive [example here](https://storybook-addon-deep-controls-example.netlify.app/?path=/story/stories-dev--with-custom-controls).
 
-### With the Docs Addon (ie Controls from Typescript Prop Types)
+### Control Type Matchers
+
+The `@storybook/addon-controls` addon supports selecting specific controls based on the name of properties, ie [control type matchers](https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers).
+
+This behaviour is also supported with this addon and it only matches on the property name (ie the last segment in the path).
+
+For example, if you have a story defined as follows, ie with a custom matcher that uses `color` controls for arg properties that contain the word "color":
+
+```js
+export const WithControlMatchers: TypeWithDeepControls<Story> = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /color/i,
+      },
+    },
+  },
+  args: {
+    color: {
+      color: "#f00",
+      description: "Very red",
+    },
+  },
+};
+```
+
+Then the output of this is as follows, ie `color.color` uses a color control, however `color.description` doesn't, because even though the path contains `color` the property name (`description`) doesn't:
+
+![Example of controls with custom control type matchers applied](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/control-matcher-result.png)
+
+### Docs Addon Controls (ie Controls from Typescript Prop Types)
 
 If you are using the `@storybook/addon-docs` addon, it will generate controls from the prop types of the component. For this to work properly with deep controls you will need to define explicit initial values for any object properties in `args` for the corresponding deep controls for those object properties to be added.
 
