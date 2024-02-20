@@ -24,7 +24,28 @@
     "register.js",
     "index.d.ts"
   ],
+  "main": "index.js",
+  "module": "index.mjs",
   "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./preset": {
+      "require": "./preset.js",
+      "import": "./preset.js"
+    },
+    "./register": {
+      "require": "./register.js",
+      "import": "./register.js"
+    },
+    "./preview": {
+      "require": "./dist/preview.js",
+      "import": "./dist/preview.js"
+    }
+  },
   "scripts": {
     "prepare": "npm run build",
     "build": "tsc -p tsconfig.build.json",
