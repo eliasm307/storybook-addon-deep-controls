@@ -519,5 +519,39 @@ describe("Story utils", function () {
         },
       );
     });
+
+    it("supports control matchers with only match the property name, not the entire path", function () {
+      assert.deepStrictEqual(
+        createFlattenedArgTypes({
+          initialArgs: {
+            color: {
+              color: "#f00",
+              description: "Very red",
+            },
+          },
+          argTypes: {},
+          parameters: {
+            controls: {
+              matchers: {
+                color: /color/i,
+              },
+            },
+          },
+        }),
+        {
+          // object argType hidden as initial arg value has been flattened
+          color: { name: "color", table: { disable: true } },
+          "color.color": {
+            name: "color.color",
+            control: { type: "color" },
+          },
+          "color.description": {
+            name: "color.description",
+            control: { type: "text" },
+            type: { name: "string" },
+          },
+        },
+      );
+    });
   });
 });
