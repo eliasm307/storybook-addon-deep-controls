@@ -38,6 +38,7 @@ class Assertions {
     const actualControlsAddonTabTitle = await this.object.page
       .locator("#tabbutton-addon-controls")
       .textContent();
+
     const expectedControlEntries = Object.entries(expectedControlsMap);
     expect(actualControlsAddonTabTitle?.trim(), "controls tab title equals").toEqual(
       `Controls${expectedControlEntries.length}`,
@@ -160,6 +161,11 @@ class Waits {
       `iframe[title="storybook-preview-iframe"][data-is-loaded="true"]`,
       { state: "visible" },
     );
+
+    // make sure controls loaded
+    await this.object.addonsPanelLocator
+      .locator("#panel-tab-content .docblock-argstable")
+      .waitFor({ state: "visible" });
   }
 }
 
