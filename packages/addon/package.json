@@ -40,7 +40,6 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^1.5.0",
-    "storybook": "8.0.8",
     "vitest": "^1.5.0"
   }
 }

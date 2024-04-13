@@ -22350,7 +22350,6 @@ __metadata:
   resolution: "storybook-addon-deep-controls@workspace:packages/addon"
   dependencies:
     "@vitest/coverage-v8": ^1.5.0
-    storybook: 8.0.8
     vitest: ^1.5.0
   peerDependencies:
     "@storybook/addon-controls": 7.x.x || 8.x.x
