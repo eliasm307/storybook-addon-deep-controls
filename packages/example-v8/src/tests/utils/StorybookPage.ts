@@ -130,7 +130,7 @@ class Actions {
     }
     await this.object.storiesTreeLocator.locator(`#${id}`).click();
     await this.object.assert.activeStoryIdEquals(id);
-    await this.object.previewLoader.isHidden();
+    await this.object.waitUntil.previewIframeLoaded();
   }
 }
 
@@ -149,12 +149,28 @@ function getEquivalentValueForInput(rawValue: unknown): string {
   }
 }
 
+class Waits {
+  constructor(private object: StorybookPageObject) {}
+
+  async previewIframeLoaded() {
+    await this.object.previewLoader.isHidden();
+
+    // wait for iframe to have attribute
+    await this.object.page.waitForSelector(
+      `iframe[title="storybook-preview-iframe"][data-is-loaded="true"]`,
+      { state: "visible" },
+    );
+  }
+}
+
 export default class StorybookPageObject {
   private readonly PREVIEW_IFRAME_SELECTOR = `iframe[title="storybook-preview-iframe"]`;
 
   assert = new Assertions(this);
 
   action = new Actions(this);
+
+  waitUntil = new Waits(this);
 
   constructor(public page: Page) {}
 
@@ -165,11 +181,12 @@ export default class StorybookPageObject {
       await this.page.goto(STORYBOOK_URL, { timeout: 5000 });
     } catch {
       // sometimes goto times out, so try again
-      console.log("page.goto timed out, trying again");
+      // eslint-disable-next-line no-console
+      console.warn("page.goto timed out, trying again");
       await this.page.goto(STORYBOOK_URL, { timeout: 5000 });
     }
     await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, { state: "visible" });
-    await this.previewLoader.isHidden();
+    await this.waitUntil.previewIframeLoaded();
   }
 
   get previewIframeLocator() {
