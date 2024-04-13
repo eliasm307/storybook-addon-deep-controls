@@ -33,6 +33,7 @@ describe("Story utils", function () {
         );
         return;
       }
+
       assert.isTrue(
         actual === expected,
         `Expect non-object at "${currentPath}" with value "${String(actual)}" to equal "${String(

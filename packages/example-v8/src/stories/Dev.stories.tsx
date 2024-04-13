@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import type { TypeWithDeepControls } from "storybook-addon-deep-controls";
+import React from "react";
 import Dev from "./Dev";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
@@ -66,6 +67,7 @@ function createNestedObject() {
     bool: true,
     string: "string1234",
     number: 1234,
+    jsx: <div />,
     nested: {
       bool: false,
       string: "string2",

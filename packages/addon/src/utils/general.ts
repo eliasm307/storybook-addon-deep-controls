@@ -48,8 +48,16 @@ const POJO_PROTOTYPES = [Object.prototype, null];
  */
 export function isPojo(val: unknown): val is object {
   return Boolean(
-    typeof val === "object" && val && POJO_PROTOTYPES.includes(Object.getPrototypeOf(val)),
+    typeof val === "object" &&
+      val &&
+      POJO_PROTOTYPES.includes(Object.getPrototypeOf(val)) &&
+      !isReactElement(val),
   );
+}
+
+// NOTE: React has `#isValidElement` utility to check this, however we dont use it here so React isn't a dependency
+export function isReactElement(val: Record<string, any>): boolean {
+  return typeof val.$$typeof === "symbol";
 }
 
 /**
@@ -118,10 +126,15 @@ function replacer(inputKey: string, inputValue: unknown): unknown {
   }
 
   if (typeof inputValue === "object") {
+    if (isReactElement(inputValue)) {
+      return "[ReactElement]";
+    }
+
     const isPojoValue = isPojo(inputValue);
     if (isPojoValue) {
       return inputValue;
     }
+
     const className = (inputValue as object).constructor.name;
     return `[${className}]`;
   }
