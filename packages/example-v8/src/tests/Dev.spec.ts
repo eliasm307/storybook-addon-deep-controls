@@ -20,7 +20,9 @@ const DEFAULT_OUTPUT_CONFIG = {
   bool: true,
   string: "string1234",
   number: 1234,
+  jsx: "[ReactElement]",
   nested: {
+    jsx: "[ReactElement]",
     bool: false,
     string: "string2",
     number: 2,
