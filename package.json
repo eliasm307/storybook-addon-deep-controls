@@ -11,7 +11,7 @@
     "check-types": "tsc --noEmit",
     "check": "npm run lint && npm run check-types",
     "build:addon": "npm --prefix packages/addon run build",
-    "example:deploy": "npm --prefix packages/example run deploy",
+    "example:deploy": "npm --prefix packages/example-v8 run deploy",
     "prepublish:base": "npm run check && npm run test && npm run build:addon",
     "publish:base": "node ./node_modules/@eliasm307/config/dist/scripts/publish.js relativeGitPath=. relativeNpmPath=./packages/addon commitChanges=true",
     "postpublish:base": "npm run example:deploy",
@@ -21,13 +21,14 @@
   },
   "devDependencies": {
     "@eliasm307/config": "^0.45.0",
-    "@types/node": "^20.11.19",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.56.0",
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/parser": "^7.6.0",
+    "eslint": "^8.57.0",
     "eslint-config-next": "13.5.6",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-storybook": "^0.8.0",
-    "typescript": "^5.3.3"
+    "playwright": "^1.43.1",
+    "typescript": "^5.4.5"
   }
 }

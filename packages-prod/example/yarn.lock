@@ -2,23 +2,23 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
-  cacheKey: 10c0
+  version: 6
+  cacheKey: 8c0
 
 "example-app-prod@workspace:.":
   version: 0.0.0-use.local
   resolution: "example-app-prod@workspace:."
   dependencies:
-    storybook-addon-deep-controls: "npm:^0.3.0"
+    storybook-addon-deep-controls: ^0.6.1
   languageName: unknown
   linkType: soft
 
-"storybook-addon-deep-controls@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "storybook-addon-deep-controls@npm:0.3.0"
+"storybook-addon-deep-controls@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "storybook-addon-deep-controls@npm:0.6.1"
   peerDependencies:
-    "@storybook/addon-controls": 7.x.x
-    storybook: 7.x.x
-  checksum: 76c974c77106cd9245d97cba4a0cd68482b03a318d438b75745fb516348ea29174d7979244c52456da1589881df6528a2406740c176f9c7d9522001fbe11d91e
+    "@storybook/addon-controls": 7.x.x || 8.x.x
+    storybook: 7.x.x || 8.x.x
+  checksum: 5ad77fe54c58cb5ad3a93827db8d7127d528d74f2c6ec1519b68b30dc8b497bbe9abd6d2a32adb04564d550870512d3fe8f3f010d1873fae608e08c0d21a5e92
   languageName: node
   linkType: hard
