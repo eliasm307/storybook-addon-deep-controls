@@ -1,4 +1,0 @@
-# see https://docs.netlify.com/configure-builds/file-based-configuration/#configuration-details
-# All paths configured in the netlify.toml should be absolute paths relative to the base directory, which is the root by default (/). I assume this takes the folder with the .git folder as the base directory.
-[build]
-  publish = "./packages/example/storybook-static"
