@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "upgrade": "yarn upgrade-interactive",
-    "storybook": "echo 'Starting storybook' && npx storybook dev -p 6006 --no-open",
+    "storybook": "echo 'Starting storybook' && storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build"
   },
   "installConfig": {

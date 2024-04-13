@@ -2,14 +2,14 @@
   "name": "storybook-addon-deep-controls-example",
   "private": true,
   "scripts": {
-    "storybook": "echo 'Starting storybook' && npm run addon:build && npx storybook dev -p 6006 --no-open",
+    "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6006 --no-open",
     "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon/src --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build-storybook": "npm run addon:build && storybook build",
     "pretest": "npm run addon:build",
-    "test": "npx playwright test",
-    "test:ui": "npx playwright test --ui",
-    "test:codegen": "npx playwright codegen http://localhost:6006/",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:codegen": "playwright codegen http://localhost:6006/",
     "deploy": "npm run build-storybook && netlify deploy --prod"
   },
   "scriptsNotes": {
