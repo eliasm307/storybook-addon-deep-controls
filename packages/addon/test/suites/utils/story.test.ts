@@ -4,6 +4,20 @@ import type { DeepControlsStorybookContext } from "../../../src/utils/story";
 import { createFlattenedArgTypes, expandObject, flattenObject } from "../../../src/utils/story";
 
 describe("Story utils", function () {
+  const REACT_ELEMENT_SYMBOL = Symbol("react.element");
+
+  /**
+   * @remark Based on React 18 implementation
+   */
+  function createDummyReactElement(key: string) {
+    return {
+      $$typeof: REACT_ELEMENT_SYMBOL,
+      type: "div",
+      key,
+      ref: null,
+    };
+  }
+
   // implemented locally as it requires specific behavior
   // and chai sometimes breaks if its used on objects with circular references
   function assertDeepEqual({
@@ -33,6 +47,7 @@ describe("Story utils", function () {
         );
         return;
       }
+
       assert.isTrue(
         actual === expected,
         `Expect non-object at "${currentPath}" with value "${String(actual)}" to equal "${String(
@@ -141,6 +156,32 @@ describe("Story utils", function () {
         "nested.nested.classRef": nestedObject.nested.nested.classRef,
         "nested.nested.numberArray": nestedObject.nested.nested.numberArray,
         "nested.nested.complexArray": nestedObject.nested.nested.complexArray,
+      },
+      message: "nested object flattened",
+    });
+
+    // can restore the original object
+    assertDeepEqual({
+      actual: expandObject(flattenedObject),
+      expected: nestedObject,
+      message: "flattened object expanded",
+    });
+  });
+
+  it("can flatten and restore objects with jsx", function () {
+    const nestedObject = {
+      jsx: createDummyReactElement("1"),
+      nested: {
+        jsx: createDummyReactElement("2"),
+      },
+    };
+    const flattenedObject = flattenObject(nestedObject);
+
+    assertDeepEqual({
+      actual: flattenedObject,
+      expected: {
+        jsx: nestedObject.jsx,
+        "nested.jsx": nestedObject.nested.jsx,
       },
       message: "nested object flattened",
     });

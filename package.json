@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "upgrade": "yarn upgrade-interactive && yarn --cwd packages-prod/example run upgrade",
-    "test": "npm run test --workspaces",
+    "test": "npm --prefix packages/addon run test && npm --prefix packages/example-v8 run test",
     "lint": "eslint --report-unused-disable-directives --cache --fix --quiet --ext .ts,.tsx --ignore-path .gitignore .",
     "check-types": "tsc --noEmit",
     "check": "npm run lint && npm run check-types",
