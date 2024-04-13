@@ -69,6 +69,7 @@ function createNestedObject() {
     number: 1234,
     jsx: <div />,
     nested: {
+      jsx: <div />,
       bool: false,
       string: "string2",
       number: 2,
