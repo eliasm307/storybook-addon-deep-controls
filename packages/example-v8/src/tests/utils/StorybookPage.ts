@@ -187,7 +187,7 @@ export default class StorybookPageObject {
       await this.page.goto(STORYBOOK_URL, { timeout: 5000 });
     } catch {
       // sometimes goto times out, so try again
-      // eslint-disable-next-line no-console
+
       console.warn("page.goto timed out, trying again");
       await this.page.goto(STORYBOOK_URL, { timeout: 5000 });
     }
