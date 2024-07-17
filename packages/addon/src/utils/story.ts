@@ -1,4 +1,4 @@
-import type { StrictInputType, StoryContextForEnhancers } from "@storybook/types";
+import type { StoryContextForEnhancers, StrictInputType } from "@storybook/types";
 import { isPojo, setProperty } from "./general";
 
 export type DeepControlsStorybookContext = Pick<
@@ -37,10 +37,12 @@ type FlattenObjectRecursionContext = {
 export function flattenObject(
   nestedObject: object,
   context?: FlattenObjectRecursionContext,
+  storyContext?: StoryContextForEnhancers,
 ): Record<string, unknown>;
 export function flattenObject(
   nestedObject: object | undefined,
   context?: FlattenObjectRecursionContext,
+  storyContext?: StoryContextForEnhancers,
 ): Record<string, unknown> | undefined;
 export function flattenObject(
   nestedObject: object | undefined,
@@ -48,6 +50,7 @@ export function flattenObject(
     currentPath: "",
     flatObjectOut: {},
   },
+  storyContext?: StoryContextForEnhancers,
 ): Record<string, unknown> | undefined {
   if (!isPojo(nestedObject)) {
     return; // cant or should not flatten
@@ -57,14 +60,27 @@ export function flattenObject(
     if (context.currentPath) {
       key = `${context.currentPath}.${key}`; // nested key
     }
-    if (!isPojo(value)) {
+
+    /**
+     * skip flatten if follow these rules:
+     * 1. the value is not an object
+     * 2. the value is an object but has no keys
+     * 3. the value is an object and has keys but argTypes are not explicitly set by the user
+     */
+    const rule1 = !isPojo(value);
+    const rule2 = isPojo(value) && Object.entries(value).length === 0;
+    const rule3 =
+      isPojo(value) &&
+      storyContext?.argTypes &&
+      !Object.keys(storyContext.argTypes).find((argTypeKey) => argTypeKey.startsWith(key + "."));
+    if (rule1 || rule2 || rule3) {
       // we have reached the last value we can flatten in this branch
 
       context.flatObjectOut[key] = value;
       return;
     }
 
-    flattenObject(value, { currentPath: key, flatObjectOut: context.flatObjectOut });
+    flattenObject(value, { currentPath: key, flatObjectOut: context.flatObjectOut }, storyContext);
   });
 
   return context.flatObjectOut;
