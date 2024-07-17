@@ -1,5 +1,5 @@
 import type { ProjectAnnotations, Renderer } from "@storybook/types";
-import { expandObject, flattenObject, createFlattenedArgTypes } from "./utils/story";
+import { createFlattenedArgTypes, expandObject, flattenObject } from "./utils/story";
 
 const preview: ProjectAnnotations<Renderer> = {
   argsEnhancers: [
@@ -10,7 +10,14 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.initialArgs;
       }
-      return flattenObject(context.initialArgs);
+      return flattenObject(
+        context.initialArgs,
+        {
+          currentPath: "",
+          flatObjectOut: {},
+        },
+        context,
+      );
     },
   ],
 
