@@ -1,6 +1,6 @@
 import {test} from "@playwright/test";
-import StorybookPageObject from "./utils/StorybookPage";
-import {clone, localHostPortIsInUse} from "./utils";
+import {localHostPortIsInUse} from "./utils";
+import StorybookPageObject, {type ControlExpectation} from "./utils/StorybookPage";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -16,35 +16,76 @@ test.beforeEach(async ({page}) => {
   await new StorybookPageObject(page).openPage();
 });
 
-const DEFAULT_OUTPUT_CONFIG = {
-  bool: true,
-  string: "string1234",
-  number: 1234,
-  jsx: "[ReactElement]",
-  nested: {
+function createDefaultOutputConfig() {
+  return {
+    bool: true,
+    string: "string1234",
+    number: 1234,
     jsx: "[ReactElement]",
-    bool: false,
-    string: "string2",
-    number: 2,
-    nestedWithoutPrototype: {
-      bool: true,
-      string: "string3",
-      element: "[HTMLSpanElement]",
-    },
-    nullValue: null,
-    element: "[HTMLDivElement]",
-    func: "[Function:func]",
     nested: {
-      bool: true,
-      string: "string3",
-      number: -3,
+      jsx: "[ReactElement]",
+      bool: false,
+      string: "string2",
+      number: 2,
+      nestedWithoutPrototype: {
+        bool: true,
+        string: "string3",
+        element: "[HTMLSpanElement]",
+      },
       nullValue: null,
-      infinity: "[Infinity]" as string | number,
-      NaNValue: "[NaN]" as string | number,
-      symbol: "[Symbol(symbol)]",
-      classRef: "[Function:Foo]",
-      numberArray: [1, 2, 3],
-      complexArray: [
+      element: "[HTMLDivElement]",
+      func: "[Function:func]",
+      nested: {
+        bool: true,
+        string: "string3",
+        number: -3,
+        nullValue: null,
+        infinity: "[Infinity]" as string | number,
+        NaNValue: "[NaN]" as string | number,
+        symbol: "[Symbol(symbol)]",
+        classRef: "[Function:Foo]",
+        numberArray: [1, 2, 3],
+        complexArray: [
+          {
+            bool: true,
+            string: "string3",
+            number: -3,
+          },
+          "[HTMLDivElement]",
+          null,
+          "[Symbol(symbol)]",
+          "[Function:Bar]",
+          "[Function:anonymous]",
+        ],
+      },
+    },
+  };
+}
+
+// NOTE: Some controls not included here intentionally as they should be hidden
+// e.g. function controls
+function createExpectedDefaultVisibleControls(): Record<string, ControlExpectation> {
+  return {
+    bool: true,
+    string: "string1234",
+    number: 1234,
+    "nested.bool": false,
+    "nested.string": "string2",
+    "nested.number": 2,
+    "nested.nestedWithoutPrototype.bool": true,
+    "nested.nestedWithoutPrototype.string": "string3",
+    "nested.nested.bool": true,
+    "nested.nested.string": "string3",
+    "nested.nested.number": -3,
+    "nested.nested.infinity": Infinity,
+    "nested.nested.NaNValue": NaN,
+    "nested.nested.numberArray": {
+      type: "json",
+      value: [1, 2, 3],
+    },
+    "nested.nested.complexArray": {
+      type: "json",
+      value: [
         {
           bool: true,
           string: "string3",
@@ -57,36 +98,16 @@ const DEFAULT_OUTPUT_CONFIG = {
         "[Function:anonymous]",
       ],
     },
-  },
-};
-
-// NOTE: Some controls not included here intentionally as they should be hidden
-// e.g. function controls
-const DEFAULT_VISIBLE_CONTROLS = {
-  bool: true,
-  string: "string1234",
-  number: 1234,
-  "nested.bool": false,
-  "nested.string": "string2",
-  "nested.number": 2,
-  "nested.nestedWithoutPrototype.bool": true,
-  "nested.nestedWithoutPrototype.string": "string3",
-  "nested.nested.bool": true,
-  "nested.nested.string": "string3",
-  "nested.nested.number": -3,
-  "nested.nested.infinity": Infinity,
-  "nested.nested.NaNValue": NaN,
-  "nested.nested.numberArray": [], // just need an array to say its a complex control
-  "nested.nested.complexArray": [], // just need an array to say its a complex control
-};
+  };
+}
 
 test("supports checking and unchecking root level boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const newConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const newVisibleControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const newConfig = createDefaultOutputConfig();
+  const newVisibleControls = createExpectedDefaultVisibleControls();
 
   // uncheck control
   const controlInput = storybookPage.getLocatorForControlInput("bool");
@@ -102,8 +123,8 @@ test("supports checking and unchecking root level boolean control", async ({page
   await controlInput.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
   // re-uncheck control
   await controlInput.click();
@@ -115,11 +136,11 @@ test("supports checking and unchecking root level boolean control", async ({page
 
 test("supports checking and unchecking nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const newConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const newVisibleControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const newConfig = createDefaultOutputConfig();
+  const newVisibleControls = createExpectedDefaultVisibleControls();
 
   // check control
   const controlInput = storybookPage.getLocatorForControlInput("nested.bool");
@@ -135,8 +156,8 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
   await controlInput.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
   // re-check control
   await controlInput.click();
@@ -148,11 +169,11 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
 
 test("supports checking and unchecking deep nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const expectedConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const expectedControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const expectedConfig = createDefaultOutputConfig();
+  const expectedControls = createExpectedDefaultVisibleControls();
 
   // uncheck control
   const controlInput = storybookPage.getLocatorForControlInput("nested.nested.bool");
@@ -168,8 +189,8 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
   await controlInput.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
   // re-uncheck control
   await controlInput.click();
@@ -181,11 +202,11 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
 
 test("supports resetting controls", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const expectedConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const expectedControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const expectedConfig = createDefaultOutputConfig();
+  const expectedControls = createExpectedDefaultVisibleControls();
 
   // uncheck root control
   let controlInput = storybookPage.getLocatorForControlInput("bool");
@@ -271,8 +292,8 @@ test("supports resetting controls", async ({page}) => {
   await storybookPage.resetControlsButtonLocator.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 });
 
 test("supports customising controls with initial values", async ({page}) => {
@@ -313,5 +334,20 @@ test("supports control matchers", async ({page}) => {
       color: "#f00",
       description: "Very red",
     },
+  });
+});
+
+test("shows empty object and array controls", async ({page}) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById("stories-dev--with-empty-initial-args");
+
+  await storybookPage.assert.controlsMatch({
+    emptyObj: {type: "json", value: {}}, // empty object shown
+    emptyArray: {type: "json", value: []}, // empty array shown
+  });
+
+  await storybookPage.assert.actualConfigMatches({
+    emptyObj: {},
+    emptyArray: [],
   });
 });

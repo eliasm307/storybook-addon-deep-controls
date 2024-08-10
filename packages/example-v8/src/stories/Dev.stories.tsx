@@ -1,6 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
-import React from "react";
 import Dev from "./Dev";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
@@ -122,5 +121,26 @@ export const WithControlMatchers: TypeWithDeepControls<Story> = {
       color: "#f00",
       description: "Very red",
     },
+  },
+};
+
+export const WithEmptyInitialArgs: TypeWithDeepControls<Story> = {
+  args: {
+    emptyObj: {},
+    emptyArray: [],
+  },
+};
+
+export const WithObjectArgTypeAndInitialValue: TypeWithDeepControls<Story> = {
+  args: {
+    someObject: {
+      obj1: {foo: "foo"},
+      obj2: {bar: "bar"},
+    },
+  },
+  argTypes: {
+    // obj1 should be deep controlled
+    // obj2 should be shown with same value in json control
+    "someObject.obj2": {control: "object"},
   },
 };

@@ -1,12 +1,11 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
 
-type ControlExpectation =
+export type ControlExpectation =
   | string
   | number
   | boolean
   | undefined
-  | unknown[]
   | {
       type: "radio";
       options: string[];
@@ -14,6 +13,10 @@ type ControlExpectation =
   | {
       type: "color";
       value: string;
+    }
+  | {
+      type: "json";
+      value: unknown[] | Record<string, unknown>;
     };
 
 class Assertions {
@@ -39,6 +42,7 @@ class Assertions {
       .locator("#tabbutton-addon-controls")
       .textContent();
 
+    // NOTE: this assumes the entries are in the same order as they are defined
     const expectedControlEntries = Object.entries(expectedControlsMap);
     expect(actualControlsAddonTabTitle?.trim(), "controls tab title equals").toEqual(
       `Controls${expectedControlEntries.length}`,
@@ -55,20 +59,6 @@ class Assertions {
 
       const controlInput = this.object.getLocatorForControlInput(controlName);
 
-      // handle arrays
-      if (Array.isArray(expectedRawValue)) {
-        const controlNameLocator = this.object.addonsPanelLocator.getByText(controlName, {
-          exact: true,
-        });
-        await expect(controlNameLocator, `control name "${controlName}" exists`).toBeVisible();
-        // cant assert these complex controls the best we can do is just say they don't exist as simple inputs
-        await expect(
-          controlInput,
-          `simple input for control "${controlName}" does not exist`,
-        ).not.toBeVisible();
-        continue;
-      }
-
       if (typeof expectedRawValue === "object") {
         // handle radio controls
         if (expectedRawValue.type === "radio") {
@@ -79,12 +69,26 @@ class Assertions {
           continue;
         }
 
-        // handle color inputs
+        // handle color controls
         if (expectedRawValue.type === "color") {
           const actualValue = await this.object.getValueForColorInput(controlName);
           expect(actualValue, `control "${controlName}" color value`).toEqual(
             expectedRawValue.value,
           );
+          continue;
+        }
+
+        // handle json controls
+        if (expectedRawValue.type === "json") {
+          const controlNameLocator = this.object.addonsPanelLocator.getByText(controlName, {
+            exact: true,
+          });
+          await expect(controlNameLocator, `control name "${controlName}" exists`).toBeVisible();
+          // cant assert these complex controls the best we can do is just say they don't exist as simple inputs
+          await expect(
+            controlInput,
+            `simple input for control "${controlName}" does not exist`,
+          ).not.toBeVisible();
           continue;
         }
       }
@@ -97,7 +101,7 @@ class Assertions {
         continue;
       }
 
-      // handle primitive values
+      // handle primitive string/number values
       const expectedValue = getEquivalentValueForInput(expectedRawValue);
       await expect(controlInput, `control "${controlName}" value equals`).toHaveValue(
         expectedValue,
@@ -135,7 +139,7 @@ class Actions {
   }
 }
 
-function getEquivalentValueForInput(rawValue: unknown): string {
+function getEquivalentValueForInput(rawValue: number | string): string {
   switch (typeof rawValue) {
     case "number": {
       if (Number.isNaN(rawValue) || !Number.isFinite(rawValue)) {
