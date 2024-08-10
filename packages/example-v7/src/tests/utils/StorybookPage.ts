@@ -1,5 +1,5 @@
-import type { Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import type {Page} from "@playwright/test";
+import {expect} from "@playwright/test";
 
 type ControlExpectation =
   | string
@@ -106,7 +106,7 @@ class Assertions {
 
   async activeStoryIdEquals(expectedStoryId: string) {
     const actualId = await this.object.storiesTreeLocator.getAttribute("data-highlighted-item-id");
-    expect(actualId, { message: "active story id" }).toEqual(expectedStoryId);
+    expect(actualId, {message: "active story id"}).toEqual(expectedStoryId);
   }
 }
 
@@ -160,7 +160,7 @@ export default class StorybookPageObject {
   async openPage() {
     const STORYBOOK_URL = "http://localhost:6006/?path=/story/stories-dev--enabled";
     await this.page.goto(STORYBOOK_URL);
-    await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, { state: "visible" });
+    await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, {state: "visible"});
   }
 
   get previewIframeLocator() {
@@ -168,7 +168,7 @@ export default class StorybookPageObject {
   }
 
   get resetControlsButtonLocator() {
-    return this.page.getByRole("button", { name: "Reset controls" });
+    return this.page.getByRole("button", {name: "Reset controls"});
   }
 
   get addonsPanelLocator() {

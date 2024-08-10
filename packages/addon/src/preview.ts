@@ -1,5 +1,5 @@
-import type { ProjectAnnotations, Renderer } from "@storybook/types";
-import { expandObject, flattenObject, createFlattenedArgTypes } from "./utils/story";
+import type {ProjectAnnotations, Renderer} from "@storybook/types";
+import {expandObject, flattenObject, createFlattenedArgTypes} from "./utils/story";
 
 const preview: ProjectAnnotations<Renderer> = {
   argsEnhancers: [
