@@ -36,6 +36,7 @@
   },
   "peerDependencies": {
     "@storybook/addon-controls": "7.x.x || 8.x.x",
+    "@storybook/types": "7.x.x || 8.x.x",
     "storybook": "7.x.x || 8.x.x"
   },
   "devDependencies": {
