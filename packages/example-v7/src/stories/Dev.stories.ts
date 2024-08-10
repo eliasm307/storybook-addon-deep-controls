@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import type { TypeWithDeepControls } from "storybook-addon-deep-controls";
+import type {Meta, StoryObj} from "@storybook/react";
+import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
 import Dev from "./Dev";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args

@@ -1,5 +1,5 @@
-import type { Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import type {Page} from "@playwright/test";
+import {expect} from "@playwright/test";
 
 type ControlExpectation =
   | string
@@ -107,7 +107,7 @@ class Assertions {
 
   async activeStoryIdEquals(expectedStoryId: string) {
     const actualId = await this.object.storiesTreeLocator.getAttribute("data-highlighted-item-id");
-    expect(actualId, { message: "active story id" }).toEqual(expectedStoryId);
+    expect(actualId, {message: "active story id"}).toEqual(expectedStoryId);
   }
 }
 
@@ -159,13 +159,13 @@ class Waits {
     // wait for iframe to have attribute
     await this.object.page.waitForSelector(
       `iframe[title="storybook-preview-iframe"][data-is-loaded="true"]`,
-      { state: "visible" },
+      {state: "visible"},
     );
 
     // make sure controls loaded
     await this.object.addonsPanelLocator
       .locator("#panel-tab-content .docblock-argstable")
-      .waitFor({ state: "visible" });
+      .waitFor({state: "visible"});
   }
 }
 
@@ -184,14 +184,14 @@ export default class StorybookPageObject {
     const STORYBOOK_URL = "http://localhost:6006/?path=/story/stories-dev--enabled";
 
     try {
-      await this.page.goto(STORYBOOK_URL, { timeout: 5000 });
+      await this.page.goto(STORYBOOK_URL, {timeout: 5000});
     } catch {
       // sometimes goto times out, so try again
 
       console.warn("page.goto timed out, trying again");
-      await this.page.goto(STORYBOOK_URL, { timeout: 5000 });
+      await this.page.goto(STORYBOOK_URL, {timeout: 5000});
     }
-    await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, { state: "visible" });
+    await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, {state: "visible"});
     await this.waitUntil.previewIframeLoaded();
   }
 
@@ -200,7 +200,7 @@ export default class StorybookPageObject {
   }
 
   get resetControlsButtonLocator() {
-    return this.page.getByRole("button", { name: "Reset controls" });
+    return this.page.getByRole("button", {name: "Reset controls"});
   }
 
   get addonsPanelLocator() {

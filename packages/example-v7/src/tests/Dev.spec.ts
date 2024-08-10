@@ -1,6 +1,6 @@
-import { test } from "@playwright/test";
+import {test} from "@playwright/test";
 import StorybookPageObject from "./utils/StorybookPage";
-import { clone, localHostPortIsInUse } from "./utils";
+import {clone, localHostPortIsInUse} from "./utils";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -11,7 +11,7 @@ test.beforeAll(async () => {
   }
 });
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({page}) => {
   test.setTimeout(60_000);
   await new StorybookPageObject(page).openPage();
 });
@@ -78,7 +78,7 @@ const DEFAULT_VISIBLE_CONTROLS = {
   "nested.nested.complexArray": [], // just need an array to say its a complex control
 };
 
-test("supports checking and unchecking root level boolean control", async ({ page }) => {
+test("supports checking and unchecking root level boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
   await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
@@ -111,7 +111,7 @@ test("supports checking and unchecking root level boolean control", async ({ pag
   await storybookPage.assert.controlsMatch(newVisibleControls);
 });
 
-test("supports checking and unchecking nested boolean control", async ({ page }) => {
+test("supports checking and unchecking nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
   await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
@@ -144,7 +144,7 @@ test("supports checking and unchecking nested boolean control", async ({ page })
   await storybookPage.assert.controlsMatch(newVisibleControls);
 });
 
-test("supports checking and unchecking deep nested boolean control", async ({ page }) => {
+test("supports checking and unchecking deep nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
   await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
@@ -177,7 +177,7 @@ test("supports checking and unchecking deep nested boolean control", async ({ pa
   await storybookPage.assert.controlsMatch(expectedControls);
 });
 
-test("supports resetting controls", async ({ page }) => {
+test("supports resetting controls", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
   await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
@@ -273,7 +273,7 @@ test("supports resetting controls", async ({ page }) => {
   await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
 });
 
-test("supports customising controls with initial values", async ({ page }) => {
+test("supports customising controls with initial values", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-dev--with-custom-controls");
   await storybookPage.assert.controlsMatch({
@@ -293,7 +293,7 @@ test("supports customising controls with initial values", async ({ page }) => {
   });
 });
 
-test("supports control matchers", async ({ page }) => {
+test("supports control matchers", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-dev--with-control-matchers");
   await storybookPage.assert.controlsMatch({

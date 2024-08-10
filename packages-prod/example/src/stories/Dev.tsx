@@ -1,6 +1,6 @@
 import React from "react";
 
-import { stringify } from "storybook-addon-deep-controls/src/utils/general";
+import {stringify} from "storybook-addon-deep-controls/src/utils/general";
 
 export function Dev(config: object) {
   return (

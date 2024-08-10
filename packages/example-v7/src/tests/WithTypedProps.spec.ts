@@ -1,6 +1,6 @@
-import { test } from "@playwright/test";
+import {test} from "@playwright/test";
 import StorybookPageObject from "./utils/StorybookPage";
-import { localHostPortIsInUse } from "./utils";
+import {localHostPortIsInUse} from "./utils";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -11,12 +11,12 @@ test.beforeAll(async () => {
   }
 });
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({page}) => {
   test.setTimeout(60_000);
   await new StorybookPageObject(page).openPage();
 });
 
-test("shows default controls when initial values are not defined", async ({ page }) => {
+test("shows default controls when initial values are not defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--default-enabled");
   await storybookPage.assert.controlsMatch({
@@ -27,7 +27,7 @@ test("shows default controls when initial values are not defined", async ({ page
   await storybookPage.assert.actualConfigMatches({});
 });
 
-test("shows deep controls when initial values are defined", async ({ page }) => {
+test("shows deep controls when initial values are defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--with-args");
   await storybookPage.assert.controlsMatch({
@@ -45,7 +45,7 @@ test("shows deep controls when initial values are defined", async ({ page }) => 
   });
 });
 
-test("supports customising controls with initial values", async ({ page }) => {
+test("supports customising controls with initial values", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--with-custom-controls");
   await storybookPage.assert.controlsMatch({

@@ -1,7 +1,7 @@
-import { describe, it, assert } from "vitest";
-import type { StrictInputType } from "@storybook/types";
-import type { DeepControlsStorybookContext } from "../../../src/utils/story";
-import { createFlattenedArgTypes, expandObject, flattenObject } from "../../../src/utils/story";
+import {describe, it, assert} from "vitest";
+import type {StrictInputType} from "@storybook/types";
+import type {DeepControlsStorybookContext} from "../../../src/utils/story";
+import {createFlattenedArgTypes, expandObject, flattenObject} from "../../../src/utils/story";
 
 describe("Story utils", function () {
   const REACT_ELEMENT_SYMBOL = Symbol("react.element");
@@ -200,14 +200,14 @@ describe("Story utils", function () {
         createFlattenedArgTypes({
           initialArgs: {},
           argTypes: {
-            bool: { name: "bool", control: "boolean" },
-            "nested.bool": { name: "nested.bool", control: "boolean" },
+            bool: {name: "bool", control: "boolean"},
+            "nested.bool": {name: "nested.bool", control: "boolean"},
           },
           parameters: {},
         }),
         {
-          bool: { name: "bool", control: "boolean" },
-          "nested.bool": { name: "nested.bool", control: "boolean" },
+          bool: {name: "bool", control: "boolean"},
+          "nested.bool": {name: "nested.bool", control: "boolean"},
         },
       );
     });
@@ -230,36 +230,36 @@ describe("Story utils", function () {
         }),
         {
           // NOTE: also asserts a control for the original root object is hidden (this still exists as its what storybook uses but we are just not showing it)
-          nested: { name: "nested", table: { disable: true } },
+          nested: {name: "nested", table: {disable: true}},
           "nested.bool": {
             name: "nested.bool",
-            control: { type: "boolean" },
-            type: { name: "boolean" },
+            control: {type: "boolean"},
+            type: {name: "boolean"},
           },
           "nested.string": {
             name: "nested.string",
-            control: { type: "text" },
-            type: { name: "string" },
+            control: {type: "text"},
+            type: {name: "string"},
           },
           "nested.number": {
             name: "nested.number",
-            control: { type: "number" },
-            type: { name: "number" },
+            control: {type: "number"},
+            type: {name: "number"},
           },
           "nested.bigInt": {
             name: "nested.bigInt",
-            control: { type: "number" },
-            type: { name: "number" },
+            control: {type: "number"},
+            type: {name: "number"},
           },
           "nested.infinityValue": {
             name: "nested.infinityValue",
-            control: { type: "number" },
-            type: { name: "number" },
+            control: {type: "number"},
+            type: {name: "number"},
           },
           "nested.NaNValue": {
             name: "nested.NaNValue",
-            control: { type: "number" },
-            type: { name: "number" },
+            control: {type: "number"},
+            type: {name: "number"},
           },
         },
       );
@@ -293,7 +293,7 @@ describe("Story utils", function () {
         }),
         {
           // NOTE: root object is partially flattened but its still hidden
-          nested: { name: "nested", table: { disable: true } },
+          nested: {name: "nested", table: {disable: true}},
           // NOTE: no inferred argType for this or its children as it had a user defined argType
           "nested.nested": {
             name: "nested.nested",
@@ -306,8 +306,8 @@ describe("Story utils", function () {
           // NOTE: still flattens other deep values without custom argTypes
           "nested.nested2.bool": {
             name: "nested.nested2.bool",
-            control: { type: "boolean" },
-            type: { name: "boolean" },
+            control: {type: "boolean"},
+            type: {name: "boolean"},
           },
         },
       );
@@ -342,11 +342,11 @@ describe("Story utils", function () {
           options: ["email", "phone", "mail"],
         },
         // inferred nested arg type added for other value
-        nested: { name: "nested", table: { disable: true } },
+        nested: {name: "nested", table: {disable: true}},
         "nested.string": {
           name: "nested.string",
-          type: { name: "string" },
-          control: { type: "text" }, // basic control
+          type: {name: "string"},
+          control: {type: "text"}, // basic control
         },
       });
 
@@ -370,11 +370,11 @@ describe("Story utils", function () {
           parameters: {},
         }),
         {
-          ref: { name: "ref", table: { disable: true } },
-          func: { name: "func", table: { disable: true } },
-          nullValue: { name: "nullValue", table: { disable: true } },
-          undefinedValue: { name: "undefinedValue", table: { disable: true } },
-          symbol: { name: "symbol", table: { disable: true } },
+          ref: {name: "ref", table: {disable: true}},
+          func: {name: "func", table: {disable: true}},
+          nullValue: {name: "nullValue", table: {disable: true}},
+          undefinedValue: {name: "undefinedValue", table: {disable: true}},
+          symbol: {name: "symbol", table: {disable: true}},
         },
       );
     });
@@ -387,13 +387,13 @@ describe("Story utils", function () {
             complex2: class {},
           },
           argTypes: {
-            complex: { name: "complex", control: "object" },
+            complex: {name: "complex", control: "object"},
           },
           parameters: {},
         }),
         {
-          complex: { name: "complex", control: "object" },
-          complex2: { name: "complex2", table: { disable: true } },
+          complex: {name: "complex", control: "object"},
+          complex2: {name: "complex2", table: {disable: true}},
         },
         "does not overwrite existing argTypes even if the value should be hidden",
       );
@@ -443,9 +443,9 @@ describe("Story utils", function () {
           parameters: {},
         }),
         {
-          array: { name: "array", control: { type: "object" } },
-          nested: { name: "nested", table: { disable: true } },
-          "nested.array": { name: "nested.array", control: { type: "object" } },
+          array: {name: "array", control: {type: "object"}},
+          nested: {name: "nested", table: {disable: true}},
+          "nested.array": {name: "nested.array", control: {type: "object"}},
         },
       );
     });
@@ -483,12 +483,12 @@ describe("Story utils", function () {
         createFlattenedArgTypes({
           initialArgs: {},
           argTypes: {
-            object: createGeneratedArgTypeExample({ name: "object" }),
+            object: createGeneratedArgTypeExample({name: "object"}),
           },
           parameters: {}, // docs addon not enabled
         }),
         {
-          object: createGeneratedArgTypeExample({ name: "object" }),
+          object: createGeneratedArgTypeExample({name: "object"}),
         },
       );
     });
@@ -503,7 +503,7 @@ describe("Story utils", function () {
             },
           },
           argTypes: {
-            object: createGeneratedArgTypeExample({ name: "object" }),
+            object: createGeneratedArgTypeExample({name: "object"}),
           },
           parameters: {
             docs: {}, // truthy value means docs addon enabled
@@ -511,18 +511,18 @@ describe("Story utils", function () {
         }),
         {
           // docs argType kept
-          object: createGeneratedArgTypeExample({ name: "object" }),
+          object: createGeneratedArgTypeExample({name: "object"}),
           // other argType flattened as normal
-          anotherObject: { name: "anotherObject", table: { disable: true } },
+          anotherObject: {name: "anotherObject", table: {disable: true}},
           "anotherObject.enum": {
             name: "anotherObject.enum",
-            control: { type: "text" },
-            type: { name: "string" },
+            control: {type: "text"},
+            type: {name: "string"},
           },
           "anotherObject.string": {
             name: "anotherObject.string",
-            control: { type: "text" },
-            type: { name: "string" },
+            control: {type: "text"},
+            type: {name: "string"},
           },
         },
       );
@@ -538,7 +538,7 @@ describe("Story utils", function () {
             },
           },
           argTypes: {
-            object: createGeneratedArgTypeExample({ name: "object" }),
+            object: createGeneratedArgTypeExample({name: "object"}),
           },
           parameters: {
             docs: {}, // truthy value means docs addon enabled
@@ -546,16 +546,16 @@ describe("Story utils", function () {
         }),
         {
           // object argType hidden as initial arg value has been flattened
-          object: { name: "object", table: { disable: true } },
+          object: {name: "object", table: {disable: true}},
           "object.enum": {
             name: "object.enum",
-            control: { type: "text" },
-            type: { name: "string" },
+            control: {type: "text"},
+            type: {name: "string"},
           },
           "object.string": {
             name: "object.string",
-            control: { type: "text" },
-            type: { name: "string" },
+            control: {type: "text"},
+            type: {name: "string"},
           },
         },
       );
@@ -581,15 +581,15 @@ describe("Story utils", function () {
         }),
         {
           // object argType hidden as initial arg value has been flattened
-          color: { name: "color", table: { disable: true } },
+          color: {name: "color", table: {disable: true}},
           "color.color": {
             name: "color.color",
-            control: { type: "color" },
+            control: {type: "color"},
           },
           "color.description": {
             name: "color.description",
-            control: { type: "text" },
-            type: { name: "string" },
+            control: {type: "text"},
+            type: {name: "string"},
           },
         },
       );

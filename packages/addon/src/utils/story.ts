@@ -1,5 +1,5 @@
-import type { StrictInputType, StoryContextForEnhancers } from "@storybook/types";
-import { isPojo, setProperty } from "./general";
+import type {StrictInputType, StoryContextForEnhancers} from "@storybook/types";
+import {isPojo, setProperty} from "./general";
 
 export type DeepControlsStorybookContext = Pick<
   StoryContextForEnhancers,
@@ -64,7 +64,7 @@ export function flattenObject(
       return;
     }
 
-    flattenObject(value, { currentPath: key, flatObjectOut: context.flatObjectOut });
+    flattenObject(value, {currentPath: key, flatObjectOut: context.flatObjectOut});
   });
 
   return context.flatObjectOut;
@@ -73,7 +73,7 @@ export function flattenObject(
 function createObjectArgType(argName: string): StrictInputType {
   return {
     name: argName,
-    control: { type: "object" },
+    control: {type: "object"},
   };
 }
 
@@ -92,7 +92,7 @@ function createObjectArgType(argName: string): StrictInputType {
 function createHiddenArgType(argPath: string) {
   return {
     name: argPath,
-    table: { disable: true },
+    table: {disable: true},
   };
 }
 
@@ -100,28 +100,28 @@ function createPrimitiveArgInputTypeConfig(arg: {
   name: string;
   value: PrimitiveValue;
 }): StrictInputType {
-  const commonConfig = { name: arg.name };
+  const commonConfig = {name: arg.name};
   switch (typeof arg.value) {
     case "string":
       return {
         ...commonConfig,
-        type: { name: "string" },
-        control: { type: "text" },
+        type: {name: "string"},
+        control: {type: "text"},
       };
 
     case "number":
     case "bigint":
       return {
         ...commonConfig,
-        type: { name: "number" },
-        control: { type: "number" },
+        type: {name: "number"},
+        control: {type: "number"},
       };
 
     case "boolean":
       return {
         ...commonConfig,
-        type: { name: "boolean" },
-        control: { type: "boolean" },
+        type: {name: "boolean"},
+        control: {type: "boolean"},
       };
 
     // controls should not exist for these
@@ -156,7 +156,7 @@ export function createFlattenedArgTypes(
   context: DeepControlsStorybookContext,
 ): Record<string, StrictInputType> {
   const flatInitialArgs = flattenObject(context.initialArgs ?? {});
-  const argTypes = { ...(context.argTypes ?? {}) }; // shallow clone to avoid mutating original arg types object
+  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const userDefinedArgTypeNames = getUserDefinedArgTypeNames(context);
   const controlMatcherEntries = Object.entries(context.parameters.controls?.matchers ?? {});
 
@@ -180,7 +180,7 @@ export function createFlattenedArgTypes(
       continue; // existing argType defined, don't override
     }
 
-    const matcherArgType = getArgTypeFromControlMatchers({ argPath, controlMatcherEntries });
+    const matcherArgType = getArgTypeFromControlMatchers({argPath, controlMatcherEntries});
     if (matcherArgType) {
       argTypes[argPath] = matcherArgType;
       continue;
@@ -203,7 +203,7 @@ export function createFlattenedArgTypes(
     }
 
     // add control for flattened primitive arg entry without existing control
-    argTypes[argPath] = createPrimitiveArgInputTypeConfig({ name: argPath, value: argValue });
+    argTypes[argPath] = createPrimitiveArgInputTypeConfig({name: argPath, value: argValue});
   }
 
   return argTypes;
@@ -222,7 +222,7 @@ function getArgTypeFromControlMatchers({
     if (matcherRegex.test(lastSegment)) {
       return {
         name: argPath,
-        control: { type: controlType },
+        control: {type: controlType},
       };
     }
   }
