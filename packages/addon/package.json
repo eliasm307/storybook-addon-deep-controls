@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-deep-controls",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A Storybook addon that extends @storybook/addon-controls and provides an alternative to interacting with object arguments",
   "repository": {
     "type": "git",
@@ -36,11 +36,12 @@
   },
   "peerDependencies": {
     "@storybook/addon-controls": "7.x.x || 8.x.x",
+    "@storybook/types": "7.x.x || 8.x.x",
     "storybook": "7.x.x || 8.x.x"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^1.5.0",
+    "@vitest/coverage-v8": "^1.6.0",
     "react": "18.2.0",
-    "vitest": "^1.5.0"
+    "vitest": "^1.6.0"
   }
 }

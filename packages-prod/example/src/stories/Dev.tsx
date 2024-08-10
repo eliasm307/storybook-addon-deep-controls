@@ -1,6 +1,6 @@
 import React from "react";
-// eslint-disable-next-line import/no-relative-packages
-import { stringify } from "../../../../packages/addon/src/utils/general";
+
+import { stringify } from "storybook-addon-deep-controls/src/utils/general";
 
 export function Dev(config: object) {
   return (
