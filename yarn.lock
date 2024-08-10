@@ -22303,6 +22303,7 @@ __metadata:
     vitest: ^1.5.0
   peerDependencies:
     "@storybook/addon-controls": 7.x.x || 8.x.x
+    "@storybook/types": 7.x.x || 8.x.x
     storybook: 7.x.x || 8.x.x
   languageName: unknown
   linkType: soft
