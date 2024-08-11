@@ -15,5 +15,12 @@
     "isolatedModules": true,
     "incremental": true,
     "jsx": "preserve"
-  }
+  },
+  "exclude": [
+    "**/node_modules/**/*",
+    "**/dist/**/*",
+    "**/coverage/**/*",
+    "**/storybook-static/**/*",
+    "**/public/**/*"
+  ]
 }
