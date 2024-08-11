@@ -1,4 +1,5 @@
 import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
+import type {DeepControlsAddonParameters} from "../..";
 import {isPojo, setProperty} from "./general";
 
 /** @internal */
@@ -16,7 +17,7 @@ export type DeepControlsStorybookContext = Pick<
     };
     // NOTE: this needs to be defined for the addon to be enabled, so we can assume it will be defined
     // but type needs to be optional for compatibility
-    deepControls?: {
+    deepControls?: DeepControlsAddonParameters & {
       /**
        * Contains the argType names that the user has defined, excludes the ones that were likely generated
        * e.g. by the docs addon or by us
