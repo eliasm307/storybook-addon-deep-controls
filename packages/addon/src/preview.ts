@@ -11,22 +11,7 @@ const preview: ProjectAnnotations<Renderer> = {
         return context.initialArgs;
       }
 
-      console.log(
-        "argsEnhancers before flatten",
-        JSON.stringify(context.initialArgs, null, 2),
-
-        "context.parameters.deepControls",
-        context.parameters.deepControls,
-      );
-
-      const argsAfter = createFlattenedArgs(context);
-      console.log("argsEnhancers", {
-        initialArgs: context.initialArgs,
-        argsAfter,
-        argTypes: context.argTypes,
-      });
-
-      return argsAfter;
+      return createFlattenedArgs(context);
     },
   ],
 
@@ -42,23 +27,7 @@ const preview: ProjectAnnotations<Renderer> = {
         return context.argTypes;
       }
 
-      console.log(
-        "argTypesEnhancers before flatten",
-        JSON.stringify(context.argTypes, null, 2),
-        "context.parameters.deepControls",
-        context.parameters.deepControls,
-      );
-
-      const argTypesAfter = createFlattenedArgTypes(context);
-
-      console.log("argTypesEnhancers", {
-        initialArgs: context.initialArgs,
-        argTypes: {...context.argTypes},
-        argTypesAfter,
-        parameters: context.parameters,
-      });
-
-      return argTypesAfter;
+      return createFlattenedArgTypes(context);
     },
   ],
 
@@ -71,13 +40,6 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return storyFn(context);
       }
-
-      console.log("decorator before story render context", {
-        args: {...context.args},
-        initialArgs: {...context.initialArgs},
-        parameters: context.parameters,
-        argTypes: {...context.argTypes},
-      });
 
       return storyFn({
         ...context,
