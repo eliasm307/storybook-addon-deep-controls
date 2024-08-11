@@ -288,7 +288,7 @@ describe("Story utils", function () {
       });
     });
 
-    it("does nothing if it cant flatten root object", function () {
+    it("should return the same value if it cannot flatten the root value", function () {
       const instance = new Es6Class();
       const flatInitialArgs = createFlattenedArgs({
         initialArgs: instance,
