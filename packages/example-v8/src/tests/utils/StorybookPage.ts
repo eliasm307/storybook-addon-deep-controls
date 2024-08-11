@@ -1,12 +1,14 @@
 import type {Locator, Page} from "@playwright/test";
 import {expect} from "@playwright/test";
-import escapeRegExp from "./escapeRegExp";
 
 export type ControlExpectation =
   | string
   | number
   | boolean
-  | undefined
+  | {
+      type: "set-value-button";
+      valueType: "string" | "object";
+    }
   | {
       type: "radio";
       options: string[];
@@ -18,18 +20,14 @@ export type ControlExpectation =
     }
   | {
       /**
-       * @remark array control cant be parsed as its string value is not valid JSON
-       * so we just assert that it is shown as an array control
+       * @remark control cant be parsed as its string value is not valid JSON
        */
-      type: "json-array";
-      value?: [];
-    }
-  | {
-      type: "json-object";
+      type: "json";
       /**
-       * @remark Value can only be asserted if it doesn't contain non-empty arrays
+       * This is the displayed text in the control, it might not be valid JSON and some sections might be collapsed
+       * so we do a general assertion of the state of the control
        */
-      value: Record<string, unknown>;
+      valueText: string;
     };
 
 class Assertions {
@@ -68,16 +66,19 @@ class Assertions {
       const row = actualRowLocators[controlName];
       expect(row, `control "${controlName}" exists`).toBeTruthy();
 
-      // handle unset controls
-      if (expectedControl === undefined) {
-        const setControlButton = this.object.getLocatorForSetControlButton(controlName, row);
-        await expect(setControlButton, `control "${controlName}" exists`).toBeVisible();
-        continue;
-      }
-
       const controlInput = this.object.getLocatorForControlInput(controlName, row);
 
       if (typeof expectedControl === "object") {
+        // handle unset controls
+        if (expectedControl.type === "set-value-button") {
+          const setValueButtonLocator = this.object.getLocatorForSetControlButton(controlName, row);
+          await expect(setValueButtonLocator, `control "${controlName}" exists`).toBeVisible();
+          await expect(setValueButtonLocator, `control "${controlName}" value equals`).toHaveText(
+            `Set ${expectedControl.valueType}`,
+          );
+          continue;
+        }
+
         // assert radio controls
         if (expectedControl.type === "radio") {
           const actualOptions = await this.object.getOptionsForRadioControl(controlName, row);
@@ -101,38 +102,18 @@ class Assertions {
         }
 
         // assert json controls
-        if (expectedControl.type === "json-array") {
-          const jsonControlLocator = await this.object.getJsonArrayControlLocator(row);
-          expect(
-            jsonControlLocator,
-            `control "${controlName}" json array control exists`,
-          ).toBeTruthy();
-
-          if (!expectedControl.value) {
-            continue;
-          }
-
-          // this will be of the format `${controlName} : ${JsonValue}`
-          const actualValueString = await jsonControlLocator!.innerText();
-          const actualValue = this.parseJsonControlValue(controlName, actualValueString);
-          expect(actualValue, `control "${controlName}" json object value`).toEqual(
-            expectedControl.value,
-          );
-          continue;
-        }
-
-        if (expectedControl.type === "json-object") {
-          const jsonControlLocator = await this.object.getJsonObjectControlLocator(row);
-          expect(
+        if (expectedControl.type === "json") {
+          const jsonControlLocator = this.object.getJsonControlLocator(row);
+          await expect(
             jsonControlLocator,
             `control "${controlName}" json object control exists`,
-          ).toBeTruthy();
+          ).toBeVisible();
 
-          // this will be of the format `${controlName} : ${JsonValue}`
-          const actualValueString = await jsonControlLocator!.innerText();
-          const actualValue = this.parseJsonControlValue(controlName, actualValueString);
-          expect(actualValue, `control "${controlName}" json object value`).toEqual(
-            expectedControl.value,
+          await this.fullyExpandJsonControl(jsonControlLocator);
+
+          // text will be of the format `${controlName} : ${JsonValue}`
+          await expect(jsonControlLocator, `control "${controlName}" json object value`).toHaveText(
+            `${controlName} : ${expectedControl.valueText}`,
           );
           continue;
         }
@@ -154,17 +135,11 @@ class Assertions {
     }
   }
 
-  /**
-   * @param actualRawValueString will be of the format `${controlName} : ${JsonValue}`
-   */
-  private parseJsonControlValue(controlName: string, actualRawValueString: string) {
-    try {
-      const prefixRegex = new RegExp(`^\\s*${escapeRegExp(controlName)}\\s*:\\s*`);
-      const actualValue = JSON.parse(actualRawValueString.replace(prefixRegex, ""));
-      return actualValue;
-    } catch (error) {
-      console.error(`Failed to parse JSON control value for ${actualRawValueString}\n${error}`);
-      return actualRawValueString; // return as is to show diff
+  private async fullyExpandJsonControl(jsonControlLocator: Locator): Promise<void> {
+    const collapsedEl = jsonControlLocator.locator(".rejt-collapsed").first();
+    while (await collapsedEl.isVisible()) {
+      // expand until there are no more collapsed elements
+      await collapsedEl.click();
     }
   }
 
@@ -333,23 +308,9 @@ export default class StorybookPageObject {
     return out;
   }
 
-  async getJsonObjectControlLocator(row: Locator): Promise<Locator | null> {
+  getJsonControlLocator(row: Locator): Locator {
     // NOTE: class name comes from tree component that Storybook uses
     // see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
-    const jsonControl = row.locator(".rejt-object-node");
-    if (await jsonControl.isVisible()) {
-      return jsonControl;
-    }
-    return null;
-  }
-
-  async getJsonArrayControlLocator(row: Locator): Promise<Locator | null> {
-    // NOTE: class name comes from tree component that Storybook uses
-    // see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
-    const jsonControl = row.locator(".rejt-array-node");
-    if (await jsonControl.isVisible()) {
-      return jsonControl;
-    }
-    return null;
+    return row.locator(".rejt-tree");
   }
 }

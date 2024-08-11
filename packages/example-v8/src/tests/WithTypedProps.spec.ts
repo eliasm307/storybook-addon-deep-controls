@@ -20,9 +20,18 @@ test("shows default controls when initial values are not defined", async ({page}
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--default-enabled");
   await storybookPage.assert.controlsMatch({
-    someString: undefined,
-    someObject: undefined,
-    someArray: undefined,
+    someString: {
+      type: "set-value-button",
+      valueType: "string",
+    },
+    someObject: {
+      type: "set-value-button",
+      valueType: "object",
+    },
+    someArray: {
+      type: "set-value-button",
+      valueType: "object",
+    },
   });
   await storybookPage.assert.actualConfigMatches({});
 });
@@ -31,10 +40,16 @@ test("shows deep controls when initial values are defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--with-args");
   await storybookPage.assert.controlsMatch({
-    someString: undefined, // still included
+    someString: {
+      type: "set-value-button",
+      valueType: "string",
+    }, // still included
     "someObject.anyString": "anyString",
     "someObject.enumString": "value2",
-    someArray: {type: "json-array"},
+    someArray: {
+      type: "json",
+      valueText: '[0 : "string1"1 : "string2"]',
+    },
   });
 
   await storybookPage.assert.actualConfigMatches({
@@ -61,7 +76,10 @@ test("supports customising controls with initial values", async ({page}) => {
       options: ["value1", "value2", "value3"],
       value: "value2",
     },
-    someArray: {type: "json-array"}, // just represents a complex control
+    someArray: {
+      type: "json",
+      valueText: '[0 : "string1"1 : "string2"]',
+    },
   });
 
   // initial value not affected by custom controls

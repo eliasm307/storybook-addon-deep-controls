@@ -79,8 +79,12 @@ function createExpectedDefaultVisibleControls(): Record<string, ControlExpectati
     "nested.nested.number": -3,
     "nested.nested.infinity": Infinity,
     "nested.nested.NaNValue": NaN,
-    "nested.nested.numberArray": {type: "json-array"},
-    "nested.nested.complexArray": {type: "json-array"},
+    "nested.nested.numberArray": {type: "json", valueText: "[0 : 11 : 22 : 3]"},
+    "nested.nested.complexArray": {
+      type: "json",
+      valueText:
+        '[0 : {bool : truestring : "string3"number : -3}1 : {}2 : null3 : Symbol(symbol)4 : null5 : null]',
+    },
   };
 }
 
@@ -354,8 +358,8 @@ test("shows empty object and array controls", async ({page}) => {
   await storybookPage.action.clickStoryById("stories-dev--with-empty-initial-args");
 
   await storybookPage.assert.controlsMatch({
-    emptyObj: {type: "json-object", value: {}}, // empty object shown
-    emptyArray: {type: "json-array", value: []},
+    emptyObj: {type: "json", valueText: "{}"}, // empty object shown
+    emptyArray: {type: "json", valueText: "[]"},
   });
 
   await storybookPage.assert.actualConfigMatches({
@@ -371,13 +375,10 @@ test("handles object arg value overridden by argType", async ({page}) => {
   await storybookPage.assert.controlsMatch({
     // control specified by arg type shown
     "someObject.obj2WithArgType": {
-      type: "json-object",
-      value: {
-        foo2: "foo2",
-        bar2: "bar2",
-      },
+      type: "json",
+      valueText: `{foo2 : "foo2"bar2 : "bar2"}`,
     },
-    // other arg left as is
+    // other arg flattened
     "someObject.obj1.foo1": "foo1",
     "someObject.obj1.bar1": "bar1",
   });
