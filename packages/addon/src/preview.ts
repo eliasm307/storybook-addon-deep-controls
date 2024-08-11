@@ -11,7 +11,13 @@ const preview: ProjectAnnotations<Renderer> = {
         return context.initialArgs;
       }
 
-      console.log("argsEnhancers before flatten", JSON.stringify(context.initialArgs, null, 2));
+      console.log(
+        "argsEnhancers before flatten",
+        JSON.stringify(context.initialArgs, null, 2),
+
+        "context.parameters.deepControls",
+        context.parameters.deepControls,
+      );
 
       const argsAfter = createFlattenedArgs(context);
       console.log("argsEnhancers", {
@@ -36,7 +42,12 @@ const preview: ProjectAnnotations<Renderer> = {
         return context.argTypes;
       }
 
-      console.log("argTypesEnhancers before flatten", JSON.stringify(context.argTypes, null, 2));
+      console.log(
+        "argTypesEnhancers before flatten",
+        JSON.stringify(context.argTypes, null, 2),
+        "context.parameters.deepControls",
+        context.parameters.deepControls,
+      );
 
       const argTypesAfter = createFlattenedArgTypes(context);
 
