@@ -1,6 +1,7 @@
 import {test} from "@playwright/test";
 import {localHostPortIsInUse} from "./utils";
 import StorybookPageObject, {type ControlExpectation} from "./utils/StorybookPage";
+import {TEST_TIMEOUT_MS} from "./utils/constants";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -12,7 +13,7 @@ test.beforeAll(async () => {
 });
 
 test.beforeEach(async ({page}) => {
-  test.setTimeout(60_000);
+  test.setTimeout(TEST_TIMEOUT_MS);
   await new StorybookPageObject(page).openPage();
 });
 
@@ -40,8 +41,8 @@ function createDefaultOutputConfig() {
         string: "string3",
         number: -3,
         nullValue: null,
-        infinity: "[Infinity]",
-        NaNValue: "[NaN]",
+        infinity: "[Infinity]" as string | number,
+        NaNValue: "[NaN]" as string | number,
         symbol: "[Symbol(symbol)]",
         classRef: "[Function:Foo]",
         numberArray: [1, 2, 3],
