@@ -10,7 +10,6 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.initialArgs;
       }
-
       return createFlattenedArgs(context);
     },
   ],
@@ -26,7 +25,6 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.argTypes;
       }
-
       return createFlattenedArgTypes(context);
     },
   ],

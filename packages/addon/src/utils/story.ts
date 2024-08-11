@@ -1,6 +1,9 @@
 import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
 import {isPojo, setProperty} from "./general";
 
+/** @internal */
+export const USER_DEFINED_ARG_TYPE_NAMES_SYMBOL = Symbol("userDefinedArgTypeNames");
+
 export type DeepControlsStorybookContext = Pick<
   StoryContextForEnhancers,
   "argTypes" | "initialArgs"
@@ -14,13 +17,17 @@ export type DeepControlsStorybookContext = Pick<
     // NOTE: this needs to be defined for the addon to be enabled, so we can assume it will be defined
     // but type needs to be optional for compatibility
     deepControls?: {
+      /**
+       * Contains the argType names that the user has defined, excludes the ones that were likely generated
+       * e.g. by the docs addon or by us
+       *
+       * @remark This is set in the ArgTypeEnhancer because it runs first and receives the original argTypes,
+       * then this will be available in the ArgsEnhancer which runs after it
+       */
       [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]?: Set<string>;
     };
   };
 };
-
-/** @internal */
-export const USER_DEFINED_ARG_TYPE_NAMES_SYMBOL = Symbol("userDefinedArgTypeNames");
 
 type PrimitiveValue = bigint | boolean | number | string | undefined | null;
 
@@ -89,7 +96,7 @@ function flattenObjectRecursively(
     // and the user has not specified a custom argType for it (ie otherwise we use whatever control they chose)
     const shouldFlatten = isPojo(value) && !context.userDefinedArgTypeNames.has(key);
     if (!shouldFlatten) {
-      context.flatObjectOut[key] = value;
+      context.flatObjectOut[key] = value; // keep the value as is
       return;
     }
 
@@ -205,8 +212,11 @@ export function createFlattenedArgTypes(
 
   /*
   NOTE: if the docs addon injected argTypes at the top level and the user didn't define an arg value for them,
-  then they wont be checked in the following loops which look at the initial args and they will be shown with the default control (ie basically falls back to default behaviour).
+  then they wont be checked in the following loops which look at the initial args and they will be shown with the default control
+  (ie basically falls back to default behaviour).
+
   We would need to infer types etc in order to show deep controls in that case so we don't support it for now as it would add a lot of complexity.
+
   Will see if its something people actually need first (ie is it commonly requested) before supporting this.
   */
 

@@ -30,6 +30,15 @@ export type ControlExpectation =
       valueText: string;
     };
 
+/**
+ * Class name comes from tree component that Storybook uses
+ * @see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
+ */
+enum JsonControlClassName {
+  MainTree = ".rejt-tree",
+  CollapsedItem = ".rejt-collapsed",
+}
+
 class Assertions {
   constructor(private object: StorybookPageObject) {}
 
@@ -103,7 +112,7 @@ class Assertions {
 
         // assert json controls
         if (expectedControl.type === "json") {
-          const jsonControlLocator = this.object.getJsonControlLocator(row);
+          const jsonControlLocator = row.locator(JsonControlClassName.MainTree);
           await expect(
             jsonControlLocator,
             `control "${controlName}" json object control exists`,
@@ -136,10 +145,10 @@ class Assertions {
   }
 
   private async fullyExpandJsonControl(jsonControlLocator: Locator): Promise<void> {
-    const collapsedEl = jsonControlLocator.locator(".rejt-collapsed").first();
-    while (await collapsedEl.isVisible()) {
-      // expand until there are no more collapsed elements
-      await collapsedEl.click();
+    const collapsedItem = jsonControlLocator.locator(JsonControlClassName.CollapsedItem).first();
+    // expand until there are no more collapsed elements
+    while (await collapsedItem.isVisible()) {
+      await collapsedItem.click();
     }
   }
 
@@ -306,11 +315,5 @@ export default class StorybookPageObject {
       out[name.trim()] = row;
     }
     return out;
-  }
-
-  getJsonControlLocator(row: Locator): Locator {
-    // NOTE: class name comes from tree component that Storybook uses
-    // see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
-    return row.locator(".rejt-tree");
   }
 }
