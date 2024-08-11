@@ -197,7 +197,7 @@ export function createFlattenedArgTypes(
   // NOTE: this assumes nothing will change these parameters as they belong to us/this addon
   Object.defineProperty(context.parameters.deepControls, USER_DEFINED_ARG_TYPE_NAMES_SYMBOL, {
     enumerable: false, // for easier test assertions
-    writable: false,
+    writable: true, // might be kept on parameters between stories so needs to be re-assignable
     value: userDefinedArgTypeNames,
   });
 
