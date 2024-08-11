@@ -15,18 +15,10 @@
     "deploy": "Need to run deploy locally as netlify cant handle symlinks in .github folder"
   },
   "devDependencies": {
-    "@playwright/test": "^1.46.0",
     "@storybook/addon-essentials": "8.2.8",
     "@storybook/nextjs": "8.2.8",
     "@storybook/react": "8.2.8",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "lodash-es": "^4.17.21",
-    "netlify-cli": "^17.34.0",
     "next": "13.5.6",
-    "nodemon": "^3.1.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "storybook": "8.2.8",
     "storybook-addon-deep-controls": "workspace:*"
   }
