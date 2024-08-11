@@ -1,5 +1,7 @@
-import type {StorybookConfig} from "@storybook/nextjs";
+import {viteCommonjs} from "@originjs/vite-plugin-commonjs";
+import type {StorybookConfig} from "@storybook/react-vite";
 import {dirname, join} from "path";
+import {mergeConfig, type InlineConfig} from "vite";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -8,6 +10,7 @@ import {dirname, join} from "path";
 function getAbsolutePathToPackage(value: string): any {
   return dirname(require.resolve(join(value, "package.json")));
 }
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
@@ -15,13 +18,22 @@ const config: StorybookConfig = {
     "storybook-addon-deep-controls",
   ].map(getAbsolutePathToPackage),
   framework: {
-    name: getAbsolutePathToPackage("@storybook/nextjs"),
-    options: {
-      builder: {
-        fsCache: true,
-        lazyCompilation: true,
+    name: getAbsolutePathToPackage("@storybook/react-vite"),
+    options: {},
+  },
+  async viteFinal(config, {configType}) {
+    // return the customized config
+    return mergeConfig(config, {
+      plugins: [viteCommonjs()],
+      // customize the Vite config here
+      optimizeDeps: {
+        // include: ["storybook-addon-deep-controls"],
+        // esbuildOptions: {
+        //   plugins: [esbuildCommonjs(["storybook-addon-deep-controls"])],
+        // },
       },
-    },
+    } satisfies InlineConfig);
   },
 };
+
 export default config;
