@@ -1,17 +1,26 @@
-import type {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Parameters as _, // need this import to allow the declaration merge below to work
-  BaseAnnotations,
-  ArgTypes,
-} from "@storybook/types";
+/* eslint-disable */
+import type {Parameters as ImportToKeep, ArgTypes, BaseAnnotations} from "@storybook/types";
+
+type DummyTypeToShowImportAsUsed = ImportToKeep; // need this to keep the Parameters import to allow the declaration merge below to work
 
 declare module "@storybook/types" {
-  type Parameters = {
+  interface Parameters {
+    /**
+     * Parameters for the `storybook-addon-deep-controls` addon.
+     */
     deepControls?: DeepControlsAddonParameters;
-  };
+  }
 }
 
 type DeepControlsAddonParameters = {
+  /**
+   * Whether the deep controls addon is enabled.
+   *
+   * This can be enabled/disabled at the Meta level to apply to all stories,
+   * or granularly at the story level to apply to a single story.
+   *
+   * @default false
+   */
   enabled?: boolean;
 };
 
