@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@eliasm307/config": "^0.51.1",
+    "@playwright/test": "^1.46.0",
     "@types/node": "^20.14.15",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
@@ -30,6 +31,8 @@
     "eslint-config-next": "13.5.6",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-storybook": "^0.8.0",
+    "netlify-cli": "^17.34.0",
+    "nodemon": "^3.1.4",
     "playwright": "^1.46.0",
     "typescript": "^5.5.4"
   }
