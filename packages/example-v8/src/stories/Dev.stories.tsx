@@ -61,7 +61,7 @@ export const WithCustomControlsForNonExistingProperty: Story = {
   },
 };
 
-export const RawObject: Story = {
+export const DisabledWithSimpleObject: Story = {
   args: {
     someObject: {
       anyString: "anyString",

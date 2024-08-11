@@ -1,5 +1,5 @@
 import type {ProjectAnnotations, Renderer} from "@storybook/types";
-import {expandObject, flattenObject, createFlattenedArgTypes} from "./utils/story";
+import {createFlattenedArgTypes, createFlattenedArgs, expandObject} from "./utils/story";
 
 const preview: ProjectAnnotations<Renderer> = {
   argsEnhancers: [
@@ -10,7 +10,17 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.initialArgs;
       }
-      return flattenObject(context.initialArgs);
+
+      console.log("argsEnhancers before flatten", JSON.stringify(context.initialArgs, null, 2));
+
+      const argsAfter = createFlattenedArgs(context);
+      console.log("argsEnhancers", {
+        initialArgs: context.initialArgs,
+        argsAfter,
+        argTypes: context.argTypes,
+      });
+
+      return argsAfter;
     },
   ],
 
@@ -25,7 +35,19 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.argTypes;
       }
-      return createFlattenedArgTypes(context);
+
+      console.log("argTypesEnhancers before flatten", JSON.stringify(context.argTypes, null, 2));
+
+      const argTypesAfter = createFlattenedArgTypes(context);
+
+      console.log("argTypesEnhancers", {
+        initialArgs: context.initialArgs,
+        argTypes: {...context.argTypes},
+        argTypesAfter,
+        parameters: context.parameters,
+      });
+
+      return argTypesAfter;
     },
   ],
 
@@ -38,6 +60,13 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return storyFn(context);
       }
+
+      console.log("decorator before story render context", {
+        args: {...context.args},
+        initialArgs: {...context.initialArgs},
+        parameters: context.parameters,
+        argTypes: {...context.argTypes},
+      });
 
       return storyFn({
         ...context,

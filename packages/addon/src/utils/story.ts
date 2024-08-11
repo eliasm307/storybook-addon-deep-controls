@@ -1,4 +1,4 @@
-import type {StrictInputType, StoryContextForEnhancers} from "@storybook/types";
+import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
 import {isPojo, setProperty} from "./general";
 
 export type DeepControlsStorybookContext = Pick<
@@ -14,6 +14,8 @@ export type DeepControlsStorybookContext = Pick<
   };
 };
 
+const IS_GENERATED_ARG_TYPE_SYMBOL = Symbol("GeneratedArgType");
+
 type PrimitiveValue = bigint | boolean | number | string | undefined | null;
 
 const PRIMITIVE_TYPE_NAMES = new Set(["bigint", "boolean", "number", "string", "undefined"]);
@@ -26,54 +28,118 @@ function isNullish(value: unknown): value is null | undefined {
 }
 
 type FlattenObjectRecursionContext = {
-  currentPath: string;
   flatObjectOut: Record<string, unknown>;
+  argTypes: Record<string, StrictInputType>;
+  parameters: DeepControlsStorybookContext["parameters"];
+  userDefinedArgTypeNames: Set<string>;
 };
+
+export function createFlattenedArgs(
+  context: Pick<DeepControlsStorybookContext, "initialArgs" | "argTypes" | "parameters">,
+): Record<string, unknown> {
+  return flattenObjectRecursively(context.initialArgs, "", {
+    flatObjectOut: {},
+    argTypes: context.argTypes ?? {},
+    parameters: context.parameters,
+    userDefinedArgTypeNames: getUserDefinedArgTypeNames(context),
+  });
+}
 
 /**
  * @remark When a key is flattened its key wont exist in the new object e.g.
  * "{key: {nestedKey: value}}" becomes "{key.nestedKey: value}" ie the "key" key is removed
  */
-export function flattenObject(
+function flattenObjectRecursively(
   nestedObject: object,
-  context?: FlattenObjectRecursionContext,
+  pathToParent: string,
+  context: FlattenObjectRecursionContext,
 ): Record<string, unknown>;
-export function flattenObject(
+function flattenObjectRecursively(
   nestedObject: object | undefined,
-  context?: FlattenObjectRecursionContext,
+  pathToParent: string,
+  context: FlattenObjectRecursionContext,
 ): Record<string, unknown> | undefined;
-export function flattenObject(
+function flattenObjectRecursively(
   nestedObject: object | undefined,
-  context: FlattenObjectRecursionContext = {
-    currentPath: "",
-    flatObjectOut: {},
-  },
+  pathToParent: string,
+  context: FlattenObjectRecursionContext,
 ): Record<string, unknown> | undefined {
   if (!isPojo(nestedObject)) {
-    return; // cant or should not flatten
+    return nestedObject; // cant or should not flatten
   }
 
   Object.entries(nestedObject).forEach(([key, value]) => {
-    if (context.currentPath) {
-      key = `${context.currentPath}.${key}`; // nested key
+    if (pathToParent) {
+      key = `${pathToParent}.${key}`; // nested key
     }
-    if (!isPojo(value)) {
-      // we have reached the last value we can flatten in this branch
 
+    if (key === "someObject.obj2WithArgType" || key === "someObject") {
+      debugger;
+    }
+    // NOTE: with the docs addon enabled, its not clear if the user wants to override the argType or not
+    // so here we assume argTypes are coming from docs addon and we flatten for convenience,
+    // otherwise the user would have to manually override the docs argTypes
+    // const argType = ;
+    // const hasUserDefinedArgType =
+    // !argType ||  !context.parameters.docs || !( && isArgTypeLikelyGeneratedByDocs(context.argTypes[key]))
+
+    // we can only flatten if have not reached the last value we can flatten in this branch
+    // and the user has not likely specified a custom argType for it (ie otherwise we use whatever control they chose)
+    // const shouldFlatten = isPojo(value) && !hasUserDefinedArgType;
+    // const shouldFlatten = canValueBeFlattened(value, context.argTypes[key], context);
+    const shouldFlatten = isPojo(value) && !context.userDefinedArgTypeNames.has(key);
+    console.log("flattenObjectRecursively", {
+      key,
+      value,
+      shouldFlatten,
+      argType: context.argTypes[key],
+      // isArgTypeLikelyDefinedByUser: hasUserDefinedArgType,
+      isPojo: isPojo(value),
+    });
+    if (!shouldFlatten) {
       context.flatObjectOut[key] = value;
       return;
     }
 
-    flattenObject(value, {currentPath: key, flatObjectOut: context.flatObjectOut});
+    flattenObjectRecursively(value, key, context);
   });
 
   return context.flatObjectOut;
+}
+
+function canValueBeFlattened(
+  value: unknown,
+  argType: StrictInputType | undefined,
+  context: FlattenObjectRecursionContext,
+) {
+  if (!isPojo(value)) {
+    return false; // can only flatten POJOs
+  }
+
+  if (!argType) {
+    return true; // no argType defined and its a POJO, we should flatten
+  }
+
+  if (!context.parameters.docs) {
+    // no injected argTypes from docs, so this is a user defined argType and we should respect it
+    // ie we keep the existing value so the user's control is used
+    return false;
+  }
+
+  if (IS_GENERATED_ARG_TYPE_SYMBOL in argType) {
+    return true; // we can ignore argTypes that we put in ourselves
+  }
+
+  // if docs is enabled, we need to check if the argType was likely generated by the docs addon
+  // if it was then we can flatten, but if it wasn't then this is a user defined argType and we should respect it
+  return isArgTypeLikelyGeneratedByDocs(argType);
 }
 
 function createObjectArgType(argName: string): StrictInputType {
   return {
     name: argName,
     control: {type: "object"},
+    [IS_GENERATED_ARG_TYPE_SYMBOL]: true,
   };
 }
 
@@ -89,10 +155,10 @@ function createObjectArgType(argName: string): StrictInputType {
  *
  * @see https://storybook.js.org/docs/react/essentials/controls#disable-controls-for-specific-properties
  */
-function createHiddenArgType(argPath: string) {
+function createHiddenArgType(argPath: string): StrictInputType {
   return {
     name: argPath,
-    table: {disable: true},
+    table: {disable: true, [IS_GENERATED_ARG_TYPE_SYMBOL]: true},
   };
 }
 
@@ -100,7 +166,10 @@ function createPrimitiveArgInputTypeConfig(arg: {
   name: string;
   value: PrimitiveValue;
 }): StrictInputType {
-  const commonConfig = {name: arg.name};
+  const commonConfig = {
+    name: arg.name,
+    table: {[IS_GENERATED_ARG_TYPE_SYMBOL]: true},
+  };
   switch (typeof arg.value) {
     case "string":
       return {
@@ -155,9 +224,14 @@ function userAlreadyDefinedArgTypeForThisPath(
 export function createFlattenedArgTypes(
   context: DeepControlsStorybookContext,
 ): Record<string, StrictInputType> {
-  const flatInitialArgs = flattenObject(context.initialArgs ?? {});
-  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const userDefinedArgTypeNames = getUserDefinedArgTypeNames(context);
+  const flatInitialArgs = flattenObjectRecursively(context.initialArgs ?? {}, "", {
+    flatObjectOut: {},
+    argTypes: context.argTypes ?? {},
+    parameters: context.parameters,
+    userDefinedArgTypeNames,
+  });
+  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const controlMatcherEntries = Object.entries(context.parameters.controls?.matchers ?? {});
 
   /*
@@ -229,7 +303,8 @@ function getArgTypeFromControlMatchers({
 }
 
 /**
- * Gets the argType names that the user has defined, excludes the ones that were likely generated e.g. by the docs addon
+ * Gets the argType names that the user has defined, excludes the ones that were likely generated
+ * e.g. by the docs addon or by us
  */
 function getUserDefinedArgTypeNames({
   argTypes = {},
@@ -244,12 +319,20 @@ function getUserDefinedArgTypeNames({
   // the docs addon will inject some argTypes so we need to filter them out to only have those explicitly defined by the user
   const userDefinedArgTypeNames = new Set<string>();
   for (const [argName, argType] of Object.entries(argTypes)) {
-    if (!isArgTypeLikelyGeneratedByDocs(argType)) {
+    if (!isArgTypeGeneratedByUs(argType) && !isArgTypeLikelyGeneratedByDocs(argType)) {
       userDefinedArgTypeNames.add(argName);
     }
   }
 
   return userDefinedArgTypeNames;
+}
+
+function isArgTypeGeneratedByUs(argType: StrictInputType) {
+  return (
+    "table" in argType &&
+    IS_GENERATED_ARG_TYPE_SYMBOL in argType.table &&
+    argType.table[IS_GENERATED_ARG_TYPE_SYMBOL]
+  );
 }
 
 const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
@@ -284,7 +367,7 @@ const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
           "type": {
               "summary": "{ anyString: string; enumString: string; }"
           },
-          "jsDocTags": undefined, // key atleast included by the docs addon
+          "jsDocTags": undefined, // key atleast included by the docs addon // not always included
           "defaultValue": null
       }
     }
@@ -306,7 +389,11 @@ function isArgTypeLikelyGeneratedByDocs(argType: StrictInputType) {
 
   // check type is defined like the docs addon would define it
   const type = argType.type;
-  if (typeof type.required !== "boolean" || typeof type.name !== "string") {
+  if (
+    typeof type.required !== "boolean" ||
+    typeof type.name !== "string" ||
+    typeof type.raw !== "string"
+  ) {
     return false;
   }
 
@@ -318,7 +405,7 @@ function isArgTypeLikelyGeneratedByDocs(argType: StrictInputType) {
   // check table is defined like the docs addon would define it
   const table = argType.table;
   if (
-    !("jsDocTags" in table) ||
+    // !("jsDocTags" in table) || // not always included by the docs addon
     !table.type ||
     typeof table.type !== "object" ||
     typeof table.type.summary !== "string"
