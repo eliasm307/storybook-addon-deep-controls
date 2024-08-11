@@ -1,5 +1,5 @@
 import type {StorybookConfig} from "@storybook/nextjs";
-import {join, dirname} from "path";
+import {dirname, join} from "path";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -16,7 +16,12 @@ const config: StorybookConfig = {
   ].map(getAbsolutePathToPackage),
   framework: {
     name: getAbsolutePathToPackage("@storybook/nextjs"),
-    options: {},
+    options: {
+      builder: {
+        fsCache: true,
+        lazyCompilation: true,
+      },
+    },
   },
 };
 export default config;
