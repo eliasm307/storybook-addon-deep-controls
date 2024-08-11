@@ -172,10 +172,20 @@ Some notes about this:
 
 ### Typescript
 
-If you are using Typescript, defining the `argTypes` for deep properties as above will produce a type error. To avoid this you can use the `TypeWithDeepControls` utility type from this addon which you can wrap over your `Meta` or `Story` types e.g. if your story type is called `StoryType` you can do the following:
+If you are using Typescript, defining the `argTypes` for deep properties as above will produce a type error. To avoid this you can use the `TypeWithDeepControls` utility type from this addon which you can wrap over your `Meta` or `Story` types e.g. if your story type is called `StoryType` and your meta type is `MetaType` you can do the following:
 
 ```ts
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
+
+export default {
+  argTypes: {
+    // no type error
+    "someObject.enumString": {
+      control: "string",
+    },
+  },
+  // Type is wrapped over the MetaType
+} satisfies TypeWithDeepControls<MetaType>;
 
 // Type is wrapped over the StoryType
 export const SomeStory: TypeWithDeepControls<StoryType> = {

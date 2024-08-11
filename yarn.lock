@@ -19413,7 +19413,10 @@ __metadata:
   resolution: "mono-repo-root@workspace:."
   dependencies:
     "@eliasm307/config": ^0.51.1
+    "@playwright/test": ^1.46.0
     "@types/node": ^20.14.15
+    "@types/react": ^18.3.3
+    "@types/react-dom": ^18.3.0
     "@typescript-eslint/eslint-plugin": ^7.18.0
     "@typescript-eslint/parser": ^7.18.0
     concurrently: ^8.2.2
@@ -19421,7 +19424,11 @@ __metadata:
     eslint-config-next: 13.5.6
     eslint-plugin-import: ^2.29.1
     eslint-plugin-storybook: ^0.8.0
+    netlify-cli: ^17.34.0
+    nodemon: ^3.1.4
     playwright: ^1.46.0
+    react: 18.2.0
+    react-dom: 18.2.0
     typescript: ^5.5.4
   languageName: unknown
   linkType: soft
@@ -23806,18 +23813,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls-example-v8@workspace:packages/example-v8"
   dependencies:
-    "@playwright/test": ^1.46.0
     "@storybook/addon-essentials": 8.2.8
     "@storybook/nextjs": 8.2.8
     "@storybook/react": 8.2.8
-    "@types/react": ^18.3.3
-    "@types/react-dom": ^18.3.0
-    lodash-es: ^4.17.21
-    netlify-cli: ^17.34.0
     next: 13.5.6
-    nodemon: ^3.1.4
-    react: 18.2.0
-    react-dom: 18.2.0
     storybook: 8.2.8
     storybook-addon-deep-controls: "workspace:*"
   languageName: unknown
@@ -23827,18 +23826,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls-example@workspace:packages/example-v7"
   dependencies:
-    "@playwright/test": ^1.46.0
     "@storybook/addon-essentials": 7.6.20
     "@storybook/nextjs": 7.6.20
     "@storybook/react": 7.6.20
-    "@types/react": ^18.3.3
-    "@types/react-dom": ^18.3.0
-    lodash-es: ^4.17.21
-    netlify-cli: ^17.34.0
     next: 13.5.6
-    nodemon: ^3.1.4
-    react: 18.2.0
-    react-dom: 18.2.0
     storybook: 7.6.20
     storybook-addon-deep-controls: "workspace:*"
   languageName: unknown

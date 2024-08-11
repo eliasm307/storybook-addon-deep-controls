@@ -1,6 +1,7 @@
 import {test} from "@playwright/test";
-import StorybookPageObject from "./utils/StorybookPage";
-import {clone, localHostPortIsInUse} from "./utils";
+import {localHostPortIsInUse} from "./utils";
+import StorybookPageObject, {type ControlExpectation} from "./utils/StorybookPage";
+import {TEST_TIMEOUT_MS} from "./utils/constants";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -12,81 +13,89 @@ test.beforeAll(async () => {
 });
 
 test.beforeEach(async ({page}) => {
-  test.setTimeout(60_000);
+  test.setTimeout(TEST_TIMEOUT_MS);
   await new StorybookPageObject(page).openPage();
 });
 
-const DEFAULT_OUTPUT_CONFIG = {
-  bool: true,
-  string: "string1234",
-  number: 1234,
-  jsx: "[ReactElement]",
-  nested: {
+function createDefaultOutputConfig() {
+  return {
+    bool: true,
+    string: "string1234",
+    number: 1234,
     jsx: "[ReactElement]",
-    bool: false,
-    string: "string2",
-    number: 2,
-    nestedWithoutPrototype: {
-      bool: true,
-      string: "string3",
-      element: "[HTMLSpanElement]",
-    },
-    nullValue: null,
-    element: "[HTMLDivElement]",
-    func: "[Function:func]",
     nested: {
-      bool: true,
-      string: "string3",
-      number: -3,
+      jsx: "[ReactElement]",
+      bool: false,
+      string: "string2",
+      number: 2,
+      nestedWithoutPrototype: {
+        bool: true,
+        string: "string3",
+        element: "[HTMLSpanElement]",
+      },
       nullValue: null,
-      infinity: "[Infinity]" as string | number,
-      NaNValue: "[NaN]" as string | number,
-      symbol: "[Symbol(symbol)]",
-      classRef: "[Function:Foo]",
-      numberArray: [1, 2, 3],
-      complexArray: [
-        {
-          bool: true,
-          string: "string3",
-          number: -3,
-        },
-        "[HTMLDivElement]",
-        null,
-        "[Symbol(symbol)]",
-        "[Function:Bar]",
-        "[Function:anonymous]",
-      ],
+      element: "[HTMLDivElement]",
+      func: "[Function:func]",
+      nested: {
+        bool: true,
+        string: "string3",
+        number: -3,
+        nullValue: null,
+        infinity: "[Infinity]" as string | number,
+        NaNValue: "[NaN]" as string | number,
+        symbol: "[Symbol(symbol)]",
+        classRef: "[Function:Foo]",
+        numberArray: [1, 2, 3],
+        complexArray: [
+          {
+            bool: true,
+            string: "string3",
+            number: -3,
+          },
+          "[HTMLDivElement]",
+          null,
+          "[Symbol(symbol)]",
+          "[Function:Bar]",
+          "[Function:anonymous]",
+        ],
+      },
     },
-  },
-};
+  };
+}
 
 // NOTE: Some controls not included here intentionally as they should be hidden
 // e.g. function controls
-const DEFAULT_VISIBLE_CONTROLS = {
-  bool: true,
-  string: "string1234",
-  number: 1234,
-  "nested.bool": false,
-  "nested.string": "string2",
-  "nested.number": 2,
-  "nested.nestedWithoutPrototype.bool": true,
-  "nested.nestedWithoutPrototype.string": "string3",
-  "nested.nested.bool": true,
-  "nested.nested.string": "string3",
-  "nested.nested.number": -3,
-  "nested.nested.infinity": Infinity,
-  "nested.nested.NaNValue": NaN,
-  "nested.nested.numberArray": [], // just need an array to say its a complex control
-  "nested.nested.complexArray": [], // just need an array to say its a complex control
-};
+function createExpectedDefaultVisibleControls(): Record<string, ControlExpectation> {
+  return {
+    bool: true,
+    string: "string1234",
+    number: 1234,
+    "nested.bool": false,
+    "nested.string": "string2",
+    "nested.number": 2,
+    "nested.nestedWithoutPrototype.bool": true,
+    "nested.nestedWithoutPrototype.string": "string3",
+    "nested.nested.bool": true,
+    "nested.nested.string": "string3",
+    "nested.nested.number": -3,
+    "nested.nested.infinity": Infinity,
+    "nested.nested.NaNValue": NaN,
+    "nested.nested.numberArray": {type: "json", valueText: "[0 : 11 : 22 : 3]"},
+    "nested.nested.complexArray": {
+      type: "json",
+      valueText:
+        '[0 : {bool : truestring : "string3"number : -3}1 : {}2 : null3 : Symbol(symbol)4 : null5 : null]',
+    },
+  };
+}
 
 test("supports checking and unchecking root level boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const newConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const newVisibleControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const newConfig = createDefaultOutputConfig();
+  const newVisibleControls = createExpectedDefaultVisibleControls();
 
   // uncheck control
   const controlInput = storybookPage.getLocatorForControlInput("bool");
@@ -102,8 +111,8 @@ test("supports checking and unchecking root level boolean control", async ({page
   await controlInput.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
   // re-uncheck control
   await controlInput.click();
@@ -115,11 +124,11 @@ test("supports checking and unchecking root level boolean control", async ({page
 
 test("supports checking and unchecking nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const newConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const newVisibleControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const newConfig = createDefaultOutputConfig();
+  const newVisibleControls = createExpectedDefaultVisibleControls();
 
   // check control
   const controlInput = storybookPage.getLocatorForControlInput("nested.bool");
@@ -135,8 +144,8 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
   await controlInput.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
   // re-check control
   await controlInput.click();
@@ -148,11 +157,11 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
 
 test("supports checking and unchecking deep nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const expectedConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const expectedControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const expectedConfig = createDefaultOutputConfig();
+  const expectedControls = createExpectedDefaultVisibleControls();
 
   // uncheck control
   const controlInput = storybookPage.getLocatorForControlInput("nested.nested.bool");
@@ -168,8 +177,8 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
   await controlInput.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
   // re-uncheck control
   await controlInput.click();
@@ -181,11 +190,11 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
 
 test("supports resetting controls", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 
-  const expectedConfig = clone(DEFAULT_OUTPUT_CONFIG);
-  const expectedControls = clone(DEFAULT_VISIBLE_CONTROLS);
+  const expectedConfig = createDefaultOutputConfig();
+  const expectedControls = createExpectedDefaultVisibleControls();
 
   // uncheck root control
   let controlInput = storybookPage.getLocatorForControlInput("bool");
@@ -271,11 +280,14 @@ test("supports resetting controls", async ({page}) => {
   await storybookPage.resetControlsButtonLocator.click();
 
   // assert change
-  await storybookPage.assert.actualConfigMatches(DEFAULT_OUTPUT_CONFIG);
-  await storybookPage.assert.controlsMatch(DEFAULT_VISIBLE_CONTROLS);
+  await storybookPage.assert.actualConfigMatches(createDefaultOutputConfig());
+  await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 });
 
-test("supports customising controls with initial values", async ({page}) => {
+// also tests it handles objects with existing properties partially defined by argTypes
+test("supports customising existing property control with initial primitive value", async ({
+  page,
+}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-dev--with-custom-controls");
   await storybookPage.assert.controlsMatch({
@@ -283,6 +295,7 @@ test("supports customising controls with initial values", async ({page}) => {
     "someObject.enumString": {
       type: "radio",
       options: ["value1", "value2", "value3"],
+      value: "value2",
     },
   });
 
@@ -290,7 +303,32 @@ test("supports customising controls with initial values", async ({page}) => {
   await storybookPage.assert.actualConfigMatches({
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
+    },
+  });
+});
+
+// also tests it handles objects with non-existing properties partially defined by argTypes
+test("supports customising non-existing property control without initial value", async ({page}) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById(
+    "stories-dev--with-custom-controls-for-non-existing-property",
+  );
+  await storybookPage.assert.controlsMatch({
+    "someObject.anyString": "anyString",
+    "someObject.enumString": "value2",
+    "someObject.unknown": {
+      type: "radio",
+      options: ["value1", "value2", "value3"],
+      value: null,
+    },
+  });
+
+  // initial value not affected by custom controls
+  await storybookPage.assert.actualConfigMatches({
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
     },
   });
 });
@@ -312,6 +350,50 @@ test("supports control matchers", async ({page}) => {
     color: {
       color: "#f00",
       description: "Very red",
+    },
+  });
+});
+
+test("shows empty object and array controls", async ({page}) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById("stories-dev--with-empty-initial-args");
+
+  await storybookPage.assert.controlsMatch({
+    emptyObj: {type: "json", valueText: "{}"}, // empty object shown
+    emptyArray: {type: "json", valueText: "[]"},
+  });
+
+  await storybookPage.assert.actualConfigMatches({
+    emptyObj: {},
+    emptyArray: [],
+  });
+});
+
+test("handles object arg value overridden by argType", async ({page}) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById("stories-dev--with-overridden-object-arg");
+
+  await storybookPage.assert.controlsMatch({
+    // control specified by arg type shown
+    "someObject.obj2WithArgType": {
+      type: "json",
+      valueText: `{foo2 : "foo2"bar2 : "bar2"}`,
+    },
+    // other arg flattened
+    "someObject.obj1.foo1": "foo1",
+    "someObject.obj1.bar1": "bar1",
+  });
+
+  await storybookPage.assert.actualConfigMatches({
+    someObject: {
+      obj1: {
+        foo1: "foo1",
+        bar1: "bar1",
+      },
+      obj2WithArgType: {
+        foo2: "foo2",
+        bar2: "bar2",
+      },
     },
   });
 });

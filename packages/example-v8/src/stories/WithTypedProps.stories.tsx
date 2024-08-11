@@ -9,9 +9,7 @@ const meta = {
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/react/configure/story-layout
     layout: "centered",
-    deepControls: {
-      enabled: true,
-    },
+    deepControls: {enabled: true},
   },
 } satisfies Meta<typeof WithTypedProps>;
 
@@ -32,7 +30,7 @@ export const WithArgs: Story = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
     someArray: ["string1", "string2"],
     // NOTE: we inherit the "someString" control from docs without an arg value
@@ -43,7 +41,7 @@ export const WithCustomControls: TypeWithDeepControls<Story> = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
     someArray: ["string1", "string2"],
   },

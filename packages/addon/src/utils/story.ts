@@ -1,5 +1,8 @@
-import type {StrictInputType, StoryContextForEnhancers} from "@storybook/types";
+import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
 import {isPojo, setProperty} from "./general";
+
+/** @internal */
+export const USER_DEFINED_ARG_TYPE_NAMES_SYMBOL = Symbol("userDefinedArgTypeNames");
 
 export type DeepControlsStorybookContext = Pick<
   StoryContextForEnhancers,
@@ -10,6 +13,18 @@ export type DeepControlsStorybookContext = Pick<
     controls?: {
       /** @see https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers */
       matchers?: Record<string, RegExp>;
+    };
+    // NOTE: this needs to be defined for the addon to be enabled, so we can assume it will be defined
+    // but type needs to be optional for compatibility
+    deepControls?: {
+      /**
+       * Contains the argType names that the user has defined, excludes the ones that were likely generated
+       * e.g. by the docs addon or by us
+       *
+       * @remark This is set in the ArgTypeEnhancer because it runs first and receives the original argTypes,
+       * then this will be available in the ArgsEnhancer which runs after it
+       */
+      [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]?: Set<string>;
     };
   };
 };
@@ -26,45 +41,66 @@ function isNullish(value: unknown): value is null | undefined {
 }
 
 type FlattenObjectRecursionContext = {
-  currentPath: string;
+  /**
+   * New object populated with the flattened properties
+   */
   flatObjectOut: Record<string, unknown>;
+  argTypes: Record<string, StrictInputType>;
+  parameters: DeepControlsStorybookContext["parameters"];
+  userDefinedArgTypeNames: Set<string>;
 };
+
+export function createFlattenedArgs(
+  context: Pick<DeepControlsStorybookContext, "initialArgs" | "argTypes" | "parameters">,
+): Record<string, unknown> {
+  return flattenObjectRecursively(context.initialArgs, "", {
+    flatObjectOut: {},
+    argTypes: context.argTypes ?? {},
+    parameters: context.parameters,
+    // this should be defined as argType enhancers run before args enhancers
+    // but handling undefined for tests and also just incase for production
+    userDefinedArgTypeNames:
+      context.parameters.deepControls?.[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL] ?? new Set(),
+  });
+}
 
 /**
  * @remark When a key is flattened its key wont exist in the new object e.g.
  * "{key: {nestedKey: value}}" becomes "{key.nestedKey: value}" ie the "key" key is removed
  */
-export function flattenObject(
+function flattenObjectRecursively(
   nestedObject: object,
-  context?: FlattenObjectRecursionContext,
+  pathToParent: string,
+  context: FlattenObjectRecursionContext,
 ): Record<string, unknown>;
-export function flattenObject(
+function flattenObjectRecursively(
   nestedObject: object | undefined,
-  context?: FlattenObjectRecursionContext,
+  pathToParent: string,
+  context: FlattenObjectRecursionContext,
 ): Record<string, unknown> | undefined;
-export function flattenObject(
+function flattenObjectRecursively(
   nestedObject: object | undefined,
-  context: FlattenObjectRecursionContext = {
-    currentPath: "",
-    flatObjectOut: {},
-  },
+  pathToParent: string,
+  context: FlattenObjectRecursionContext,
 ): Record<string, unknown> | undefined {
   if (!isPojo(nestedObject)) {
-    return; // cant or should not flatten
+    return nestedObject; // cant or should not flatten
   }
 
   Object.entries(nestedObject).forEach(([key, value]) => {
-    if (context.currentPath) {
-      key = `${context.currentPath}.${key}`; // nested key
+    if (pathToParent) {
+      key = `${pathToParent}.${key}`; // nested key
     }
-    if (!isPojo(value)) {
-      // we have reached the last value we can flatten in this branch
 
-      context.flatObjectOut[key] = value;
+    // we can only flatten if have not reached the last value we can flatten in this branch
+    // and the user has not specified a custom argType for it (ie otherwise we use whatever control they chose)
+    const shouldFlatten = isPojo(value) && !context.userDefinedArgTypeNames.has(key);
+    if (!shouldFlatten) {
+      context.flatObjectOut[key] = value; // keep the value as is
       return;
     }
 
-    flattenObject(value, {currentPath: key, flatObjectOut: context.flatObjectOut});
+    flattenObjectRecursively(value, key, context);
   });
 
   return context.flatObjectOut;
@@ -89,7 +125,7 @@ function createObjectArgType(argName: string): StrictInputType {
  *
  * @see https://storybook.js.org/docs/react/essentials/controls#disable-controls-for-specific-properties
  */
-function createHiddenArgType(argPath: string) {
+function createHiddenArgType(argPath: string): StrictInputType {
   return {
     name: argPath,
     table: {disable: true},
@@ -155,15 +191,32 @@ function userAlreadyDefinedArgTypeForThisPath(
 export function createFlattenedArgTypes(
   context: DeepControlsStorybookContext,
 ): Record<string, StrictInputType> {
-  const flatInitialArgs = flattenObject(context.initialArgs ?? {});
-  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const userDefinedArgTypeNames = getUserDefinedArgTypeNames(context);
+
+  // save the result so the arg enhancer can access the accurate list
+  // NOTE: this assumes nothing will change these parameters as they belong to us/this addon
+  Object.defineProperty(context.parameters.deepControls, USER_DEFINED_ARG_TYPE_NAMES_SYMBOL, {
+    enumerable: false, // for easier test assertions
+    writable: true, // might be kept on parameters between stories so needs to be re-assignable
+    value: userDefinedArgTypeNames,
+  });
+
+  const flatInitialArgs = flattenObjectRecursively(context.initialArgs ?? {}, "", {
+    flatObjectOut: {},
+    argTypes: context.argTypes ?? {},
+    parameters: context.parameters,
+    userDefinedArgTypeNames,
+  });
+  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const controlMatcherEntries = Object.entries(context.parameters.controls?.matchers ?? {});
 
   /*
   NOTE: if the docs addon injected argTypes at the top level and the user didn't define an arg value for them,
-  then they wont be checked in the following loops which look at the initial args and they will be shown with the default control (ie basically falls back to default behaviour).
+  then they wont be checked in the following loops which look at the initial args and they will be shown with the default control
+  (ie basically falls back to default behaviour).
+
   We would need to infer types etc in order to show deep controls in that case so we don't support it for now as it would add a lot of complexity.
+
   Will see if its something people actually need first (ie is it commonly requested) before supporting this.
   */
 
@@ -229,7 +282,13 @@ function getArgTypeFromControlMatchers({
 }
 
 /**
- * Gets the argType names that the user has defined, excludes the ones that were likely generated e.g. by the docs addon
+ * Gets the argType names that the user has defined, excludes the ones that were likely generated
+ * e.g. by the docs addon or by us
+ *
+ * @remark This only works accurately in an ArgTypeEnhancer because it runs first and receives the original argTypes,
+ * when the args enhancer runs it receives the arg types after they have gone through the flattening process, so its more
+ * difficult to determine which argTypes were user defined and which were generated by us or the docs addon.
+ * The solution chosen is to save the result of this in the context.parameters so the arg enhancer can access the accurate list
  */
 function getUserDefinedArgTypeNames({
   argTypes = {},
@@ -244,7 +303,7 @@ function getUserDefinedArgTypeNames({
   // the docs addon will inject some argTypes so we need to filter them out to only have those explicitly defined by the user
   const userDefinedArgTypeNames = new Set<string>();
   for (const [argName, argType] of Object.entries(argTypes)) {
-    if (!isArgTypeLikelyGeneratedByDocs(argType)) {
+    if (!isArgTypeLikelyGeneratedByDocs(argName, argType)) {
       userDefinedArgTypeNames.add(argName);
     }
   }
@@ -268,7 +327,7 @@ const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
  * @remark See examples of the format users are instructed to use when defining argTypes: https://storybook.js.org/docs/api/arg-types#manually-specifying-argtypes
  *
  * @example
- * // argType generated by docs addon
+ * // object argType generated by docs addon
  *
 {
   "argTypes": {
@@ -284,44 +343,61 @@ const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
           "type": {
               "summary": "{ anyString: string; enumString: string; }"
           },
-          "jsDocTags": undefined, // key atleast included by the docs addon
+          "jsDocTags": undefined, // key atleast included by the docs addon // not always included
           "defaultValue": null
       }
     }
   }
 }
- */
-function isArgTypeLikelyGeneratedByDocs(argType: StrictInputType) {
-  // check argType has all the properties the docs addon would add
-  for (const argTypePropertyName of ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON) {
-    if (!(argTypePropertyName in argType)) {
-      return false;
+
+// string argType generated by docs addon
+"someString": {
+    "name": "someString",
+    "description": "",
+    "type": {
+      "required": false,
+      "name": "string"
+    },
+    "table": {
+      "type": {
+        "summary": "string"
+      }
     }
+  },
+ */
+function isArgTypeLikelyGeneratedByDocs(argName: string, argType: StrictInputType): boolean {
+  // check argType only has the properties the docs addon would add
+  if (Object.keys(argType).length !== ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON.size) {
+    return false; // likely be a customised argType because it has a different number of properties than a generated argType
   }
 
-  // check type is an object
-  if (!argType.type || typeof argType.type !== "object") {
-    return false;
+  if (argType.name !== argName) {
+    return false; // assuming docs doesn't do aliases
   }
 
-  // check type is defined like the docs addon would define it
-  const type = argType.type;
-  if (typeof type.required !== "boolean" || typeof type.name !== "string") {
-    return false;
+  if (typeof argType.description !== "string") {
+    return false; // assuming docs always includes a description
   }
 
-  // check table is an object
-  if (!("table" in argType) || !argType.table || typeof argType.table !== "object") {
-    return false;
-  }
-
-  // check table is defined like the docs addon would define it
-  const table = argType.table;
+  // check type object is defined like the docs addon would define it
   if (
-    !("jsDocTags" in table) ||
-    !table.type ||
-    typeof table.type !== "object" ||
-    typeof table.type.summary !== "string"
+    !argType.type ||
+    typeof argType.type !== "object" ||
+    typeof argType.type.required !== "boolean" ||
+    typeof argType.type.name !== "string"
+    // typeof type.raw !== "string" // not always included
+  ) {
+    return false;
+  }
+
+  // check table object is defined like the docs addon would define it
+  if (
+    !argType.table ||
+    typeof argType.table !== "object" ||
+    // !("jsDocTags" in table) || // not always included by the docs addon
+    !argType.table.type ||
+    typeof argType.table.type !== "object" ||
+    typeof argType.table.type.summary !== "string"
   ) {
     return false;
   }

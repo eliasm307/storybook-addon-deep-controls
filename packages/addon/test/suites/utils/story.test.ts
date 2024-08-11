@@ -1,7 +1,12 @@
-import {describe, it, assert} from "vitest";
 import type {StrictInputType} from "@storybook/types";
+import {assert, describe, expect, it} from "vitest";
 import type {DeepControlsStorybookContext} from "../../../src/utils/story";
-import {createFlattenedArgTypes, expandObject, flattenObject} from "../../../src/utils/story";
+import {
+  createFlattenedArgs,
+  createFlattenedArgTypes,
+  expandObject,
+  USER_DEFINED_ARG_TYPE_NAMES_SYMBOL,
+} from "../../../src/utils/story";
 
 describe("Story utils", function () {
   const REACT_ELEMENT_SYMBOL = Symbol("react.element");
@@ -77,7 +82,7 @@ describe("Story utils", function () {
     });
   }
 
-  class Foo {}
+  class Es6Class {}
 
   function createNestedObject() {
     return {
@@ -91,10 +96,10 @@ describe("Story utils", function () {
         nestedWithoutPrototype: Object.assign(Object.create(null), {
           bool: true,
           string: "string3",
-          instance: new Foo(),
+          instance: new Es6Class(),
         }),
         nullValue: null,
-        instance: new Foo(),
+        instance: new Es6Class(),
         func: () => {},
         nested: {
           bool: true,
@@ -105,7 +110,7 @@ describe("Story utils", function () {
           NaNValue: NaN,
           symbol: Symbol("symbol"),
           bigint: BigInt(123),
-          classRef: Foo,
+          classRef: Es6Class,
           numberArray: [1, 2, 3],
           complexArray: [
             {
@@ -113,7 +118,7 @@ describe("Story utils", function () {
               string: "string3",
               number: -3,
             },
-            new Foo(),
+            new Es6Class(),
             null,
             Symbol("symbol"),
             BigInt(1234),
@@ -125,72 +130,173 @@ describe("Story utils", function () {
     };
   }
 
-  it("can flatten and restore objects", function () {
-    const nestedObject = createNestedObject();
-    const flattenedObject = flattenObject(nestedObject);
+  describe("#createFlattenedArgs", function () {
+    // todo split this into smaller tests
+    it("can flatten and restore args", function () {
+      const nestedObject = createNestedObject();
+      const flattenedArgs = createFlattenedArgs({
+        initialArgs: nestedObject,
+        argTypes: {},
+        parameters: {deepControls: {}},
+      });
 
-    assertDeepEqual({
-      actual: flattenedObject,
-      expected: {
-        bool: true,
-        string: "string1234",
-        number: 1234,
-        "nested.bool": false,
-        "nested.string": "string2",
-        "nested.number": 2,
-        "nested.nestedWithoutPrototype.bool": true,
-        "nested.nestedWithoutPrototype.string": "string3",
-        "nested.nestedWithoutPrototype.instance":
-          nestedObject.nested.nestedWithoutPrototype.instance,
-        "nested.nullValue": null,
-        "nested.instance": nestedObject.nested.instance,
-        "nested.func": nestedObject.nested.func,
-        "nested.nested.bool": true,
-        "nested.nested.string": "string3",
-        "nested.nested.number": -3,
-        "nested.nested.nullValue": null,
-        "nested.nested.infinity": Infinity,
-        "nested.nested.NaNValue": NaN,
-        "nested.nested.symbol": nestedObject.nested.nested.symbol,
-        "nested.nested.bigint": BigInt(123),
-        "nested.nested.classRef": nestedObject.nested.nested.classRef,
-        "nested.nested.numberArray": nestedObject.nested.nested.numberArray,
-        "nested.nested.complexArray": nestedObject.nested.nested.complexArray,
-      },
-      message: "nested object flattened",
+      assertDeepEqual({
+        actual: flattenedArgs,
+        expected: {
+          bool: true,
+          string: "string1234",
+          number: 1234,
+          "nested.bool": false,
+          "nested.string": "string2",
+          "nested.number": 2,
+          "nested.nestedWithoutPrototype.bool": true,
+          "nested.nestedWithoutPrototype.string": "string3",
+          "nested.nestedWithoutPrototype.instance":
+            nestedObject.nested.nestedWithoutPrototype.instance,
+          "nested.nullValue": null,
+          "nested.instance": nestedObject.nested.instance,
+          "nested.func": nestedObject.nested.func,
+          "nested.nested.bool": true,
+          "nested.nested.string": "string3",
+          "nested.nested.number": -3,
+          "nested.nested.nullValue": null,
+          "nested.nested.infinity": Infinity,
+          "nested.nested.NaNValue": NaN,
+          "nested.nested.symbol": nestedObject.nested.nested.symbol,
+          "nested.nested.bigint": BigInt(123),
+          "nested.nested.classRef": nestedObject.nested.nested.classRef,
+          "nested.nested.numberArray": nestedObject.nested.nested.numberArray,
+          "nested.nested.complexArray": nestedObject.nested.nested.complexArray,
+        },
+        message: "nested object flattened",
+      });
+
+      // can restore the original object
+      assertDeepEqual({
+        actual: expandObject(flattenedArgs),
+        expected: nestedObject,
+        message: "flattened object expanded",
+      });
     });
 
-    // can restore the original object
-    assertDeepEqual({
-      actual: expandObject(flattenedObject),
-      expected: nestedObject,
-      message: "flattened object expanded",
+    it("can flatten and restore objects with jsx", function () {
+      const nestedObject = {
+        jsx: createDummyReactElement("1"),
+        nested: {
+          jsx: createDummyReactElement("2"),
+        },
+      };
+      const flattenedObject = createFlattenedArgs({
+        initialArgs: nestedObject,
+        argTypes: {},
+        parameters: {
+          deepControls: {},
+        },
+      });
+
+      assertDeepEqual({
+        actual: flattenedObject,
+        expected: {
+          jsx: nestedObject.jsx,
+          "nested.jsx": nestedObject.nested.jsx,
+        },
+        message: "nested object flattened",
+      });
+
+      // can restore the original object
+      assertDeepEqual({
+        actual: expandObject(flattenedObject),
+        expected: nestedObject,
+        message: "flattened object expanded",
+      });
     });
-  });
 
-  it("can flatten and restore objects with jsx", function () {
-    const nestedObject = {
-      jsx: createDummyReactElement("1"),
-      nested: {
-        jsx: createDummyReactElement("2"),
-      },
-    };
-    const flattenedObject = flattenObject(nestedObject);
+    it("keeps objects that are overridden by user-defined argTypes", function () {
+      const flattenedArgs = createFlattenedArgs({
+        initialArgs: {
+          someObject: {
+            obj1: {
+              foo1: "foo1",
+              bar1: "bar1",
+            },
+            obj2WithArgType: {
+              foo2: "foo2",
+              bar2: "bar2",
+            },
+          },
+        },
+        argTypes: {
+          // obj1 should be deep controlled
+          // obj2 should be shown with same value in json control
+          "someObject.obj2WithArgType": {
+            name: "someObject.obj2WithArgType",
+            control: "object",
+          },
+        },
+        parameters: {
+          deepControls: {
+            [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: new Set(["someObject.obj2WithArgType"]),
+          },
+        },
+      });
 
-    assertDeepEqual({
-      actual: flattenedObject,
-      expected: {
-        jsx: nestedObject.jsx,
-        "nested.jsx": nestedObject.nested.jsx,
-      },
-      message: "nested object flattened",
+      expect(flattenedArgs).toEqual({
+        "someObject.obj1.foo1": "foo1",
+        "someObject.obj1.bar1": "bar1",
+        "someObject.obj2WithArgType": {
+          foo2: "foo2",
+          bar2: "bar2",
+        },
+      });
     });
 
-    // can restore the original object
-    assertDeepEqual({
-      actual: expandObject(flattenedObject),
-      expected: nestedObject,
-      message: "flattened object expanded",
+    it("flattens objects that are overridden by non-user-defined argTypes", function () {
+      const flattenedArgs = createFlattenedArgs({
+        initialArgs: {
+          someObject: {
+            obj1: {
+              foo1: "foo1",
+              bar1: "bar1",
+            },
+            obj2WithArgType: {
+              foo2: "foo2",
+              bar2: "bar2",
+            },
+          },
+        },
+        argTypes: {
+          // obj1 should be deep controlled
+          // obj2 should be shown with same value in json control
+          "someObject.obj2WithArgType": {
+            name: "someObject.obj2WithArgType",
+            control: "object",
+          },
+        },
+        parameters: {
+          deepControls: {
+            [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: new Set(), // no user defined argTypes
+          },
+          docs: {}, // truthy value means docs addon enabled
+        },
+      });
+
+      expect(flattenedArgs).toEqual({
+        "someObject.obj1.foo1": "foo1",
+        "someObject.obj1.bar1": "bar1",
+        "someObject.obj2WithArgType.foo2": "foo2",
+        "someObject.obj2WithArgType.bar2": "bar2",
+      });
+    });
+
+    it("should return the same value if it cannot flatten the root value", function () {
+      const instance = new Es6Class();
+      const flatInitialArgs = createFlattenedArgs({
+        initialArgs: instance,
+        argTypes: {},
+        parameters: {deepControls: {}},
+      });
+
+      assert.isTrue(flatInitialArgs === instance, "should return the same object");
     });
   });
 
@@ -203,7 +309,7 @@ describe("Story utils", function () {
             bool: {name: "bool", control: "boolean"},
             "nested.bool": {name: "nested.bool", control: "boolean"},
           },
-          parameters: {},
+          parameters: {deepControls: {}},
         }),
         {
           bool: {name: "bool", control: "boolean"},
@@ -226,7 +332,7 @@ describe("Story utils", function () {
             },
           },
           argTypes: {},
-          parameters: {},
+          parameters: {deepControls: {}},
         }),
         {
           // NOTE: also asserts a control for the original root object is hidden (this still exists as its what storybook uses but we are just not showing it)
@@ -289,7 +395,7 @@ describe("Story utils", function () {
               },
             },
           },
-          parameters: {},
+          parameters: {deepControls: {}},
         }),
         {
           // NOTE: root object is partially flattened but its still hidden
@@ -329,7 +435,7 @@ describe("Story utils", function () {
             options: ["email", "phone", "mail"],
           },
         },
-        parameters: {},
+        parameters: {deepControls: {}},
       };
 
       const outputArgTypes = createFlattenedArgTypes(originalContext);
@@ -367,7 +473,7 @@ describe("Story utils", function () {
             symbol: Symbol("symbol"),
           },
           argTypes: {},
-          parameters: {},
+          parameters: {deepControls: {}},
         }),
         {
           ref: {name: "ref", table: {disable: true}},
@@ -389,7 +495,7 @@ describe("Story utils", function () {
           argTypes: {
             complex: {name: "complex", control: "object"},
           },
-          parameters: {},
+          parameters: {deepControls: {}},
         }),
         {
           complex: {name: "complex", control: "object"},
@@ -415,7 +521,7 @@ describe("Story utils", function () {
               options: ["email", "phone", "mail"],
             },
           },
-          parameters: {},
+          parameters: {deepControls: {}},
         };
       }
 
@@ -440,7 +546,7 @@ describe("Story utils", function () {
             },
           },
           argTypes: {},
-          parameters: {},
+          parameters: {deepControls: {}},
         }),
         {
           array: {name: "array", control: {type: "object"}},
@@ -485,7 +591,7 @@ describe("Story utils", function () {
           argTypes: {
             object: createGeneratedArgTypeExample({name: "object"}),
           },
-          parameters: {}, // docs addon not enabled
+          parameters: {deepControls: {}}, // docs addon not enabled
         }),
         {
           object: createGeneratedArgTypeExample({name: "object"}),
@@ -506,6 +612,7 @@ describe("Story utils", function () {
             object: createGeneratedArgTypeExample({name: "object"}),
           },
           parameters: {
+            deepControls: {},
             docs: {}, // truthy value means docs addon enabled
           },
         }),
@@ -541,6 +648,7 @@ describe("Story utils", function () {
             object: createGeneratedArgTypeExample({name: "object"}),
           },
           parameters: {
+            deepControls: {},
             docs: {}, // truthy value means docs addon enabled
           },
         }),
@@ -561,6 +669,54 @@ describe("Story utils", function () {
       );
     });
 
+    // here since docs addon is disabled, argTypes can only come from user
+    it("keeps argTypes that are likely overridden by the user", function () {
+      const flattenedArgs = createFlattenedArgTypes({
+        initialArgs: {
+          someObject: {
+            obj1: {
+              foo1: "foo1",
+              bar1: "bar1",
+            },
+            obj2WithArgType: {
+              foo2: "foo2",
+              bar2: "bar2",
+            },
+          },
+        },
+        argTypes: {
+          // obj1 should be deep controlled
+          // obj2 should be shown with same value in json control
+          "someObject.obj2WithArgType": {
+            name: "someObject.obj2WithArgType",
+            control: "object",
+          },
+        },
+        parameters: {deepControls: {}},
+      });
+
+      expect(flattenedArgs).toEqual({
+        someObject: {
+          name: "someObject",
+          table: {disable: true}, // hide root object
+        },
+        "someObject.obj1.foo1": {
+          name: "someObject.obj1.foo1",
+          control: {type: "text"},
+          type: {name: "string"},
+        },
+        "someObject.obj1.bar1": {
+          name: "someObject.obj1.bar1",
+          control: {type: "text"},
+          type: {name: "string"},
+        },
+        "someObject.obj2WithArgType": {
+          name: "someObject.obj2WithArgType",
+          control: "object", // keep object control
+        },
+      });
+    });
+
     it("supports control matchers with only match the property name, not the entire path", function () {
       assert.deepStrictEqual(
         createFlattenedArgTypes({
@@ -572,6 +728,7 @@ describe("Story utils", function () {
           },
           argTypes: {},
           parameters: {
+            deepControls: {},
             controls: {
               matchers: {
                 color: /color/i,

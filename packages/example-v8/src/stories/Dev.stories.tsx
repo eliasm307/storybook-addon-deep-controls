@@ -1,6 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
-import React from "react";
 import Dev from "./Dev";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
@@ -36,7 +35,7 @@ export const WithCustomControls: Story = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
   },
   argTypes: {
@@ -47,7 +46,22 @@ export const WithCustomControls: Story = {
   },
 };
 
-export const RawObject: Story = {
+export const WithCustomControlsForNonExistingProperty: Story = {
+  args: {
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
+    },
+  },
+  argTypes: {
+    "someObject.unknown": {
+      control: "radio",
+      options: ["value1", "value2", "value3"],
+    },
+  },
+};
+
+export const DisabledWithSimpleObject: Story = {
   args: {
     someObject: {
       anyString: "anyString",
@@ -122,5 +136,32 @@ export const WithControlMatchers: TypeWithDeepControls<Story> = {
       color: "#f00",
       description: "Very red",
     },
+  },
+};
+
+export const WithEmptyInitialArgs: TypeWithDeepControls<Story> = {
+  args: {
+    emptyObj: {},
+    emptyArray: [],
+  },
+};
+
+export const WithOverriddenObjectArg: TypeWithDeepControls<Story> = {
+  args: {
+    someObject: {
+      obj1: {
+        foo1: "foo1",
+        bar1: "bar1",
+      },
+      obj2WithArgType: {
+        foo2: "foo2",
+        bar2: "bar2",
+      },
+    },
+  },
+  argTypes: {
+    // obj1 should be deep controlled
+    // obj2 should be shown with same value in json control
+    "someObject.obj2WithArgType": {control: "object"},
   },
 };
