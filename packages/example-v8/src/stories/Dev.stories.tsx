@@ -35,11 +35,26 @@ export const WithCustomControls: Story = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
   },
   argTypes: {
     "someObject.enumString": {
+      control: "radio",
+      options: ["value1", "value2", "value3"],
+    },
+  },
+};
+
+export const WithCustomControlsForNonExistingProperty: Story = {
+  args: {
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
+    },
+  },
+  argTypes: {
+    "someObject.unknown": {
       control: "radio",
       options: ["value1", "value2", "value3"],
     },
@@ -131,16 +146,22 @@ export const WithEmptyInitialArgs: TypeWithDeepControls<Story> = {
   },
 };
 
-export const WithObjectArgTypeAndInitialValue: TypeWithDeepControls<Story> = {
+export const WithOverriddenObjectArg: TypeWithDeepControls<Story> = {
   args: {
     someObject: {
-      obj1: {foo: "foo"},
-      obj2: {bar: "bar"},
+      obj1: {
+        foo1: "foo1",
+        bar1: "bar1",
+      },
+      obj2WithArgType: {
+        foo2: "foo2",
+        bar2: "bar2",
+      },
     },
   },
   argTypes: {
     // obj1 should be deep controlled
     // obj2 should be shown with same value in json control
-    "someObject.obj2": {control: "object"},
+    "someObject.obj2WithArgType": {control: "object"},
   },
 };

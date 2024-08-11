@@ -79,25 +79,8 @@ function createExpectedDefaultVisibleControls(): Record<string, ControlExpectati
     "nested.nested.number": -3,
     "nested.nested.infinity": Infinity,
     "nested.nested.NaNValue": NaN,
-    "nested.nested.numberArray": {
-      type: "json",
-      value: [1, 2, 3],
-    },
-    "nested.nested.complexArray": {
-      type: "json",
-      value: [
-        {
-          bool: true,
-          string: "string3",
-          number: -3,
-        },
-        "[HTMLDivElement]",
-        null,
-        "[Symbol(symbol)]",
-        "[Function:Bar]",
-        "[Function:anonymous]",
-      ],
-    },
+    "nested.nested.numberArray": {type: "json-array"},
+    "nested.nested.complexArray": {type: "json-array"},
   };
 }
 
@@ -296,7 +279,10 @@ test("supports resetting controls", async ({page}) => {
   await storybookPage.assert.controlsMatch(createExpectedDefaultVisibleControls());
 });
 
-test("supports customising controls with initial values", async ({page}) => {
+// also tests it handles objects with existing properties partially defined by argTypes
+test("supports customising existing property control with initial primitive value", async ({
+  page,
+}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-dev--with-custom-controls");
   await storybookPage.assert.controlsMatch({
@@ -304,6 +290,7 @@ test("supports customising controls with initial values", async ({page}) => {
     "someObject.enumString": {
       type: "radio",
       options: ["value1", "value2", "value3"],
+      value: "value2",
     },
   });
 
@@ -311,7 +298,32 @@ test("supports customising controls with initial values", async ({page}) => {
   await storybookPage.assert.actualConfigMatches({
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
+    },
+  });
+});
+
+// also tests it handles objects with non-existing properties partially defined by argTypes
+test("supports customising non-existing property control without initial value", async ({page}) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById(
+    "stories-dev--with-custom-controls-for-non-existing-property",
+  );
+  await storybookPage.assert.controlsMatch({
+    "someObject.anyString": "anyString",
+    "someObject.enumString": "value2",
+    "someObject.unknown": {
+      type: "radio",
+      options: ["value1", "value2", "value3"],
+      value: null,
+    },
+  });
+
+  // initial value not affected by custom controls
+  await storybookPage.assert.actualConfigMatches({
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
     },
   });
 });
@@ -342,12 +354,44 @@ test("shows empty object and array controls", async ({page}) => {
   await storybookPage.action.clickStoryById("stories-dev--with-empty-initial-args");
 
   await storybookPage.assert.controlsMatch({
-    emptyObj: {type: "json", value: {}}, // empty object shown
-    emptyArray: {type: "json", value: []}, // empty array shown
+    emptyObj: {type: "json-object", value: {}}, // empty object shown
+    emptyArray: {type: "json-array", value: []},
   });
 
   await storybookPage.assert.actualConfigMatches({
     emptyObj: {},
     emptyArray: [],
+  });
+});
+
+test("handles object arg value overridden by argType", async ({page}) => {
+  const storybookPage = new StorybookPageObject(page);
+  await storybookPage.action.clickStoryById("stories-dev--with-overridden-object-arg");
+
+  await storybookPage.assert.controlsMatch({
+    // control specified by arg type shown
+    "someObject.obj2WithArgType": {
+      type: "json-object",
+      value: {
+        foo2: "foo2",
+        bar2: "bar2",
+      },
+    },
+    // other arg left as is
+    "someObject.obj1.foo1": "foo1",
+    "someObject.obj1.bar1": "bar1",
+  });
+
+  await storybookPage.assert.actualConfigMatches({
+    someObject: {
+      obj1: {
+        foo1: "foo1",
+        bar1: "bar1",
+      },
+      obj2WithArgType: {
+        foo2: "foo2",
+        bar2: "bar2",
+      },
+    },
   });
 });

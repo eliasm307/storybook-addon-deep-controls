@@ -32,7 +32,7 @@ export const WithArgs: Story = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
     someArray: ["string1", "string2"],
     // NOTE: we inherit the "someString" control from docs without an arg value
@@ -43,7 +43,7 @@ export const WithCustomControls: TypeWithDeepControls<Story> = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
     someArray: ["string1", "string2"],
   },

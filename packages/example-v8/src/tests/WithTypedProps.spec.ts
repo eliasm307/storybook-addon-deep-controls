@@ -1,6 +1,6 @@
 import {test} from "@playwright/test";
-import StorybookPageObject from "./utils/StorybookPage";
 import {localHostPortIsInUse} from "./utils";
+import StorybookPageObject from "./utils/StorybookPage";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
@@ -33,14 +33,15 @@ test("shows deep controls when initial values are defined", async ({page}) => {
   await storybookPage.assert.controlsMatch({
     someString: undefined, // still included
     "someObject.anyString": "anyString",
-    "someObject.enumString": "enumString",
-    someArray: [], // just represents a complex control
+    "someObject.enumString": "value2",
+    someArray: {type: "json-array"},
   });
+
   await storybookPage.assert.actualConfigMatches({
     someArray: ["string1", "string2"],
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
   });
 });
@@ -52,13 +53,15 @@ test("supports customising controls with initial values", async ({page}) => {
     someString: {
       type: "radio",
       options: ["string1", "string2", "string3"],
+      value: null,
     },
     "someObject.anyString": "anyString",
     "someObject.enumString": {
       type: "radio",
       options: ["value1", "value2", "value3"],
+      value: "value2",
     },
-    someArray: [], // just represents a complex control
+    someArray: {type: "json-array"}, // just represents a complex control
   });
 
   // initial value not affected by custom controls
@@ -66,7 +69,7 @@ test("supports customising controls with initial values", async ({page}) => {
     someArray: ["string1", "string2"],
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
   });
 });

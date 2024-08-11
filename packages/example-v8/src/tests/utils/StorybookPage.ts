@@ -1,5 +1,6 @@
-import type {Page} from "@playwright/test";
+import type {Locator, Page} from "@playwright/test";
 import {expect} from "@playwright/test";
+import escapeRegExp from "./escapeRegExp";
 
 export type ControlExpectation =
   | string
@@ -9,14 +10,26 @@ export type ControlExpectation =
   | {
       type: "radio";
       options: string[];
+      value: string | null;
     }
   | {
       type: "color";
       value: string;
     }
   | {
-      type: "json";
-      value: unknown[] | Record<string, unknown>;
+      /**
+       * @remark array control cant be parsed as its string value is not valid JSON
+       * so we just assert that it is shown as an array control
+       */
+      type: "json-array";
+      value?: [];
+    }
+  | {
+      type: "json-object";
+      /**
+       * @remark Value can only be asserted if it doesn't contain non-empty arrays
+       */
+      value: Record<string, unknown>;
     };
 
 class Assertions {
@@ -35,77 +48,123 @@ class Assertions {
    * - Arrays are asserted to just show an array control but the value is not asserted
    *
    * @remark `undefined` means the control exists but no value is set
+   *
+   * @remark This does not consider the order of the controls, as this is not determined by the input data
+   * Storybook has separate settings for control ordering
    */
   async controlsMatch(expectedControlsMap: Record<string, ControlExpectation>) {
     // check controls count to make sure we are not missing any
-    const actualControlsAddonTabTitle = await this.object.page
-      .locator("#tabbutton-addon-controls")
-      .textContent();
+    const actualControlsAddonTabTitle = await this.object.addonPanelTabsLocator.textContent();
 
-    // NOTE: this assumes the entries are in the same order as they are defined
     const expectedControlEntries = Object.entries(expectedControlsMap);
     expect(actualControlsAddonTabTitle?.trim(), "controls tab title equals").toEqual(
       `Controls${expectedControlEntries.length}`,
     );
 
+    const actualRowLocators = await this.object.getAllControlRowLocators();
+
     // check control values
-    for (const [controlName, expectedRawValue] of expectedControlEntries) {
+    for (const [controlName, expectedControl] of expectedControlEntries) {
+      const row = actualRowLocators[controlName];
+      expect(row, `control "${controlName}" exists`).toBeTruthy();
+
       // handle unset controls
-      if (expectedRawValue === undefined) {
-        const setControlButton = this.object.getLocatorForSetControlButton(controlName);
+      if (expectedControl === undefined) {
+        const setControlButton = this.object.getLocatorForSetControlButton(controlName, row);
         await expect(setControlButton, `control "${controlName}" exists`).toBeVisible();
         continue;
       }
 
-      const controlInput = this.object.getLocatorForControlInput(controlName);
+      const controlInput = this.object.getLocatorForControlInput(controlName, row);
 
-      if (typeof expectedRawValue === "object") {
-        // handle radio controls
-        if (expectedRawValue.type === "radio") {
-          const actualOptions = await this.object.getOptionsForRadioControl(controlName);
+      if (typeof expectedControl === "object") {
+        // assert radio controls
+        if (expectedControl.type === "radio") {
+          const actualOptions = await this.object.getOptionsForRadioControl(controlName, row);
           expect(actualOptions, `control "${controlName}" radio input options`).toEqual(
-            expectedRawValue.options,
+            expectedControl.options,
           );
+          expect(
+            await this.object.getCheckedOptionForRadioControl(controlName, row),
+            `control "${controlName}" radio input checked option`,
+          ).toEqual(expectedControl.value);
           continue;
         }
 
-        // handle color controls
-        if (expectedRawValue.type === "color") {
-          const actualValue = await this.object.getValueForColorInput(controlName);
+        // assert color controls
+        if (expectedControl.type === "color") {
+          const actualValue = await this.object.getValueForColorInput(controlName, row);
           expect(actualValue, `control "${controlName}" color value`).toEqual(
-            expectedRawValue.value,
+            expectedControl.value,
           );
           continue;
         }
 
-        // handle json controls
-        if (expectedRawValue.type === "json") {
-          const controlNameLocator = this.object.addonsPanelLocator.getByText(controlName, {
-            exact: true,
-          });
-          await expect(controlNameLocator, `control name "${controlName}" exists`).toBeVisible();
-          // cant assert these complex controls the best we can do is just say they don't exist as simple inputs
-          await expect(
-            controlInput,
-            `simple input for control "${controlName}" does not exist`,
-          ).not.toBeVisible();
+        // assert json controls
+        if (expectedControl.type === "json-array") {
+          const jsonControlLocator = await this.object.getJsonArrayControlLocator(row);
+          expect(
+            jsonControlLocator,
+            `control "${controlName}" json array control exists`,
+          ).toBeTruthy();
+
+          if (!expectedControl.value) {
+            continue;
+          }
+
+          // this will be of the format `${controlName} : ${JsonValue}`
+          const actualValueString = await jsonControlLocator!.innerText();
+          const actualValue = this.parseJsonControlValue(controlName, actualValueString);
+          expect(actualValue, `control "${controlName}" json object value`).toEqual(
+            expectedControl.value,
+          );
+          continue;
+        }
+
+        if (expectedControl.type === "json-object") {
+          const jsonControlLocator = await this.object.getJsonObjectControlLocator(row);
+          expect(
+            jsonControlLocator,
+            `control "${controlName}" json object control exists`,
+          ).toBeTruthy();
+
+          // this will be of the format `${controlName} : ${JsonValue}`
+          const actualValueString = await jsonControlLocator!.innerText();
+          const actualValue = this.parseJsonControlValue(controlName, actualValueString);
+          expect(actualValue, `control "${controlName}" json object value`).toEqual(
+            expectedControl.value,
+          );
           continue;
         }
       }
 
-      // handle boolean toggles
-      if (typeof expectedRawValue === "boolean") {
+      // assert boolean toggles
+      if (typeof expectedControl === "boolean") {
         expect(await controlInput.isChecked(), `control "${controlName}" is checked`).toEqual(
-          expectedRawValue,
+          expectedControl,
         );
         continue;
       }
 
-      // handle primitive string/number values
-      const expectedValue = getEquivalentValueForInput(expectedRawValue);
+      // assert primitive string/number values
+      const expectedValue = getEquivalentValueForInput(expectedControl);
       await expect(controlInput, `control "${controlName}" value equals`).toHaveValue(
         expectedValue,
       );
+    }
+  }
+
+  /**
+   * @param actualRawValueString will be of the format `${controlName} : ${JsonValue}`
+   */
+  private parseJsonControlValue(controlName: string, actualRawValueString: string) {
+    try {
+      const prefixRegex = new RegExp(`^\\s*${escapeRegExp(controlName)}\\s*:\\s*`);
+      const actualValue = JSON.parse(actualRawValueString.replace(prefixRegex, ""));
+      return actualValue;
+    } catch (error) {
+      console.error(`Failed to parse JSON control value for ${actualRawValueString}\n${error}`);
+      return actualRawValueString; // return as is to show diff
     }
   }
 
@@ -219,11 +278,15 @@ export default class StorybookPageObject {
     return this.page.locator("#preview-loader");
   }
 
+  get addonPanelTabsLocator() {
+    return this.page.locator("#tabbutton-addon-controls");
+  }
+
   /**
    * @param controlName The name of the control as shown in the UI Controls panel in the "Name" column, e.g. "bool"
    */
-  getLocatorForControlInput(controlName: string) {
-    return this.addonsPanelLocator.locator(`[id='control-${controlName}']`);
+  getLocatorForControlInput(controlName: string, container: Locator = this.addonsPanelLocator) {
+    return container.locator(`[id='control-${controlName}']`);
   }
 
   /**
@@ -231,15 +294,62 @@ export default class StorybookPageObject {
    *
    * @param controlName The name of the control as shown in the UI Controls panel in the "Name" column, e.g. "bool"
    */
-  getLocatorForSetControlButton(controlName: string) {
-    return this.addonsPanelLocator.locator(`button[id='set-${controlName}']`);
+  getLocatorForSetControlButton(controlName: string, container: Locator) {
+    return container.locator(`button[id='set-${controlName}']`);
   }
 
-  getOptionsForRadioControl(controlName: string) {
-    return this.addonsPanelLocator.locator(`label[for^='control-${controlName}']`).allInnerTexts();
+  getOptionsForRadioControl(controlName: string, container: Locator) {
+    return container.locator(`label[for^='control-${controlName}']`).allInnerTexts();
   }
 
-  getValueForColorInput(controlName: string) {
-    return this.getLocatorForControlInput(controlName).inputValue();
+  /**
+   * @returns `null` if no option is checked
+   */
+  async getCheckedOptionForRadioControl(
+    controlName: string,
+    container: Locator,
+  ): Promise<string | null> {
+    const selectedInput = container.locator(`input[id^='control-${controlName}'][checked]`);
+    if (await selectedInput.isVisible()) {
+      // NOTE: this could return `null`, assuming this is always defined for radio input options in Storybook
+      return selectedInput.getAttribute("value");
+    }
+    return null;
+  }
+
+  getValueForColorInput(controlName: string, container: Locator) {
+    return this.getLocatorForControlInput(controlName, container).inputValue();
+  }
+
+  async getAllControlRowLocators(): Promise<Record<string, Locator>> {
+    const out: Record<string, Locator> = {};
+    const rowLocators = await this.addonsPanelLocator
+      .locator(".docblock-argstable-body > tr")
+      .all();
+    for (const row of rowLocators) {
+      const name = await row.locator("td").first().innerText();
+      out[name.trim()] = row;
+    }
+    return out;
+  }
+
+  async getJsonObjectControlLocator(row: Locator): Promise<Locator | null> {
+    // NOTE: class name comes from tree component that Storybook uses
+    // see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
+    const jsonControl = row.locator(".rejt-object-node");
+    if (await jsonControl.isVisible()) {
+      return jsonControl;
+    }
+    return null;
+  }
+
+  async getJsonArrayControlLocator(row: Locator): Promise<Locator | null> {
+    // NOTE: class name comes from tree component that Storybook uses
+    // see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
+    const jsonControl = row.locator(".rejt-array-node");
+    if (await jsonControl.isVisible()) {
+      return jsonControl;
+    }
+    return null;
   }
 }
