@@ -262,27 +262,23 @@ function createFlattenedValueArgType(
   controlMatcherEntries: [string, RegExp][],
   userDefinedArgTypes: DeepControlsArgTypesMap,
 ): StrictInputType | undefined {
-  // todo test can override control matcher argType
+  if (userAlreadyDefinedArgTypeForParentOfThisPath(argPath, userDefinedArgTypes)) {
+    return; // user has defined an argType for a parent object so we don't create controls for its children
+  }
+
   const matcherArgType = getArgTypeFromControlMatchers({argPath, controlMatcherEntries});
   if (matcherArgType) {
     return matcherArgType;
   }
 
-  // todo test can override array argType
   if (Array.isArray(argValue)) {
     return createObjectArgType(argPath);
   }
 
-  // todo test can override non editable value argType
   // only show editable controls, remove controls for non-primitive args
   // or primitive nullish args without a manual argType from the UI
   if (isNullish(argValue) || !isPrimitive(argValue)) {
     return createHiddenArgType(argPath);
-  }
-
-  // todo this should be first check
-  if (userAlreadyDefinedArgTypeForParentOfThisPath(argPath, userDefinedArgTypes)) {
-    return; // user has defined an argType for a parent object so we don't create controls for its children
   }
 
   // add control for flattened primitive arg entry without existing control
@@ -309,8 +305,6 @@ function mergeArgTypes(
 
   // merge the control type
   for (const [argPath, argValue] of flatSourceEntries) {
-    // todo test it doesnt overwrite existing properties
-    // todo test it overwrites arrays entirely instead of specific items
     if (getProperty(target, argPath) === undefined) {
       setProperty(target, argPath, argValue);
     }

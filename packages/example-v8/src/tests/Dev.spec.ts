@@ -3,6 +3,7 @@ import {localHostPortIsInUse} from "./utils";
 import StorybookPageObject, {type ControlExpectation} from "./utils/StorybookPage";
 import {TEST_TIMEOUT_MS} from "./utils/constants";
 
+// todo colocate tests with source files
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);
   if (!isStorybookRunning) {

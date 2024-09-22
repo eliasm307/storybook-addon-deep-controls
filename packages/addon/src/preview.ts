@@ -1,6 +1,7 @@
 import type {ProjectAnnotations, Renderer, StrictArgTypes} from "@storybook/types";
 import {createFlattenedArgTypes, createFlattenedArgs, expandObject} from "./utils/story";
 
+// todo test it does not do anything custom if deepControls is not enabled
 const preview: ProjectAnnotations<Renderer> = {
   argsEnhancers: [
     /**
