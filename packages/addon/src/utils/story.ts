@@ -1,6 +1,6 @@
 import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
 import type {DeepControlsAddonParameters, PartialStrictInputType} from "../..";
-import {getProperty, isPojo, setProperty} from "./general";
+import {isPojo, setProperty} from "./general";
 
 /** @internal */
 export const USER_DEFINED_ARG_TYPE_NAMES_SYMBOL = Symbol("userDefinedArgTypeNames");
@@ -231,19 +231,14 @@ export function createFlattenedArgTypes(
 
   // define controls for flattened primitive arg entries without existing controls
   for (const [argPath, argValue] of Object.entries(flatInitialArgs)) {
-    let userArgTypeToMerge: PartialStrictInputType | undefined;
-    if (argTypes[argPath]) {
-      if (!userArgTypeCanBeMerged(argTypes[argPath])) {
-        continue; // existing user defined argType defined, don't override
-      }
-      userArgTypeToMerge = argTypes[argPath];
-    }
-
-    const newArgType = mergeArgTypes(
-      userArgTypeToMerge,
-      createFlattenedValueArgType(argPath, argValue, controlMatcherEntries, userDefinedArgTypes),
+    const generatedArgType = createFlattenedValueArgType(
+      argPath,
+      argValue,
+      controlMatcherEntries,
+      userDefinedArgTypes,
     );
-
+    const userArgTypeOverride = argTypes[argPath];
+    const newArgType = mergeArgTypes(generatedArgType, userArgTypeOverride);
     if (newArgType) {
       argTypes[argPath] = newArgType;
     }
@@ -281,79 +276,37 @@ function createFlattenedValueArgType(
   return createPrimitiveArgInputTypeConfig({name: argPath, value: argValue});
 }
 
+/**
+ * @note This overwrites properties in the target argType with the source argType
+ */
+// todo test it overwrites arrays completely instead of specific elements
+// todo test it supports overwriting generated argType properties
 function mergeArgTypes(
   target: PartialStrictInputType | undefined,
-  source: PartialStrictInputType | undefined,
+  overrides: PartialStrictInputType | undefined,
 ): PartialStrictInputType | undefined {
   if (!target) {
-    return source;
+    return overrides;
   }
-  if (!source) {
+  if (!overrides) {
     return target;
   }
 
-  const flatSourceEntries = Object.entries(
-    flattenObjectRecursively(source, "", {
+  const flatOverrideEntries = Object.entries(
+    flattenObjectRecursively(overrides, "", {
       flatObjectOut: {},
       userDefinedArgTypes: {},
     }),
   );
 
+  target = {...target}; // shallow clone to avoid mutating original arg type object
+
   // merge the control type
-  for (const [argPath, argValue] of flatSourceEntries) {
-    if (getProperty(target, argPath) === undefined) {
-      setProperty(target, argPath, argValue);
-    }
+  for (const [overridePath, overrideValue] of flatOverrideEntries) {
+    setProperty(target, overridePath, overrideValue);
   }
 
   return target;
-}
-
-function userArgTypeCanBeMerged(userArgType: PartialStrictInputType): boolean {
-  const flatKeys = Object.keys(
-    flattenObjectRecursively(userArgType, "", {
-      flatObjectOut: {},
-      userDefinedArgTypes: {},
-    }),
-  );
-
-  // check all user argType keys can be merged or are children of keys that can be merged
-  return flatKeys.every(argTypeKeyCanBeMerged);
-}
-
-/**
- * Keys that can be merged from a user defined argType to a generated flat argType
- *
- * @note See available keys at: https://storybook.js.org/docs/api/arg-types
- */
-// todo test all keys here can be merged
-// todo add auto documentation about keys that can be merged based on this list
-// todo add demo to docs showing customisations via merging e.g. required
-export const USER_ARG_TYPE_KEYS_THAT_CAN_BE_MERGED = [
-  "name", // display name of the arg, this is always included automatically when argTypes are provided to argType enhancer
-  "if",
-  "description",
-  "type.required",
-  "mapping",
-  // allow merging control config incase it is a matcher control
-  // todo test matcher controls can be merged
-  "options",
-  "control.min",
-  "control.max",
-  "control.accept",
-  "control.step",
-  "control.presetColors",
-  // allow merging table config
-  "table.category",
-  "table.disable",
-  "table.readonly",
-  "table.subcategory",
-];
-
-function argTypeKeyCanBeMerged(key: string) {
-  return USER_ARG_TYPE_KEYS_THAT_CAN_BE_MERGED.some((keyThatCanBeMerged) => {
-    return key === keyThatCanBeMerged || key.startsWith(`${keyThatCanBeMerged}.`);
-  });
 }
 
 function getArgTypeFromControlMatchers({
@@ -501,7 +454,7 @@ function isArgTypeLikelyGeneratedByDocs(argName: string, argType: PartialStrictI
 }
 
 /**
- * When a key is flattened its key wont exist in the new object e.g.
+ * When a property is flattened its key wont exist in the new object e.g.
  * "{key: {nestedKey: value}}" becomes "{key.nestedKey: value}" ie the "key" key is removed
  *
  * This finds such keys that used to exist in the original object but do not exist after flattening
@@ -528,8 +481,7 @@ export function expandObject(
     return; // cant expand a non-object, assumes truthy values passed in are objects
   }
 
-  // NOTE: tried sorting these so the unflattened props would be first and get overwritten by the nested props
-  // but it didn't work for some reason so opted to just filter them out instead
+  // NOTE: dont need to sort these here, control order is managed by storybook and can be configured by the user via parameters
   const flattenedRootArgKeys = getRootKeysThatWereFlattened(flatObject);
   return Object.entries(flatObject)
     .filter(([key]) => !flattenedRootArgKeys.has(key))
