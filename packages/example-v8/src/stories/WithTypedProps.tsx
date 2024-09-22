@@ -9,6 +9,10 @@ type Props = {
     enumString: string;
   };
   someArray?: string[];
+  /**
+   * Jsdoc description
+   */
+  stringWithJsdoc?: string
 };
 
 export default function WithTypedProps(config: Props) {

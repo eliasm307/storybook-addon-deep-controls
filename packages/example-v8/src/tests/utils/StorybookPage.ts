@@ -74,6 +74,9 @@ class Assertions {
     for (const [controlName, expectedControl] of expectedControlEntries) {
       const row = actualRowLocators[controlName];
       expect(row, `control "${controlName}" exists`).toBeTruthy();
+      if (!row) {
+        continue; // for TS
+      }
 
       const controlInput = this.object.getLocatorForControlInput(controlName, row);
 
@@ -188,9 +191,9 @@ function getEquivalentValueForInput(rawValue: number | string): string {
       if (Number.isNaN(rawValue) || !Number.isFinite(rawValue)) {
         return ""; // shows as an empty number input
       }
+      return String(rawValue);
     }
 
-    // eslint-disable-next-line no-fallthrough
     default: {
       return String(rawValue);
     }

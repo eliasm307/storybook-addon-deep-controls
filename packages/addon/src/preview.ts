@@ -1,4 +1,4 @@
-import type {ProjectAnnotations, Renderer} from "@storybook/types";
+import type {ProjectAnnotations, Renderer, StrictArgTypes} from "@storybook/types";
 import {createFlattenedArgTypes, createFlattenedArgs, expandObject} from "./utils/story";
 
 const preview: ProjectAnnotations<Renderer> = {
@@ -25,7 +25,7 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.argTypes;
       }
-      return createFlattenedArgTypes(context);
+      return createFlattenedArgTypes(context) as StrictArgTypes;
     },
   ],
 

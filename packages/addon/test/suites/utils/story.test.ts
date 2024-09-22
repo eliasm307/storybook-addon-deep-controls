@@ -235,7 +235,9 @@ describe("Story utils", function () {
         },
         parameters: {
           deepControls: {
-            [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: new Set(["someObject.obj2WithArgType"]),
+            [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: {
+              "someObject.obj2WithArgType": {},
+            },
           },
         },
       });
@@ -274,7 +276,7 @@ describe("Story utils", function () {
         },
         parameters: {
           deepControls: {
-            [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: new Set(), // no user defined argTypes
+            [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: {}, // no user defined argTypes
           },
           docs: {}, // truthy value means docs addon enabled
         },
@@ -457,7 +459,7 @@ describe("Story utils", function () {
       });
 
       assert.isTrue(
-        outputArgTypes["nested.enum"] === originalContext.argTypes["nested.enum"],
+        outputArgTypes["nested.enum"] === originalContext.argTypes!["nested.enum"],
         "should use the same argTypes object",
       );
     });
@@ -750,6 +752,161 @@ describe("Story utils", function () {
           },
         },
       );
+    });
+
+    describe("merging custom argTypes with flattened argTypes", function () {
+      it("supports merging custom arg type with description", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              object: {prop: true},
+            },
+            argTypes: {
+              "object.prop": {description: "Custom description"},
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            object: {
+              name: "object",
+              table: {disable: true},
+            },
+            "object.prop": {
+              name: "object.prop",
+              type: {name: "boolean"},
+              control: {type: "boolean"},
+
+              // merged property
+              description: "Custom description",
+            },
+          },
+        );
+      });
+
+      it("supports merging custom arg type with if", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              object: {prop: true},
+            },
+            argTypes: {
+              "object.prop": {
+                if: {arg: "object.prop", eq: true},
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            object: {
+              name: "object",
+              table: {disable: true},
+            },
+            "object.prop": {
+              name: "object.prop",
+              type: {name: "boolean"},
+              control: {type: "boolean"},
+
+              // merged property
+              if: {arg: "object.prop", eq: true},
+            },
+          },
+        );
+      });
+
+      it("supports merging custom arg type with type.required", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              object: {prop: true},
+            },
+            argTypes: {
+              "object.prop": {
+                type: {required: true},
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            object: {
+              name: "object",
+              table: {disable: true},
+            },
+            "object.prop": {
+              name: "object.prop",
+              type: {
+                name: "boolean",
+                // NOTE: also tests that it can merge to nested objects
+                required: true, // merged property
+              },
+              control: {type: "boolean"},
+            },
+          },
+        );
+      });
+
+      it("does not merge custom arg type with unknown key", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              object: {prop: true},
+            },
+            argTypes: {
+              "object.prop": {
+                unknownKey: "unknownValue",
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            object: {
+              name: "object",
+              table: {disable: true},
+            },
+            "object.prop": {
+              unknownKey: "unknownValue", // not merged
+            },
+          },
+        );
+      });
+
+      it("supports merging custom arg type with description and overriding sibling arg type", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              object: {
+                prop1: true,
+                prop2: true,
+              },
+            },
+            argTypes: {
+              "object.prop1": {description: "Custom description"},
+              "object.prop2": {type: {name: "number"}},
+            },
+            parameters: {
+              deepControls: {},
+            },
+          }),
+          {
+            object: {
+              name: "object",
+              table: {disable: true},
+            },
+            // merged with custom arg type
+            "object.prop1": {
+              name: "object.prop1",
+              type: {name: "boolean"},
+              control: {type: "boolean"},
+
+              // merged property
+              description: "Custom description",
+            },
+            // overridden by custom arg type
+            "object.prop2": {
+              type: {name: "number"},
+            },
+          },
+        );
+      });
     });
   });
 });
