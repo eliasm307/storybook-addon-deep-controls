@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6006 --no-open",
-    "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon/src --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json",
+    "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build-storybook": "npm run addon:build && storybook build",
     "test": "playwright test",
