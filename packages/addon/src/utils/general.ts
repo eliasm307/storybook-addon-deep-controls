@@ -1,12 +1,9 @@
-// todo test it handles non object values
-// todo test it handles invalid paths
-// todo test it handles setting values on objects
 export function setProperty<T extends Partial<Record<string, unknown>>>(
   object: T,
   path: string,
   value: any,
 ): T {
-  if (isAnyObject(object)) {
+  if (!isAnyObject(object)) {
     return object; // should be an object but handle if it isn't
   }
 

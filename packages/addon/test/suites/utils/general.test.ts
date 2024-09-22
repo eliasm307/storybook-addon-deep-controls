@@ -1,7 +1,66 @@
 import {describe, expect, it} from "vitest";
-import {getProperty} from "../../../src/utils/general";
+import {getProperty, setProperty} from "../../../src/utils/general";
 
 describe("general utils", () => {
+  describe("setProperty", () => {
+    it("can add nested properties to objects", () => {
+      const obj = {};
+      setProperty(obj, "a.b.c", 1);
+      expect(obj).toEqual({a: {b: {c: 1}}});
+    });
+
+    it("can overwrite nested object properties", () => {
+      const obj = {a: {b: {c: 1}}};
+      setProperty(obj, "a.b.c", 2);
+      expect(obj).toEqual({a: {b: {c: 2}}});
+    });
+
+    it("can overwrite nested array object item properties", () => {
+      const obj = {a: [{b: 1}, {b: 2}, {b: 3}]};
+      setProperty(obj, "a.1.b", 4);
+      expect(obj).toEqual({a: [{b: 1}, {b: 4}, {b: 3}]});
+    });
+
+    it("can overwrite non-object array item", () => {
+      const obj = {a: [1, 2, 3]};
+      setProperty(obj, "a.1", 4);
+      expect(obj).toEqual({a: [1, 4, 3]});
+    });
+
+    // ie mainly testing it doesnt throw
+    describe("non object values handling", () => {
+      it("number", () => {
+        const obj: any = 1;
+        setProperty(obj, "prop", 1);
+        expect(obj).toBe(1);
+      });
+
+      it("string", () => {
+        const obj: any = "string";
+        setProperty(obj, "prop", 1);
+        expect(obj).toBe("string");
+      });
+
+      it("boolean", () => {
+        const obj: any = true;
+        setProperty(obj, "prop", 1);
+        expect(obj).toBe(true);
+      });
+
+      it("null", () => {
+        const obj: any = null;
+        setProperty(obj, "prop", 1);
+        expect(obj).toBe(null);
+      });
+
+      it("undefined", () => {
+        const obj: any = undefined;
+        setProperty(obj, "prop", 1);
+        expect(obj).toBe(undefined);
+      });
+    });
+  });
+
   describe("getProperty", () => {
     it("can get properties of nested objects", () => {
       const obj = {a: {b: {c: 1}}};
