@@ -14,15 +14,15 @@ const meta = {
   },
   args: {
     object: {
-      propWithCustomDescription: true,
-      propWithRequiredType: true,
+      booleanPropWithCustomDescription: true,
+      requiredNumberProp: 5,
     },
   },
   argTypes: {
-    "object.propWithCustomDescription": {
+    "object.booleanPropWithCustomDescription": {
       description: "Custom description",
     },
-    "object.propWithRequiredType": {
+    "object.requiredNumberProp": {
       type: {required: true},
     },
   },
