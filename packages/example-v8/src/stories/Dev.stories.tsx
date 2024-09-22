@@ -16,6 +16,7 @@ const meta = {
 } satisfies Meta<typeof Dev>;
 
 export default meta;
+
 type Story = TypeWithDeepControls<StoryObj<typeof meta>>;
 
 export const Enabled: Story = {
@@ -163,16 +164,5 @@ export const WithOverriddenObjectArg: Story = {
     // obj1 should be deep controlled
     // obj2 should be shown with same value in json control
     "someObject.obj2WithArgType": {control: "object"},
-  },
-};
-
-export const WithMergedArgTypes: Story = {
-  args: {
-    object: {
-      propWithCustomDescription: true,
-    },
-  },
-  argTypes: {
-    "object.propWithCustomDescription": {description: "Custom description"},
   },
 };
