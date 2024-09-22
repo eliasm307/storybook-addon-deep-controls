@@ -1,12 +1,12 @@
 import type {StrictInputType} from "@storybook/types";
 import {assert, describe, expect, it} from "vitest";
-import type {DeepControlsStorybookContext} from "../../../src/utils/story";
+import type {DeepControlsStorybookContext} from "./story";
 import {
   createFlattenedArgs,
   createFlattenedArgTypes,
   expandObject,
   USER_DEFINED_ARG_TYPE_NAMES_SYMBOL,
-} from "../../../src/utils/story";
+} from "./story";
 
 describe("Story utils", function () {
   const REACT_ELEMENT_SYMBOL = Symbol("react.element");

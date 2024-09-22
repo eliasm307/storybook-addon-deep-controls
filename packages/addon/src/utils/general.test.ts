@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {getProperty, setProperty} from "../../../src/utils/general";
+import {getProperty, setProperty} from "./general";
 
 describe("general utils", () => {
   describe("setProperty", () => {
