@@ -131,7 +131,6 @@ describe("Story utils", function () {
   }
 
   describe("#createFlattenedArgs", function () {
-    // todo split this into smaller tests
     it("can flatten and restore args", function () {
       const nestedObject = createNestedObject();
       const flattenedArgs = createFlattenedArgs({

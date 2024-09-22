@@ -1,9 +1,12 @@
+// todo test it handles non object values
+// todo test it handles invalid paths
+// todo test it handles setting values on objects
 export function setProperty<T extends Partial<Record<string, unknown>>>(
   object: T,
   path: string,
   value: any,
 ): T {
-  if (typeof object !== "object" || object === null) {
+  if (isAnyObject(object)) {
     return object; // should be an object but handle if it isn't
   }
 
@@ -38,9 +41,6 @@ export function setProperty<T extends Partial<Record<string, unknown>>>(
   return object;
 }
 
-// todo test it cant get properties of non objects
-// todo test it can get properties of nested objects
-// todo test it can get properties of items in arrays
 export function getProperty(value: unknown, path: string): unknown {
   for (const pathSegment of path.split(".")) {
     if (!isAnyObject(value)) {
