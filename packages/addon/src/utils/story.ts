@@ -1,5 +1,5 @@
 import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
-import type {DeepControlsAddonParameters} from "../..";
+import type {DeepControlsAddonParameters, PartialStrictInputType} from "../..";
 import {getProperty, isPojo, setProperty} from "./general";
 
 /** @internal */
@@ -26,10 +26,6 @@ export type DeepControlsStorybookContext = Pick<StoryContextForEnhancers, "initi
       [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]?: DeepControlsArgTypesMap;
     };
   };
-};
-
-type PartialStrictInputType = Omit<Partial<StrictInputType>, "type"> & {
-  type?: Partial<StrictInputType["type"]>;
 };
 
 export type DeepControlsArgTypesMap = Record<string, PartialStrictInputType>;
@@ -327,8 +323,33 @@ function userArgTypeCanBeMerged(userArgType: PartialStrictInputType): boolean {
 
 /**
  * Keys that can be merged from a user defined argType to a generated flat argType
+ *
+ * @note See available keys at: https://storybook.js.org/docs/api/arg-types
  */
-const USER_ARG_TYPE_KEYS_THAT_CAN_BE_MERGED = ["description", "if", "type.required"];
+// todo test all keys here can be merged
+// todo add auto documentation about keys that can be merged based on this list
+// todo add demo to docs showing customisations via merging e.g. required
+export const USER_ARG_TYPE_KEYS_THAT_CAN_BE_MERGED = [
+  "name", // display name of the arg, this is always included automatically when argTypes are provided to argType enhancer
+  "if",
+  "description",
+  "type.required",
+  "mapping",
+  // allow merging control config incase it is a matcher control
+  // todo test matcher controls can be merged
+  "options",
+  "control.min",
+  "control.max",
+  "control.accept",
+  "control.step",
+  "control.presetColors",
+  // allow merging table config
+  "table.category",
+  "table.disable",
+  "table.readonly",
+  "table.subcategory",
+];
+
 function argTypeKeyCanBeMerged(key: string) {
   return USER_ARG_TYPE_KEYS_THAT_CAN_BE_MERGED.some((keyThatCanBeMerged) => {
     return key === keyThatCanBeMerged || key.startsWith(`${keyThatCanBeMerged}.`);
