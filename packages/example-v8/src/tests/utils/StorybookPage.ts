@@ -19,7 +19,7 @@ export type ControlExpectation =
           value: boolean;
         }
     ) & {
-      required?: boolean;
+      isRequired?: boolean;
     })
   | {
       type: "set-value-button";
@@ -46,6 +46,12 @@ export type ControlExpectation =
       valueText: string;
     };
 
+type ControlDetails = {
+  name: string;
+  inputLocator: Locator;
+  rowLocator: Locator;
+};
+
 /**
  * Class name comes from tree component that Storybook uses
  * @see https://github.com/shachi-bhavsar/json-editable-react-tree/tree/master?tab=readme-ov-file#design
@@ -60,6 +66,7 @@ class Assertions {
 
   async actualConfigMatches(expectedConfig: Record<string, unknown>) {
     const actualConfigText = await this.object.previewIframeLocator
+      .locator("#storybook-root") // docs are rendered but not visible, so here we are specifying the main story root
       .locator("#actual-config-json")
       .innerText();
     expect(JSON.parse(actualConfigText), "output config equals").toEqual(expectedConfig);
@@ -84,22 +91,29 @@ class Assertions {
       `Controls${expectedControlEntries.length}`,
     );
 
-    const actualRowLocators = await this.object.getAllControlRowLocators();
+    const actualTrRowLocators = await this.object.getAllControlRowLocators();
 
     // check control values
     for (const [controlName, expectedControl] of expectedControlEntries) {
-      const row = actualRowLocators[controlName];
-      expect(row, `control "${controlName}" exists`).toBeTruthy();
-      if (!row) {
+      const trRow = actualTrRowLocators[controlName];
+      expect(trRow, `control "${controlName}" exists`).toBeTruthy();
+      if (!trRow) {
         continue; // for TS
       }
 
-      const controlInput = this.object.getLocatorForControlInput(controlName, row);
+      const control: ControlDetails = {
+        name: controlName,
+        inputLocator: this.object.getLocatorForControlInput(controlName, trRow),
+        rowLocator: trRow,
+      };
 
       if (typeof expectedControl === "object") {
         // handle unset controls
         if (expectedControl.type === "set-value-button") {
-          const setValueButtonLocator = this.object.getLocatorForSetControlButton(controlName, row);
+          const setValueButtonLocator = this.object.getLocatorForSetControlButton(
+            controlName,
+            trRow,
+          );
           await expect(setValueButtonLocator, `control "${controlName}" exists`).toBeVisible();
           await expect(setValueButtonLocator, `control "${controlName}" value equals`).toHaveText(
             `Set ${expectedControl.valueType}`,
@@ -109,12 +123,12 @@ class Assertions {
 
         // assert radio controls
         if (expectedControl.type === "radio") {
-          const actualOptions = await this.object.getOptionsForRadioControl(controlName, row);
+          const actualOptions = await this.object.getOptionsForRadioControl(controlName, trRow);
           expect(actualOptions, `control "${controlName}" radio input options`).toEqual(
             expectedControl.options,
           );
           expect(
-            await this.object.getCheckedOptionForRadioControl(controlName, row),
+            await this.object.getCheckedOptionForRadioControl(controlName, trRow),
             `control "${controlName}" radio input checked option`,
           ).toEqual(expectedControl.value);
           continue;
@@ -122,7 +136,7 @@ class Assertions {
 
         // assert color controls
         if (expectedControl.type === "color") {
-          const actualValue = await this.object.getValueForColorInput(controlName, row);
+          const actualValue = await this.object.getValueForColorInput(controlName, trRow);
           expect(actualValue, `control "${controlName}" color value`).toEqual(
             expectedControl.value,
           );
@@ -131,7 +145,7 @@ class Assertions {
 
         // assert json controls
         if (expectedControl.type === "json") {
-          const jsonControlLocator = row.locator(JsonControlClassName.MainTree);
+          const jsonControlLocator = trRow.locator(JsonControlClassName.MainTree);
           await expect(
             jsonControlLocator,
             `control "${controlName}" json object control exists`,
@@ -145,22 +159,77 @@ class Assertions {
           );
           continue;
         }
-      }
 
-      // assert boolean toggles
-      if (typeof expectedControl === "boolean") {
-        expect(await controlInput.isChecked(), `control "${controlName}" is checked`).toEqual(
-          expectedControl,
-        );
+        // assert boolean toggles
+        if (expectedControl.type === "boolean") {
+          await this.assertBooleanControl(control, {
+            value: expectedControl.value,
+            isRequired: expectedControl.isRequired,
+          });
+          continue;
+        }
+
+        // assert primitive string/number values
+        await this.assertStringOrNumberControl(control, {
+          value: expectedControl.value,
+          isRequired: expectedControl.isRequired,
+        });
         continue;
       }
 
+      // todo deprecate passing in primitives directly?
+      // assert boolean toggles
+      if (typeof expectedControl === "boolean") {
+        await this.assertBooleanControl(control, {
+          value: expectedControl,
+          isRequired: undefined,
+        });
+        continue;
+      }
+
+      // todo deprecate passing in primitives directly?
       // assert primitive string/number values
-      const expectedValue = getEquivalentValueForInput(expectedControl);
-      await expect(controlInput, `control "${controlName}" value equals`).toHaveValue(
-        expectedValue,
-      );
+      await this.assertStringOrNumberControl(control, {
+        value: expectedControl,
+        isRequired: undefined,
+      });
     }
+  }
+
+  private async assertBooleanControl(
+    control: ControlDetails,
+    expected: {
+      value: boolean;
+      isRequired: boolean | undefined;
+    },
+  ) {
+    const actualValue = await control.inputLocator.isChecked();
+    expect(actualValue, `control "${control.name}" is checked`).toEqual(expected.value);
+
+    await this.assertRowIsRequired(control, expected.isRequired);
+  }
+
+  private async assertStringOrNumberControl(
+    control: ControlDetails,
+    expected: {
+      value: string | number;
+      isRequired: boolean | undefined;
+    },
+  ) {
+    const expectedValue = getEquivalentValueForInput(expected.value);
+    await expect(control.inputLocator, `control "${control.name}" value equals`).toHaveValue(
+      expectedValue,
+    );
+
+    await this.assertRowIsRequired(control, expected.isRequired);
+  }
+
+  private async assertRowIsRequired(control: ControlDetails, isRequired: boolean | undefined) {
+    const requiredMarkerLocator = control.rowLocator.locator("td span[title=Required]");
+    const isRequiredMarkerVisible = await requiredMarkerLocator.isVisible();
+    expect(isRequiredMarkerVisible, `control "${control.name}" required marker is visible`).toEqual(
+      isRequired ?? false,
+    );
   }
 
   private async fullyExpandJsonControl(jsonControlLocator: Locator): Promise<void> {
@@ -330,7 +399,8 @@ export default class StorybookPageObject {
       .locator(".docblock-argstable-body > tr")
       .all();
     for (const row of rowLocators) {
-      const name = await row.locator("td").first().innerText();
+      // NOTE: second element could be "required" marker element
+      const name = await row.locator("td > span:first-of-type").first().innerText();
       out[name.trim()] = row;
     }
     return out;
