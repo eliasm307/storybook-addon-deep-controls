@@ -5,6 +5,22 @@ export type ControlExpectation =
   | string
   | number
   | boolean
+  | ((
+      | {
+          type: "string";
+          value: string;
+        }
+      | {
+          type: "number";
+          value: number;
+        }
+      | {
+          type: "boolean";
+          value: boolean;
+        }
+    ) & {
+      required?: boolean;
+    })
   | {
       type: "set-value-button";
       valueType: "string" | "object";

@@ -1,16 +1,9 @@
 import {test} from "@playwright/test";
-import {localHostPortIsInUse} from "../tests/utils";
+import {assertStorybookIsRunning} from "../tests/utils";
 import StorybookPageObject from "../tests/utils/StorybookPage";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
-test.beforeAll(async () => {
-  const isStorybookRunning = await localHostPortIsInUse(6006);
-  if (!isStorybookRunning) {
-    throw new Error(
-      "Storybook is not running (expected on localhost:6006), please run `npm run storybook` in a separate terminal",
-    );
-  }
-});
+test.beforeAll(assertStorybookIsRunning);
 
 test.beforeEach(async ({page}) => {
   test.setTimeout(TEST_TIMEOUT_MS);

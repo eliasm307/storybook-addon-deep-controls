@@ -1,4 +1,3 @@
-import React from "react";
 import {stringify} from "storybook-addon-deep-controls/src/utils/general";
 
 // NOTE: the docs addon will try to create argTypes for this component's props based on this types that this addon needs to handle
@@ -9,10 +8,6 @@ type Props = {
     enumString: string;
   };
   someArray?: string[];
-  /**
-   * Jsdoc description
-   */
-  stringWithJsdoc?: string
 };
 
 export default function WithTypedProps(config: Props) {

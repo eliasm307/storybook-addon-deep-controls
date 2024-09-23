@@ -4,7 +4,7 @@ export function clone<T extends Record<string, unknown>>(obj: T): T {
   return cloneDeep(obj); // maintains value as is, e.g. NaN, Infinity, etc. which JSON.stringify does not
 }
 
-export function localHostPortIsInUse(port: number): Promise<boolean> {
+function localHostPortIsInUse(port: number): Promise<boolean> {
   return new Promise((resolve) => {
     const server = require("http").createServer();
     server.on("error", () => {
@@ -17,4 +17,13 @@ export function localHostPortIsInUse(port: number): Promise<boolean> {
     });
     server.listen(port);
   });
+}
+
+export async function assertStorybookIsRunning() {
+  const isStorybookRunning = await localHostPortIsInUse(6006);
+  if (!isStorybookRunning) {
+    throw new Error(
+      "Storybook is not running (expected on localhost:6006), please run `npm run storybook` in a separate terminal",
+    );
+  }
 }
