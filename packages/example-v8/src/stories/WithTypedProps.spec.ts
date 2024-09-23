@@ -1,7 +1,7 @@
 import {test} from "@playwright/test";
-import {localHostPortIsInUse} from "./utils";
-import StorybookPageObject from "./utils/StorybookPage";
-import {TEST_TIMEOUT_MS} from "./utils/constants";
+import {localHostPortIsInUse} from "../tests/utils";
+import StorybookPageObject from "../tests/utils/StorybookPage";
+import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 test.beforeAll(async () => {
   const isStorybookRunning = await localHostPortIsInUse(6006);

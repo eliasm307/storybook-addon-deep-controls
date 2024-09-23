@@ -1,7 +1,7 @@
 import {test} from "@playwright/test";
-import {localHostPortIsInUse} from "./utils";
-import StorybookPageObject, {type ControlExpectation} from "./utils/StorybookPage";
-import {TEST_TIMEOUT_MS} from "./utils/constants";
+import {localHostPortIsInUse} from "../tests/utils";
+import StorybookPageObject, {type ControlExpectation} from "../tests/utils/StorybookPage";
+import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 // todo colocate tests with source files
 test.beforeAll(async () => {
