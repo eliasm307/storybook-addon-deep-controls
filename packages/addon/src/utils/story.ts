@@ -93,9 +93,12 @@ function flattenObjectRecursively(
       key = `${pathToParent}.${key}`; // nested key
     }
 
-    // we can only flatten if have not reached the last value we can flatten in this branch
-    // and the user has not specified a custom argType for it (ie otherwise we use whatever control they chose)
-    const shouldFlatten = isPojo(value) && !context.userDefinedArgTypes[key];
+    // we can only flatten if:
+    // - we have not reached the last value we can flatten (ie POJO) in this branch
+    // - the POJO has some keys to flatten
+    // - and the user has not specified a custom argType for it (ie otherwise we use whatever control they chose)
+    const shouldFlatten =
+      isPojo(value) && !context.userDefinedArgTypes[key] && Object.keys(value).length;
     if (!shouldFlatten) {
       context.flatObjectOut[key] = value; // keep the value as is
       return;
@@ -208,7 +211,7 @@ export function createFlattenedArgTypes(
     // parameters: context.parameters,
     userDefinedArgTypes,
   });
-  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
+  const argTypesOut = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const controlMatcherEntries = Object.entries(context.parameters.controls?.matchers ?? {});
 
   /*
@@ -225,7 +228,7 @@ export function createFlattenedArgTypes(
   for (const flattenedRootArgKey of getRootKeysThatWereFlattened(flatInitialArgs)) {
     if (!userDefinedArgTypes[flattenedRootArgKey]) {
       // only hide the control if the user didn't define an argType for it
-      argTypes[flattenedRootArgKey] = createHiddenArgType(flattenedRootArgKey);
+      argTypesOut[flattenedRootArgKey] = createHiddenArgType(flattenedRootArgKey);
     }
   }
 
@@ -237,14 +240,20 @@ export function createFlattenedArgTypes(
       controlMatcherEntries,
       userDefinedArgTypes,
     );
-    const userArgTypeOverride = argTypes[argPath];
+    const userArgTypeOverride = argTypesOut[argPath];
+    if (userArgTypeOverride && generatedArgType && "table" in generatedArgType) {
+      // we only define the table property to hide a control
+      // here we know the user has defined an argType so we assume they want it shown,
+      // so we remove the table property (ie show the control)
+      delete generatedArgType.table;
+    }
     const newArgType = mergeArgTypes(generatedArgType, userArgTypeOverride);
     if (newArgType) {
-      argTypes[argPath] = newArgType;
+      argTypesOut[argPath] = newArgType;
     }
   }
 
-  return argTypes;
+  return argTypesOut;
 }
 
 function createFlattenedValueArgType(

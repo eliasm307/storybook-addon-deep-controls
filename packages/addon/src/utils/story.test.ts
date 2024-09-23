@@ -372,97 +372,6 @@ describe("Story utils", function () {
       );
     });
 
-    it("does not add arg types for deep values if a custom argType exists for the parent object", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {
-            nested: {
-              nested: {
-                bool: true,
-              },
-              // NOTE: intentionally having this name start with the arg with a custom type to test the pattern matching, ie the path string starts with the user defined argType but is not correct in terms of the path
-              nested2: {
-                bool: true,
-              },
-            },
-          },
-          argTypes: {
-            "nested.nested": {
-              name: "nested.nested",
-              control: "object",
-              type: {
-                name: "object",
-                value: {},
-              },
-            },
-          },
-          parameters: {deepControls: {}},
-        }),
-        {
-          // NOTE: root object is partially flattened but its still hidden
-          nested: {name: "nested", table: {disable: true}},
-          // NOTE: no inferred argType for this or its children as it had a user defined argType
-          "nested.nested": {
-            name: "nested.nested",
-            control: "object",
-            type: {
-              name: "object",
-              value: {},
-            },
-          },
-          // NOTE: still flattens other deep values without custom argTypes
-          "nested.nested2.bool": {
-            name: "nested.nested2.bool",
-            control: {type: "boolean"},
-            type: {name: "boolean"},
-          },
-        },
-      );
-    });
-
-    it("does not overwrite existing argTypes", function () {
-      const originalContext: DeepControlsStorybookContext = {
-        initialArgs: {
-          nested: {
-            enum: "",
-            string: "",
-          },
-        },
-        argTypes: {
-          // custom arg type
-          "nested.enum": {
-            name: "nested.enum",
-            control: "radio",
-            options: ["email", "phone", "mail"],
-          },
-        },
-        parameters: {deepControls: {}},
-      };
-
-      const outputArgTypes = createFlattenedArgTypes(originalContext);
-
-      assert.deepStrictEqual(outputArgTypes, {
-        // custom arg type maintained
-        "nested.enum": {
-          name: "nested.enum",
-          control: "radio",
-          options: ["email", "phone", "mail"],
-        },
-        // inferred nested arg type added for other value
-        nested: {name: "nested", table: {disable: true}},
-        "nested.string": {
-          name: "nested.string",
-          type: {name: "string"},
-          control: {type: "text"}, // basic control
-        },
-      });
-
-      assert.isTrue(
-        outputArgTypes["nested.enum"] === originalContext.argTypes!["nested.enum"],
-        "should use the same argTypes object",
-      );
-    });
-
     it("hides arg types for values that should not have controls", function () {
       assert.deepStrictEqual(
         createFlattenedArgTypes({
@@ -483,26 +392,6 @@ describe("Story utils", function () {
           undefinedValue: {name: "undefinedValue", table: {disable: true}},
           symbol: {name: "symbol", table: {disable: true}},
         },
-      );
-    });
-
-    it("does not overwrite existing argTypes even if they should be hidden", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {
-            complex: class {},
-            complex2: class {},
-          },
-          argTypes: {
-            complex: {name: "complex", control: "object"},
-          },
-          parameters: {deepControls: {}},
-        }),
-        {
-          complex: {name: "complex", control: "object"},
-          complex2: {name: "complex2", table: {disable: true}},
-        },
-        "does not overwrite existing argTypes even if the value should be hidden",
       );
     });
 
@@ -557,208 +446,166 @@ describe("Story utils", function () {
       );
     });
 
-    it("supports overriding array control via argTypes", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {
-            nested: {
-              array: [1, 2, 3],
-            },
-          },
-          argTypes: {
-            "nested.array": {
-              control: {type: "string"},
-            },
-          },
-          parameters: {deepControls: {}},
-        }),
-        {
-          nested: {name: "nested", table: {disable: true}},
-          "nested.array": {control: {type: "string"}},
-        },
-      );
-    });
-
-    it("supports overriding null control via argTypes", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {
-            nested: {
-              null: null,
-            },
-          },
-          argTypes: {
-            "nested.null": {
-              control: {type: "string"},
-            },
-          },
-          parameters: {deepControls: {}},
-        }),
-        {
-          nested: {name: "nested", table: {disable: true}},
-          "nested.null": {control: {type: "string"}},
-        },
-      );
-    });
-
-    /**
-     * Creates an example argType that would be generated by the storybook docs addon
-     */
-    function createGeneratedArgTypeExample({
-      name,
-      required,
-    }: {
-      name: string;
-      required?: boolean;
-    }): StrictInputType {
-      return {
+    describe("docs addon", () => {
+      /**
+       * Creates an example argType that would be generated by the storybook docs addon
+       */
+      function createGeneratedArgTypeExample({
         name,
-        description: "",
-        type: {
-          required: !!required,
-          name: "other",
-          value: "unknown",
-        },
-        table: {
+        required,
+      }: {
+        name: string;
+        required?: boolean;
+      }): StrictInputType {
+        return {
+          name,
+          description: "",
           type: {
-            summary: "unknown",
+            required: !!required,
+            name: "other",
+            value: "unknown",
           },
-          jsDocTags: undefined, // key atleast included by the docs addon
-          defaultValue: null,
-        },
-      };
-    }
+          table: {
+            type: {
+              summary: "unknown",
+            },
+            jsDocTags: undefined, // key atleast included by the docs addon
+            defaultValue: null,
+          },
+        };
+      }
 
-    it("shows argTypes from the docs addon if docs not enabled", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {},
-          argTypes: {
+      it("shows argTypes from the docs addon if docs not enabled", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {},
+            argTypes: {
+              object: createGeneratedArgTypeExample({name: "object"}),
+            },
+            parameters: {deepControls: {}}, // docs addon not enabled
+          }),
+          {
             object: createGeneratedArgTypeExample({name: "object"}),
           },
-          parameters: {deepControls: {}}, // docs addon not enabled
-        }),
-        {
-          object: createGeneratedArgTypeExample({name: "object"}),
-        },
-      );
-    });
-
-    it("shows argTypes from the docs addon if there is no initial arg value for that argType", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {
-            anotherObject: {
-              enum: "",
-              string: "",
-            },
-          },
-          argTypes: {
-            object: createGeneratedArgTypeExample({name: "object"}),
-          },
-          parameters: {
-            deepControls: {},
-            docs: {}, // truthy value means docs addon enabled
-          },
-        }),
-        {
-          // docs argType kept
-          object: createGeneratedArgTypeExample({name: "object"}),
-          // other argType flattened as normal
-          anotherObject: {name: "anotherObject", table: {disable: true}},
-          "anotherObject.enum": {
-            name: "anotherObject.enum",
-            control: {type: "text"},
-            type: {name: "string"},
-          },
-          "anotherObject.string": {
-            name: "anotherObject.string",
-            control: {type: "text"},
-            type: {name: "string"},
-          },
-        },
-      );
-    });
-
-    it("hides argTypes from the docs addon if there is an object initialArg", function () {
-      assert.deepStrictEqual(
-        createFlattenedArgTypes({
-          initialArgs: {
-            object: {
-              enum: "",
-              string: "",
-            },
-          },
-          argTypes: {
-            object: createGeneratedArgTypeExample({name: "object"}),
-          },
-          parameters: {
-            deepControls: {},
-            docs: {}, // truthy value means docs addon enabled
-          },
-        }),
-        {
-          // object argType hidden as initial arg value has been flattened
-          object: {name: "object", table: {disable: true}},
-          "object.enum": {
-            name: "object.enum",
-            control: {type: "text"},
-            type: {name: "string"},
-          },
-          "object.string": {
-            name: "object.string",
-            control: {type: "text"},
-            type: {name: "string"},
-          },
-        },
-      );
-    });
-
-    // here since docs addon is disabled, argTypes can only come from user
-    it("keeps argTypes that are likely overridden by the user", function () {
-      const flattenedArgs = createFlattenedArgTypes({
-        initialArgs: {
-          someObject: {
-            obj1: {
-              foo1: "foo1",
-              bar1: "bar1",
-            },
-            obj2WithArgType: {
-              foo2: "foo2",
-              bar2: "bar2",
-            },
-          },
-        },
-        argTypes: {
-          // obj1 should be deep controlled
-          // obj2 should be shown with same value in json control
-          "someObject.obj2WithArgType": {
-            name: "someObject.obj2WithArgType",
-            control: "object",
-          },
-        },
-        parameters: {deepControls: {}},
+        );
       });
 
-      expect(flattenedArgs).toEqual({
-        someObject: {
-          name: "someObject",
-          table: {disable: true}, // hide root object
-        },
-        "someObject.obj1.foo1": {
-          name: "someObject.obj1.foo1",
-          control: {type: "text"},
-          type: {name: "string"},
-        },
-        "someObject.obj1.bar1": {
-          name: "someObject.obj1.bar1",
-          control: {type: "text"},
-          type: {name: "string"},
-        },
-        "someObject.obj2WithArgType": {
-          name: "someObject.obj2WithArgType",
-          control: "object", // keep object control
-        },
+      it("shows argTypes from the docs addon if there is no initial arg value for that argType", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              anotherObject: {
+                enum: "",
+                string: "",
+              },
+            },
+            argTypes: {
+              object: createGeneratedArgTypeExample({name: "object"}),
+            },
+            parameters: {
+              deepControls: {},
+              docs: {}, // truthy value means docs addon enabled
+            },
+          }),
+          {
+            // docs argType kept
+            object: createGeneratedArgTypeExample({name: "object"}),
+            // other argType flattened as normal
+            anotherObject: {name: "anotherObject", table: {disable: true}},
+            "anotherObject.enum": {
+              name: "anotherObject.enum",
+              control: {type: "text"},
+              type: {name: "string"},
+            },
+            "anotherObject.string": {
+              name: "anotherObject.string",
+              control: {type: "text"},
+              type: {name: "string"},
+            },
+          },
+        );
+      });
+
+      it("hides argTypes from the docs addon if there is an object initialArg", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              object: {
+                enum: "",
+                string: "",
+              },
+            },
+            argTypes: {
+              object: createGeneratedArgTypeExample({name: "object"}),
+            },
+            parameters: {
+              deepControls: {},
+              docs: {}, // truthy value means docs addon enabled
+            },
+          }),
+          {
+            // object argType hidden as initial arg value has been flattened
+            object: {name: "object", table: {disable: true}},
+            "object.enum": {
+              name: "object.enum",
+              control: {type: "text"},
+              type: {name: "string"},
+            },
+            "object.string": {
+              name: "object.string",
+              control: {type: "text"},
+              type: {name: "string"},
+            },
+          },
+        );
+      });
+
+      // here since docs addon is disabled, argTypes can only come from user
+      it("keeps argTypes that are likely overridden by the user", function () {
+        const flattenedArgs = createFlattenedArgTypes({
+          initialArgs: {
+            someObject: {
+              obj1: {
+                foo1: "foo1",
+                bar1: "bar1",
+              },
+              obj2WithArgType: {
+                foo2: "foo2",
+                bar2: "bar2",
+              },
+            },
+          },
+          argTypes: {
+            // obj1 should be deep controlled
+            // obj2 should be shown with same value in json control
+            "someObject.obj2WithArgType": {
+              name: "someObject.obj2WithArgType",
+              control: "object",
+            },
+          },
+          parameters: {deepControls: {}},
+        });
+
+        expect(flattenedArgs).toEqual({
+          someObject: {
+            name: "someObject",
+            table: {disable: true}, // hide root object
+          },
+          "someObject.obj1.foo1": {
+            name: "someObject.obj1.foo1",
+            control: {type: "text"},
+            type: {name: "string"},
+          },
+          "someObject.obj1.bar1": {
+            name: "someObject.obj1.bar1",
+            control: {type: "text"},
+            type: {name: "string"},
+          },
+          "someObject.obj2WithArgType": {
+            name: "someObject.obj2WithArgType",
+            control: "object", // keep object control
+          },
+        });
       });
     });
 
@@ -823,19 +670,203 @@ describe("Story utils", function () {
             // object argType hidden as initial arg value has been flattened
             color: {name: "color", table: {disable: true}},
             "color.color": {
-              control: {type: "string"},
+              name: "color.color", // merged in from generated argType
+              control: {type: "string"}, // overridden by user defined argType
             },
           },
         );
       });
     });
 
-    describe("merging custom argTypes with flattened argTypes", function () {
+    // todo there is some test duplication here, could be refactored
+    describe("merging/overriding generated flattened argTypes with custom argTypes", function () {
       // NOTE: doesn't test the following as there aren't any properties that are auto generated that can be merged
       // test it doesn't overwrite existing properties
       // test it overwrites arrays entirely instead of specific items
 
-      it("supports merging custom arg type with description", function () {
+      it("supports overriding existing properties", () => {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              nested: {
+                bool: true,
+              },
+            },
+            argTypes: {
+              "nested.bool": {
+                name: "foo",
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            nested: {name: "nested", table: {disable: true}},
+            "nested.bool": {
+              name: "foo", // overridden by user defined argType
+              control: {type: "boolean"}, // merged in from generated argType
+              type: {name: "boolean"}, // merged in from generated argType
+            },
+          },
+        );
+      });
+
+      it("supports overriding array control via argTypes", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              nested: {
+                array: [1, 2, 3],
+              },
+            },
+            argTypes: {
+              "nested.array": {
+                control: {type: "string"},
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            nested: {name: "nested", table: {disable: true}},
+            "nested.array": {
+              name: "nested.array", // merged in from generated argType
+              control: {type: "string"}, // overridden by user defined argType
+            },
+          },
+        );
+      });
+
+      it("supports overriding null control via argTypes", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              nested: {
+                null: null,
+              },
+            },
+            argTypes: {
+              "nested.null": {
+                control: {type: "string"},
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            nested: {name: "nested", table: {disable: true}},
+            "nested.null": {
+              name: "nested.null", // merged in from generated argType
+              control: {type: "string"}, // overridden by user defined argType
+            },
+          },
+        );
+      });
+
+      it("does not hide overridden controls even if they should be hidden", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              complex: class {},
+              complex2: class {},
+            },
+            argTypes: {
+              complex: {name: "complex", control: "object"},
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            complex: {name: "complex", control: "object"},
+            complex2: {name: "complex2", table: {disable: true}},
+          },
+        );
+      });
+
+      it("does not add arg types for deep values if a custom argType exists for the parent object", function () {
+        assert.deepStrictEqual(
+          createFlattenedArgTypes({
+            initialArgs: {
+              nested: {
+                nested: {
+                  bool: true,
+                },
+                // NOTE: intentionally having this name start with the arg with a custom type to test the pattern matching, ie the path string starts with the user defined argType but is not correct in terms of the path
+                nested2: {
+                  bool: true,
+                },
+              },
+            },
+            argTypes: {
+              "nested.nested": {
+                name: "nested.nested",
+                control: "object",
+                type: {
+                  name: "object",
+                  value: {},
+                },
+              },
+            },
+            parameters: {deepControls: {}},
+          }),
+          {
+            // NOTE: root object is partially flattened but its still hidden
+            nested: {name: "nested", table: {disable: true}},
+            // NOTE: no inferred argType for this or its children as it had a user defined argType
+            "nested.nested": {
+              name: "nested.nested",
+              control: "object",
+              type: {
+                name: "object",
+                value: {}, // NOTE: tests it can keep empty objects
+              },
+            },
+            // NOTE: still flattens other deep values without custom argTypes
+            "nested.nested2.bool": {
+              name: "nested.nested2.bool",
+              control: {type: "boolean"},
+              type: {name: "boolean"},
+            },
+          },
+        );
+      });
+
+      it("merges existing argTypes", function () {
+        const originalContext: DeepControlsStorybookContext = {
+          initialArgs: {
+            nested: {
+              enum: "",
+              string: "",
+            },
+          },
+          argTypes: {
+            // custom arg type
+            "nested.enum": {
+              name: "nested.enum",
+              control: "radio",
+              options: ["email", "phone", "mail"],
+            },
+          },
+          parameters: {deepControls: {}},
+        };
+
+        const outputArgTypes = createFlattenedArgTypes(originalContext);
+
+        assert.deepStrictEqual(outputArgTypes, {
+          // custom arg type maintained
+          "nested.enum": {
+            name: "nested.enum",
+            control: "radio",
+            options: ["email", "phone", "mail"],
+            type: {name: "string"}, // from generated argType
+          },
+          // inferred nested arg type added for other value
+          nested: {name: "nested", table: {disable: true}},
+          "nested.string": {
+            name: "nested.string",
+            type: {name: "string"},
+            control: {type: "text"}, // basic control
+          },
+        });
+      });
+
+      it("supports merging custom arg type with known key", function () {
         assert.deepStrictEqual(
           createFlattenedArgTypes({
             initialArgs: {
@@ -863,68 +894,7 @@ describe("Story utils", function () {
         );
       });
 
-      it("supports merging custom arg type with if", function () {
-        assert.deepStrictEqual(
-          createFlattenedArgTypes({
-            initialArgs: {
-              object: {prop: true},
-            },
-            argTypes: {
-              "object.prop": {
-                if: {arg: "object.prop", eq: true},
-              },
-            },
-            parameters: {deepControls: {}},
-          }),
-          {
-            object: {
-              name: "object",
-              table: {disable: true},
-            },
-            "object.prop": {
-              name: "object.prop",
-              type: {name: "boolean"},
-              control: {type: "boolean"},
-
-              // merged property
-              if: {arg: "object.prop", eq: true},
-            },
-          },
-        );
-      });
-
-      it("supports merging custom arg type with type.required", function () {
-        assert.deepStrictEqual(
-          createFlattenedArgTypes({
-            initialArgs: {
-              object: {prop: true},
-            },
-            argTypes: {
-              "object.prop": {
-                type: {required: true},
-              },
-            },
-            parameters: {deepControls: {}},
-          }),
-          {
-            object: {
-              name: "object",
-              table: {disable: true},
-            },
-            "object.prop": {
-              name: "object.prop",
-              type: {
-                name: "boolean",
-                // NOTE: also tests that it can merge to nested objects
-                required: true, // merged property
-              },
-              control: {type: "boolean"},
-            },
-          },
-        );
-      });
-
-      it("does not merge custom arg type with unknown key", function () {
+      it("merges custom arg type with unknown key", function () {
         assert.deepStrictEqual(
           createFlattenedArgTypes({
             initialArgs: {
@@ -943,13 +913,18 @@ describe("Story utils", function () {
               table: {disable: true},
             },
             "object.prop": {
-              unknownKey: "unknownValue", // not merged
+              name: "object.prop",
+              type: {name: "boolean"},
+              control: {type: "boolean"},
+
+              // merged property
+              unknownKey: "unknownValue",
             },
           },
         );
       });
 
-      it("supports merging custom arg type with description and overriding sibling arg type", function () {
+      it("supports merging multiple sibling arg type", function () {
         assert.deepStrictEqual(
           createFlattenedArgTypes({
             initialArgs: {
@@ -960,7 +935,7 @@ describe("Story utils", function () {
             },
             argTypes: {
               "object.prop1": {description: "Custom description"},
-              "object.prop2": {type: {name: "number"}},
+              "object.prop2": {type: {name: "Foo"}},
             },
             parameters: {
               deepControls: {},
@@ -982,7 +957,9 @@ describe("Story utils", function () {
             },
             // overridden by custom arg type
             "object.prop2": {
-              type: {name: "number"},
+              name: "object.prop2",
+              control: {type: "boolean"},
+              type: {name: "Foo"}, // overridden by custom arg type
             },
           },
         );
