@@ -1,6 +1,6 @@
 import {type Page, expect} from "playwright/test";
 import type {ControlExpectation} from "../types";
-import {StorybookArgsTableObject} from "./StorybookArgsTableObject";
+import {StorybookArgsTableObject} from "./ArgsTableObject";
 
 // todo extract magic storybook id/class etc selectors to constants
 class Assertions {

@@ -1,8 +1,8 @@
 import {test} from "@playwright/test";
 import type {ControlExpectation} from "../tests/types";
 import {assertStorybookIsRunning} from "../tests/utils";
+import StorybookPageObject from "../tests/utils/AppObject";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
-import StorybookPageObject from "../tests/utils/StorybookPage";
 
 test.beforeAll(assertStorybookIsRunning);
 
@@ -319,7 +319,8 @@ test("supports customising existing property control with initial primitive valu
 // also tests it handles objects with non-existing properties partially defined by argTypes
 test("supports customising non-existing property control without initial value", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.openStoriesTreeItemById("story",
+  await storybookPage.action.openStoriesTreeItemById(
+    "story",
     "stories-dev--with-custom-controls-for-non-existing-property",
   );
 
@@ -368,7 +369,10 @@ test("supports control matchers", async ({page}) => {
 
 test("shows empty object and array controls", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-empty-initial-args");
+  await storybookPage.action.openStoriesTreeItemById(
+    "story",
+    "stories-dev--with-empty-initial-args",
+  );
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.controlsMatch({
@@ -384,7 +388,10 @@ test("shows empty object and array controls", async ({page}) => {
 
 test("handles object arg value overridden by argType", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-overridden-object-arg");
+  await storybookPage.action.openStoriesTreeItemById(
+    "story",
+    "stories-dev--with-overridden-object-arg",
+  );
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.controlsMatch({

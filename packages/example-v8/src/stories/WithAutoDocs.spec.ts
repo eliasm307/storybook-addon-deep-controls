@@ -1,6 +1,6 @@
 import {test} from "@playwright/test";
 import {assertStorybookIsRunning} from "../tests/utils";
-import StorybookPageObject from "../tests/utils/StorybookPage";
+import StorybookPageObject from "../tests/utils/AppObject";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 test.beforeAll(assertStorybookIsRunning);

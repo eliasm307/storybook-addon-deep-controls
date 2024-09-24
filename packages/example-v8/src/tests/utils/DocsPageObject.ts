@@ -2,7 +2,7 @@
 
 import {expect, type Page} from "playwright/test";
 import type {ControlExpectation} from "../types";
-import {StorybookArgsTableObject} from "./StorybookArgsTableObject";
+import {StorybookArgsTableObject} from "./ArgsTableObject";
 
 class Waits {
   constructor(private object: DocsPageObject) {}
