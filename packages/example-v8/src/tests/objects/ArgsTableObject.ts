@@ -117,7 +117,6 @@ class Assertions {
         continue;
       }
 
-      // todo deprecate passing in primitives directly?
       // assert boolean toggles
       if (typeof expectedControl === "boolean") {
         await this.assertBooleanControl(control, {
@@ -128,7 +127,6 @@ class Assertions {
         continue;
       }
 
-      // todo deprecate passing in primitives directly?
       // assert primitive string values
       if (typeof expectedControl === "string") {
         await this.assertStringOrNumberControl(control, {
@@ -139,13 +137,18 @@ class Assertions {
         continue;
       }
 
-      // todo deprecate passing in primitives directly?
       // assert primitive number values
-      await this.assertStringOrNumberControl(control, {
-        type: "number",
-        value: expectedControl,
-        isRequired: undefined,
-      });
+      if (typeof expectedControl === "number") {
+        await this.assertStringOrNumberControl(control, {
+          type: "number",
+          value: expectedControl,
+          isRequired: undefined,
+        });
+      }
+
+      throw new Error(
+        `Unexpected control expectation type: \n${JSON.stringify(expectedControl, null, 2)}`,
+      );
     }
   }
 

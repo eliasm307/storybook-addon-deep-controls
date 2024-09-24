@@ -5,6 +5,9 @@ export type GeneralControlRowExpectation = {
   descriptionLines?: string[];
 };
 
+/**
+ * Providing primitive values infers a basic expectation
+ */
 export type ControlExpectation =
   | StringControlExpectation
   | NumberControlExpectation
@@ -13,7 +16,6 @@ export type ControlExpectation =
   | RadioControlExpectation
   | ColorControlExpectation
   | JsonControlExpectation
-  // todo deprecate passing in primitives directly?
   | string
   | number
   | boolean;
