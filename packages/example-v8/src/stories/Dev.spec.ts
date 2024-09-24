@@ -1,7 +1,7 @@
 import {test} from "@playwright/test";
+import {AppObject} from "../tests/objects/AppObject";
 import type {ControlExpectation} from "../tests/types";
 import {assertStorybookIsRunning} from "../tests/utils";
-import {AppObject} from "../tests/utils/AppObject";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 test.beforeAll(assertStorybookIsRunning);
