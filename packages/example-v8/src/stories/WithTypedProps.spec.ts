@@ -1,26 +1,24 @@
 import {test} from "@playwright/test";
-import {localHostPortIsInUse} from "./utils";
-import StorybookPageObject from "./utils/StorybookPage";
-import {TEST_TIMEOUT_MS} from "./utils/constants";
+import {AppObject} from "../tests/objects/AppObject";
+import {assertStorybookIsRunning} from "../tests/utils";
+import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
-test.beforeAll(async () => {
-  const isStorybookRunning = await localHostPortIsInUse(6006);
-  if (!isStorybookRunning) {
-    throw new Error(
-      "Storybook is not running (expected on localhost:6006), please run `npm run storybook` in a separate terminal",
-    );
-  }
-});
+test.beforeAll(assertStorybookIsRunning);
 
 test.beforeEach(async ({page}) => {
   test.setTimeout(TEST_TIMEOUT_MS);
-  await new StorybookPageObject(page).openPage();
+  await new AppObject(page).openDefaultPage();
 });
 
 test("shows default controls when initial values are not defined", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-withtypedprops--default-enabled");
-  await storybookPage.assert.controlsMatch({
+  const storybookPage = new AppObject(page);
+  await storybookPage.action.openStoriesTreeItemById(
+    "story",
+    "stories-withtypedprops--default-enabled",
+  );
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.argsTable.assert.controlsMatch({
     someString: {
       type: "set-value-button",
       valueType: "string",
@@ -34,13 +32,15 @@ test("shows default controls when initial values are not defined", async ({page}
       valueType: "object",
     },
   });
-  await storybookPage.assert.actualConfigMatches({});
+  await storyPage.assert.actualConfigMatches({});
 });
 
 test("shows deep controls when initial values are defined", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-withtypedprops--with-args");
-  await storybookPage.assert.controlsMatch({
+  const storybookPage = new AppObject(page);
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-withtypedprops--with-args");
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.argsTable.assert.controlsMatch({
     someString: {
       type: "set-value-button",
       valueType: "string",
@@ -53,7 +53,7 @@ test("shows deep controls when initial values are defined", async ({page}) => {
     },
   });
 
-  await storybookPage.assert.actualConfigMatches({
+  await storyPage.assert.actualConfigMatches({
     someArray: ["string1", "string2"],
     someObject: {
       anyString: "anyString",
@@ -63,9 +63,14 @@ test("shows deep controls when initial values are defined", async ({page}) => {
 });
 
 test("supports customising controls with initial values", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-withtypedprops--with-custom-controls");
-  await storybookPage.assert.controlsMatch({
+  const storybookPage = new AppObject(page);
+  await storybookPage.action.openStoriesTreeItemById(
+    "story",
+    "stories-withtypedprops--with-custom-controls",
+  );
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.argsTable.assert.controlsMatch({
     someString: {
       type: "radio",
       options: ["string1", "string2", "string3"],
@@ -84,7 +89,7 @@ test("supports customising controls with initial values", async ({page}) => {
   });
 
   // initial value not affected by custom controls
-  await storybookPage.assert.actualConfigMatches({
+  await storyPage.assert.actualConfigMatches({
     someArray: ["string1", "string2"],
     someObject: {
       anyString: "anyString",

@@ -3,7 +3,7 @@ export function setProperty<T extends Partial<Record<string, unknown>>>(
   path: string,
   value: any,
 ): T {
-  if (typeof object !== "object" || object === null) {
+  if (!isAnyObject(object)) {
     return object; // should be an object but handle if it isn't
   }
 
@@ -38,6 +38,21 @@ export function setProperty<T extends Partial<Record<string, unknown>>>(
   return object;
 }
 
+export function getProperty(value: unknown, path: string): unknown {
+  for (const pathSegment of path.split(".")) {
+    if (!isAnyObject(value)) {
+      return; // cant go further, invalid path ignore
+    }
+    if (pathSegment in value) {
+      value = value[pathSegment];
+    } else {
+      return; // invalid path ignore
+    }
+  }
+
+  return value; // value at the end of the path
+}
+
 const POJO_PROTOTYPES = [Object.prototype, null];
 
 /**
@@ -46,13 +61,17 @@ const POJO_PROTOTYPES = [Object.prototype, null];
  *
  * @internal
  */
-export function isPojo(val: unknown): val is object {
+export function isPojo(val: unknown): val is Record<string, unknown> {
   return Boolean(
     typeof val === "object" &&
       val &&
       POJO_PROTOTYPES.includes(Object.getPrototypeOf(val)) &&
       !isReactElement(val),
   );
+}
+
+function isAnyObject(val: unknown): val is Record<string, unknown> {
+  return typeof val === "object" && val !== null;
 }
 
 // NOTE: React has `#isValidElement` utility to check this, however we dont use it here so React isn't a dependency
@@ -135,7 +154,7 @@ function replacer(inputKey: string, inputValue: unknown): unknown {
       return inputValue;
     }
 
-    const className = (inputValue as object).constructor.name;
+    const className = inputValue.constructor.name;
     return `[${className}]`;
   }
 

@@ -188,7 +188,9 @@ export default {
 } satisfies TypeWithDeepControls<MetaType>;
 
 // Type is wrapped over the StoryType
-export const SomeStory: TypeWithDeepControls<StoryType> = {
+type Story = TypeWithDeepControls<StoryType>;
+
+export const SomeStory: Story = {
   args: {
     someObject: {
       anyString: "string",

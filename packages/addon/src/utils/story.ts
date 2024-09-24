@@ -1,14 +1,12 @@
 import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
-import type {DeepControlsAddonParameters} from "../..";
+import type {DeepControlsAddonParameters, PartialStrictInputType} from "../..";
 import {isPojo, setProperty} from "./general";
 
 /** @internal */
 export const USER_DEFINED_ARG_TYPE_NAMES_SYMBOL = Symbol("userDefinedArgTypeNames");
 
-export type DeepControlsStorybookContext = Pick<
-  StoryContextForEnhancers,
-  "argTypes" | "initialArgs"
-> & {
+export type DeepControlsStorybookContext = Pick<StoryContextForEnhancers, "initialArgs"> & {
+  argTypes?: DeepControlsArgTypesMap;
   parameters: {
     docs?: unknown;
     controls?: {
@@ -19,16 +17,18 @@ export type DeepControlsStorybookContext = Pick<
     // but type needs to be optional for compatibility
     deepControls?: DeepControlsAddonParameters & {
       /**
-       * Contains the argType names that the user has defined, excludes the ones that were likely generated
+       * Contains the argTypes that the user has defined, excludes the ones that were likely generated
        * e.g. by the docs addon or by us
        *
        * @remark This is set in the ArgTypeEnhancer because it runs first and receives the original argTypes,
        * then this will be available in the ArgsEnhancer which runs after it
        */
-      [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]?: Set<string>;
+      [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]?: DeepControlsArgTypesMap;
     };
   };
 };
+
+export type DeepControlsArgTypesMap = Record<string, PartialStrictInputType>;
 
 type PrimitiveValue = bigint | boolean | number | string | undefined | null;
 
@@ -46,9 +46,9 @@ type FlattenObjectRecursionContext = {
    * New object populated with the flattened properties
    */
   flatObjectOut: Record<string, unknown>;
-  argTypes: Record<string, StrictInputType>;
-  parameters: DeepControlsStorybookContext["parameters"];
-  userDefinedArgTypeNames: Set<string>;
+  // argTypes: DeepControlsArgTypesMap;
+  // parameters: DeepControlsStorybookContext["parameters"];
+  userDefinedArgTypes: DeepControlsArgTypesMap;
 };
 
 export function createFlattenedArgs(
@@ -56,12 +56,12 @@ export function createFlattenedArgs(
 ): Record<string, unknown> {
   return flattenObjectRecursively(context.initialArgs, "", {
     flatObjectOut: {},
-    argTypes: context.argTypes ?? {},
-    parameters: context.parameters,
+    // argTypes: context.argTypes ?? {},
+    // parameters: context.parameters,
     // this should be defined as argType enhancers run before args enhancers
     // but handling undefined for tests and also just incase for production
-    userDefinedArgTypeNames:
-      context.parameters.deepControls?.[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL] ?? new Set(),
+    userDefinedArgTypes:
+      context.parameters.deepControls?.[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL] ?? {},
   });
 }
 
@@ -85,7 +85,7 @@ function flattenObjectRecursively(
   context: FlattenObjectRecursionContext,
 ): Record<string, unknown> | undefined {
   if (!isPojo(nestedObject)) {
-    return nestedObject; // cant or should not flatten
+    return nestedObject as any; // cant or should not flatten
   }
 
   Object.entries(nestedObject).forEach(([key, value]) => {
@@ -93,9 +93,12 @@ function flattenObjectRecursively(
       key = `${pathToParent}.${key}`; // nested key
     }
 
-    // we can only flatten if have not reached the last value we can flatten in this branch
-    // and the user has not specified a custom argType for it (ie otherwise we use whatever control they chose)
-    const shouldFlatten = isPojo(value) && !context.userDefinedArgTypeNames.has(key);
+    // we can only flatten if:
+    // - we have not reached the last value we can flatten (ie POJO) in this branch
+    // - the POJO has some keys to flatten
+    // - and the user has not specified a custom argType for it (ie otherwise we use whatever control they chose)
+    const shouldFlatten =
+      isPojo(value) && !context.userDefinedArgTypes[key] && Object.keys(value).length;
     if (!shouldFlatten) {
       context.flatObjectOut[key] = value; // keep the value as is
       return;
@@ -178,11 +181,11 @@ function createPrimitiveArgInputTypeConfig(arg: {
  * This covers cases where a user has defined an argType for a parent object
  * so we don't want to create controls for its children
  */
-function userAlreadyDefinedArgTypeForThisPath(
+function userAlreadyDefinedArgTypeForParentOfThisPath(
   argPath: string,
-  userDefinedArgTypeNames: Set<string>,
+  userDefinedArgTypes: DeepControlsArgTypesMap,
 ) {
-  for (const userDefinedArgTypeName of userDefinedArgTypeNames) {
+  for (const userDefinedArgTypeName of Object.keys(userDefinedArgTypes)) {
     if (argPath.startsWith(`${userDefinedArgTypeName}.`)) {
       return true;
     }
@@ -191,24 +194,24 @@ function userAlreadyDefinedArgTypeForThisPath(
 
 export function createFlattenedArgTypes(
   context: DeepControlsStorybookContext,
-): Record<string, StrictInputType> {
-  const userDefinedArgTypeNames = getUserDefinedArgTypeNames(context);
+): DeepControlsArgTypesMap {
+  const userDefinedArgTypes = getUserDefinedArgTypes(context);
 
   // save the result so the arg enhancer can access the accurate list
   // NOTE: this assumes nothing will change these parameters as they belong to us/this addon
   Object.defineProperty(context.parameters.deepControls, USER_DEFINED_ARG_TYPE_NAMES_SYMBOL, {
     enumerable: false, // for easier test assertions
     writable: true, // might be kept on parameters between stories so needs to be re-assignable
-    value: userDefinedArgTypeNames,
+    value: userDefinedArgTypes,
   });
 
   const flatInitialArgs = flattenObjectRecursively(context.initialArgs ?? {}, "", {
     flatObjectOut: {},
-    argTypes: context.argTypes ?? {},
-    parameters: context.parameters,
-    userDefinedArgTypeNames,
+    // argTypes: context.argTypes ?? {},
+    // parameters: context.parameters,
+    userDefinedArgTypes,
   });
-  const argTypes = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
+  const argTypesOut = {...(context.argTypes ?? {})}; // shallow clone to avoid mutating original arg types object
   const controlMatcherEntries = Object.entries(context.parameters.controls?.matchers ?? {});
 
   /*
@@ -223,44 +226,95 @@ export function createFlattenedArgTypes(
 
   // remove argTypes for args that were flattened and don't exist now
   for (const flattenedRootArgKey of getRootKeysThatWereFlattened(flatInitialArgs)) {
-    if (!userDefinedArgTypeNames.has(flattenedRootArgKey)) {
+    if (!userDefinedArgTypes[flattenedRootArgKey]) {
       // only hide the control if the user didn't define an argType for it
-      argTypes[flattenedRootArgKey] = createHiddenArgType(flattenedRootArgKey);
+      argTypesOut[flattenedRootArgKey] = createHiddenArgType(flattenedRootArgKey);
     }
   }
 
+  // define controls for flattened primitive arg entries without existing controls
   for (const [argPath, argValue] of Object.entries(flatInitialArgs)) {
-    if (argTypes[argPath]) {
-      continue; // existing argType defined, don't override
+    const generatedArgType = createFlattenedValueArgType(
+      argPath,
+      argValue,
+      controlMatcherEntries,
+      userDefinedArgTypes,
+    );
+    const userArgTypeOverride = argTypesOut[argPath];
+    if (userArgTypeOverride && generatedArgType && "table" in generatedArgType) {
+      // we only define the table property to hide a control
+      // here we know the user has defined an argType so we assume they want it shown,
+      // so we remove the table property (ie show the control)
+      delete generatedArgType.table;
     }
-
-    const matcherArgType = getArgTypeFromControlMatchers({argPath, controlMatcherEntries});
-    if (matcherArgType) {
-      argTypes[argPath] = matcherArgType;
-      continue;
+    const newArgType = mergeArgTypes(generatedArgType, userArgTypeOverride);
+    if (newArgType) {
+      argTypesOut[argPath] = newArgType;
     }
-
-    if (Array.isArray(argValue)) {
-      argTypes[argPath] = createObjectArgType(argPath);
-      continue;
-    }
-
-    // only show editable controls, remove controls for non-primitive args
-    // or primitive nullish args without a manual argType from the UI
-    if (isNullish(argValue) || !isPrimitive(argValue)) {
-      argTypes[argPath] = createHiddenArgType(argPath);
-      continue;
-    }
-
-    if (userAlreadyDefinedArgTypeForThisPath(argPath, userDefinedArgTypeNames)) {
-      continue;
-    }
-
-    // add control for flattened primitive arg entry without existing control
-    argTypes[argPath] = createPrimitiveArgInputTypeConfig({name: argPath, value: argValue});
   }
 
-  return argTypes;
+  return argTypesOut;
+}
+
+function createFlattenedValueArgType(
+  argPath: string,
+  argValue: unknown,
+  controlMatcherEntries: [string, RegExp][],
+  userDefinedArgTypes: DeepControlsArgTypesMap,
+): StrictInputType | undefined {
+  if (userAlreadyDefinedArgTypeForParentOfThisPath(argPath, userDefinedArgTypes)) {
+    return; // user has defined an argType for a parent object so we don't create controls for its children
+  }
+
+  const matcherArgType = getArgTypeFromControlMatchers({argPath, controlMatcherEntries});
+  if (matcherArgType) {
+    return matcherArgType;
+  }
+
+  if (Array.isArray(argValue) || (isPojo(argValue) && !Object.keys(argValue).length)) {
+    return createObjectArgType(argPath);
+  }
+
+  // only show editable controls, remove controls for non-primitive args
+  // or primitive nullish args without a manual argType from the UI
+  if (isNullish(argValue) || !isPrimitive(argValue)) {
+    return createHiddenArgType(argPath);
+  }
+
+  // add control for flattened primitive arg entry without existing control
+  return createPrimitiveArgInputTypeConfig({name: argPath, value: argValue});
+}
+
+/**
+ * @note This overwrites properties in the target argType with the source argType
+ */
+// todo test it overwrites arrays completely instead of specific elements
+function mergeArgTypes(
+  target: PartialStrictInputType | undefined,
+  overrides: PartialStrictInputType | undefined,
+): PartialStrictInputType | undefined {
+  if (!target) {
+    return overrides;
+  }
+  if (!overrides) {
+    return target;
+  }
+
+  const flatOverrideEntries = Object.entries(
+    flattenObjectRecursively(overrides, "", {
+      flatObjectOut: {},
+      userDefinedArgTypes: {},
+    }),
+  );
+
+  target = {...target}; // shallow clone to avoid mutating original arg type object
+
+  // merge the control type
+  for (const [overridePath, overrideValue] of flatOverrideEntries) {
+    setProperty(target, overridePath, overrideValue);
+  }
+
+  return target;
 }
 
 function getArgTypeFromControlMatchers({
@@ -291,21 +345,21 @@ function getArgTypeFromControlMatchers({
  * difficult to determine which argTypes were user defined and which were generated by us or the docs addon.
  * The solution chosen is to save the result of this in the context.parameters so the arg enhancer can access the accurate list
  */
-function getUserDefinedArgTypeNames({
+function getUserDefinedArgTypes({
   argTypes = {},
   parameters,
-}: DeepControlsStorybookContext): Set<string> {
+}: DeepControlsStorybookContext): DeepControlsArgTypesMap {
   if (!parameters.docs) {
     // NOTE: we assume this being truthy means the docs addon is enabled
     // there are no generated argTypes to filter out so we assume all of them are user defined
-    return new Set(Object.keys(argTypes));
+    return {...argTypes};
   }
 
   // the docs addon will inject some argTypes so we need to filter them out to only have those explicitly defined by the user
-  const userDefinedArgTypeNames = new Set<string>();
+  const userDefinedArgTypeNames: DeepControlsArgTypesMap = {};
   for (const [argName, argType] of Object.entries(argTypes)) {
     if (!isArgTypeLikelyGeneratedByDocs(argName, argType)) {
-      userDefinedArgTypeNames.add(argName);
+      userDefinedArgTypeNames[argName] = argType;
     }
   }
 
@@ -366,7 +420,7 @@ const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
     }
   },
  */
-function isArgTypeLikelyGeneratedByDocs(argName: string, argType: StrictInputType): boolean {
+function isArgTypeLikelyGeneratedByDocs(argName: string, argType: PartialStrictInputType): boolean {
   // check argType only has the properties the docs addon would add
   if (Object.keys(argType).length !== ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON.size) {
     return false; // likely be a customised argType because it has a different number of properties than a generated argType
@@ -408,7 +462,7 @@ function isArgTypeLikelyGeneratedByDocs(argName: string, argType: StrictInputTyp
 }
 
 /**
- * When a key is flattened its key wont exist in the new object e.g.
+ * When a property is flattened its key wont exist in the new object e.g.
  * "{key: {nestedKey: value}}" becomes "{key.nestedKey: value}" ie the "key" key is removed
  *
  * This finds such keys that used to exist in the original object but do not exist after flattening
@@ -435,8 +489,7 @@ export function expandObject(
     return; // cant expand a non-object, assumes truthy values passed in are objects
   }
 
-  // NOTE: tried sorting these so the unflattened props would be first and get overwritten by the nested props
-  // but it didn't work for some reason so opted to just filter them out instead
+  // NOTE: dont need to sort these here, control order is managed by storybook and can be configured by the user via parameters
   const flattenedRootArgKeys = getRootKeysThatWereFlattened(flatObject);
   return Object.entries(flatObject)
     .filter(([key]) => !flattenedRootArgKeys.has(key))

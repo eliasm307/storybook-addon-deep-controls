@@ -16,7 +16,8 @@ const meta = {
 } satisfies Meta<typeof Dev>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+
+type Story = TypeWithDeepControls<StoryObj<typeof meta>>;
 
 export const Enabled: Story = {
   args: createNestedObject(),
@@ -122,7 +123,7 @@ function createNestedObject() {
   };
 }
 
-export const WithControlMatchers: TypeWithDeepControls<Story> = {
+export const WithControlMatchers: Story = {
   parameters: {
     controls: {
       // see https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers
@@ -139,14 +140,14 @@ export const WithControlMatchers: TypeWithDeepControls<Story> = {
   },
 };
 
-export const WithEmptyInitialArgs: TypeWithDeepControls<Story> = {
+export const WithEmptyInitialArgs: Story = {
   args: {
     emptyObj: {},
     emptyArray: [],
   },
 };
 
-export const WithOverriddenObjectArg: TypeWithDeepControls<Story> = {
+export const WithOverriddenObjectArg: Story = {
   args: {
     someObject: {
       obj1: {

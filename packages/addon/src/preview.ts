@@ -1,6 +1,7 @@
-import type {ProjectAnnotations, Renderer} from "@storybook/types";
+import type {ProjectAnnotations, Renderer, StrictArgTypes} from "@storybook/types";
 import {createFlattenedArgTypes, createFlattenedArgs, expandObject} from "./utils/story";
 
+// todo test it does not do anything custom if deepControls is not enabled
 const preview: ProjectAnnotations<Renderer> = {
   argsEnhancers: [
     /**
@@ -25,7 +26,7 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.argTypes;
       }
-      return createFlattenedArgTypes(context);
+      return createFlattenedArgTypes(context) as StrictArgTypes;
     },
   ],
 

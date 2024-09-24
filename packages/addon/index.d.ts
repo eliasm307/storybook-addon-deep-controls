@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type {Parameters as ImportToKeep, ArgTypes, BaseAnnotations} from "@storybook/types";
+import type {BaseAnnotations, Parameters as ImportToKeep} from "@storybook/types";
 
 type DummyTypeToShowImportAsUsed = ImportToKeep; // need this to keep the Parameters import to allow the declaration merge below to work
 
@@ -24,6 +24,12 @@ type DeepControlsAddonParameters = {
   enabled?: boolean;
 };
 
+/** @internal */
+export type PartialStrictInputType = Omit<Partial<StrictInputType>, "type"> & {
+  type?: Partial<StrictInputType["type"]>;
+};
+
 export type TypeWithDeepControls<T extends Pick<BaseAnnotations, "argTypes">> = T & {
-  argTypes?: ArgTypes<Record<string, unknown>>;
+  // custom argTypes for deep controls only
+  argTypes?: Record<`${string}.${string}`, PartialStrictInputType>;
 };
