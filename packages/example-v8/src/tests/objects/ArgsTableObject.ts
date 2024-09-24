@@ -144,6 +144,7 @@ class Assertions {
           value: expectedControl,
           isRequired: undefined,
         });
+        continue;
       }
 
       throw new Error(
