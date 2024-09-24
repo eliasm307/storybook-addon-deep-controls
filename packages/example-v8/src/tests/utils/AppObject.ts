@@ -1,10 +1,10 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
-import DocsPageObject from "./DocsPageObject";
-import StoryPageObject from "./StoryPageObject";
+import {DocsPageObject} from "./DocsPageObject";
+import {StoryPageObject} from "./StoryPageObject";
 
 class Assertions {
-  constructor(private object: StorybookPageObject) {}
+  constructor(private object: AppObject) {}
 
   /**
    *
@@ -17,7 +17,7 @@ class Assertions {
 }
 
 class Actions {
-  constructor(private object: StorybookPageObject) {}
+  constructor(private object: AppObject) {}
 
   /**
    *
@@ -57,11 +57,10 @@ class Actions {
 }
 
 class Waits {
-  constructor(private object: StorybookPageObject) {}
+  constructor(private object: AppObject) {}
 }
 
-// todo rename to StorybookAppObject
-export default class StorybookPageObject {
+export class AppObject {
   assert = new Assertions(this);
 
   action = new Actions(this);
@@ -74,7 +73,7 @@ export default class StorybookPageObject {
 
   constructor(public page: Page) {}
 
-  async openPage() {
+  async openDefaultPage() {
     const STORYBOOK_URL = "http://localhost:6006/?path=/story/stories-dev--enabled";
 
     try {

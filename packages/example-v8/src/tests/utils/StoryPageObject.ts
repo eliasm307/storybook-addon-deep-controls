@@ -53,7 +53,7 @@ class Waits {
 /**
  * Page object for the single active story in Storybook
  */
-export default class StoryPageObject {
+export class StoryPageObject {
   assert = new Assertions(this);
 
   action = new Actions(this);

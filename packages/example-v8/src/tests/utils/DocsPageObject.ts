@@ -44,7 +44,7 @@ class Actions {
 /**
  * Page object for the single active docs page in Storybook
  */
-export default class DocsPageObject {
+export class DocsPageObject {
   assert = new Assertions(this);
 
   action = new Actions(this);

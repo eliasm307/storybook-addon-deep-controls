@@ -1,17 +1,17 @@
 import {test} from "@playwright/test";
 import {assertStorybookIsRunning} from "../tests/utils";
-import StorybookPageObject from "../tests/utils/AppObject";
+import {AppObject} from "../tests/utils/AppObject";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 test.beforeAll(assertStorybookIsRunning);
 
 test.beforeEach(async ({page}) => {
   test.setTimeout(TEST_TIMEOUT_MS);
-  await new StorybookPageObject(page).openPage();
+  await new AppObject(page).openDefaultPage();
 });
 
 test("shows story with merged arg types correctly", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById(
     "story",
     "stories-withautodocs--with-merged-arg-types",
@@ -35,7 +35,7 @@ test("shows story with merged arg types correctly", async ({page}) => {
 });
 
 test("shows docs page with merged arg types correctly", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("docs", "stories-withautodocs--docs");
 
   const docsPage = storybookPage.activeDocsPage;

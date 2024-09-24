@@ -1,17 +1,17 @@
 import {test} from "@playwright/test";
 import {assertStorybookIsRunning} from "../tests/utils";
-import StorybookPageObject from "../tests/utils/AppObject";
+import {AppObject} from "../tests/utils/AppObject";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 test.beforeAll(assertStorybookIsRunning);
 
 test.beforeEach(async ({page}) => {
   test.setTimeout(TEST_TIMEOUT_MS);
-  await new StorybookPageObject(page).openPage();
+  await new AppObject(page).openDefaultPage();
 });
 
 test("shows default controls when initial values are not defined", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById(
     "story",
     "stories-withtypedprops--default-enabled",
@@ -36,7 +36,7 @@ test("shows default controls when initial values are not defined", async ({page}
 });
 
 test("shows deep controls when initial values are defined", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-withtypedprops--with-args");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -63,7 +63,7 @@ test("shows deep controls when initial values are defined", async ({page}) => {
 });
 
 test("supports customising controls with initial values", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById(
     "story",
     "stories-withtypedprops--with-custom-controls",

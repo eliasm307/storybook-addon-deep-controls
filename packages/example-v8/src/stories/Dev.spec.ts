@@ -1,14 +1,14 @@
 import {test} from "@playwright/test";
 import type {ControlExpectation} from "../tests/types";
 import {assertStorybookIsRunning} from "../tests/utils";
-import StorybookPageObject from "../tests/utils/AppObject";
+import {AppObject} from "../tests/utils/AppObject";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 
 test.beforeAll(assertStorybookIsRunning);
 
 test.beforeEach(async ({page}) => {
   test.setTimeout(TEST_TIMEOUT_MS);
-  await new StorybookPageObject(page).openPage();
+  await new AppObject(page).openDefaultPage();
 });
 
 function createDefaultOutputConfig() {
@@ -84,7 +84,7 @@ function createExpectedDefaultVisibleControls(): Record<string, ControlExpectati
 }
 
 test("supports checking and unchecking root level boolean control", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -120,7 +120,7 @@ test("supports checking and unchecking root level boolean control", async ({page
 });
 
 test("supports checking and unchecking nested boolean control", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -156,7 +156,7 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
 });
 
 test("supports checking and unchecking deep nested boolean control", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -192,7 +192,7 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
 });
 
 test("supports resetting controls", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -294,7 +294,7 @@ test("supports resetting controls", async ({page}) => {
 test("supports customising existing property control with initial primitive value", async ({
   page,
 }) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-custom-controls");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -318,7 +318,7 @@ test("supports customising existing property control with initial primitive valu
 
 // also tests it handles objects with non-existing properties partially defined by argTypes
 test("supports customising non-existing property control without initial value", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById(
     "story",
     "stories-dev--with-custom-controls-for-non-existing-property",
@@ -345,7 +345,7 @@ test("supports customising non-existing property control without initial value",
 });
 
 test("supports control matchers", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-control-matchers");
 
   const storyPage = storybookPage.activeStoryPage;
@@ -368,7 +368,7 @@ test("supports control matchers", async ({page}) => {
 });
 
 test("shows empty object and array controls", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById(
     "story",
     "stories-dev--with-empty-initial-args",
@@ -387,7 +387,7 @@ test("shows empty object and array controls", async ({page}) => {
 });
 
 test("handles object arg value overridden by argType", async ({page}) => {
-  const storybookPage = new StorybookPageObject(page);
+  const storybookPage = new AppObject(page);
   await storybookPage.action.openStoriesTreeItemById(
     "story",
     "stories-dev--with-overridden-object-arg",
