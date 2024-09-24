@@ -1,5 +1,6 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
+import DocsPageObject from "./DocsPageObject";
 import StoryPageObject from "./StoryPageObject";
 
 class Assertions {
@@ -21,10 +22,22 @@ class Actions {
   /**
    *
    * @param id Story id, e.g. "stories-dev--enabled"
+   *
+   * @note This is the ID shown in the URL when you click on a story in the Storybook UI e.g.
+   * `http://localhost:6006/?path=/story/stories-dev--enabled`
    */
-  async clickStoryById(id: `${string}--${string}`) {
+  async openStoriesTreeItemById(type: "story" | "docs", id: `stories-${string}--${string}`) {
     await this.clickStoryTreeItemById(id);
-    await this.object.activeStoryPage.waitUntil.previewIframeLoaded();
+
+    // wait until loaded
+    switch (type) {
+      case "story":
+        return this.object.activeStoryPage.waitUntil.previewIframeLoaded();
+      case "docs":
+        return this.object.activeDocsPage.waitUntil.previewIframeLoaded();
+      default:
+        throw Error(`Invalid tree item type: ${type}`);
+    }
   }
 
   private async clickStoryTreeItemById(id: string) {
@@ -56,6 +69,8 @@ export default class StorybookPageObject {
   waitUntil = new Waits(this);
 
   activeStoryPage = new StoryPageObject(this.page);
+
+  activeDocsPage = new DocsPageObject(this.page);
 
   constructor(public page: Page) {}
 

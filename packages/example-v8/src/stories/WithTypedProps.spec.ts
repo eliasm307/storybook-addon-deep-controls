@@ -12,10 +12,10 @@ test.beforeEach(async ({page}) => {
 
 test("shows default controls when initial values are not defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-withtypedprops--default-enabled");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-withtypedprops--default-enabled");
 
   const storyPage = storybookPage.activeStoryPage;
-  await storyPage.assert.controlsMatch({
+  await storyPage.argsTable.assert.controlsMatch({
     someString: {
       type: "set-value-button",
       valueType: "string",
@@ -34,10 +34,10 @@ test("shows default controls when initial values are not defined", async ({page}
 
 test("shows deep controls when initial values are defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-withtypedprops--with-args");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-withtypedprops--with-args");
 
   const storyPage = storybookPage.activeStoryPage;
-  await storyPage.assert.controlsMatch({
+  await storyPage.argsTable.assert.controlsMatch({
     someString: {
       type: "set-value-button",
       valueType: "string",
@@ -61,10 +61,10 @@ test("shows deep controls when initial values are defined", async ({page}) => {
 
 test("supports customising controls with initial values", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-withtypedprops--with-custom-controls");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-withtypedprops--with-custom-controls");
 
   const storyPage = storybookPage.activeStoryPage;
-  await storyPage.assert.controlsMatch({
+  await storyPage.argsTable.assert.controlsMatch({
     someString: {
       type: "radio",
       options: ["string1", "string2", "string3"],

@@ -1,8 +1,8 @@
 import {test} from "@playwright/test";
+import type {ControlExpectation} from "../tests/types";
 import {assertStorybookIsRunning} from "../tests/utils";
 import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
 import StorybookPageObject from "../tests/utils/StorybookPage";
-import type {ControlExpectation} from "../tests/utils/StoryPageObject";
 
 test.beforeAll(assertStorybookIsRunning);
 
@@ -85,7 +85,7 @@ function createExpectedDefaultVisibleControls(): Record<string, ControlExpectati
 
 test("supports checking and unchecking root level boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--enabled");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.actualConfigMatches(createDefaultOutputConfig());
@@ -95,7 +95,7 @@ test("supports checking and unchecking root level boolean control", async ({page
   const newVisibleControls = createExpectedDefaultVisibleControls();
 
   // uncheck control
-  const controlInput = storyPage.getLocatorForControlInput("bool");
+  const controlInput = storyPage.argsTable.getLocatorForControlInput("bool");
   await controlInput.click();
   newConfig.bool = false;
   newVisibleControls.bool = false;
@@ -121,7 +121,7 @@ test("supports checking and unchecking root level boolean control", async ({page
 
 test("supports checking and unchecking nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--enabled");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.actualConfigMatches(createDefaultOutputConfig());
@@ -131,7 +131,7 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
   const newVisibleControls = createExpectedDefaultVisibleControls();
 
   // check control
-  const controlInput = storyPage.getLocatorForControlInput("nested.bool");
+  const controlInput = storyPage.argsTable.getLocatorForControlInput("nested.bool");
   await controlInput.click();
   newConfig.nested.bool = true;
   newVisibleControls["nested.bool"] = true;
@@ -157,7 +157,7 @@ test("supports checking and unchecking nested boolean control", async ({page}) =
 
 test("supports checking and unchecking deep nested boolean control", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--enabled");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.actualConfigMatches(createDefaultOutputConfig());
@@ -167,7 +167,7 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
   const expectedControls = createExpectedDefaultVisibleControls();
 
   // uncheck control
-  const controlInput = storyPage.getLocatorForControlInput("nested.nested.bool");
+  const controlInput = storyPage.argsTable.getLocatorForControlInput("nested.nested.bool");
   await controlInput.click();
   expectedConfig.nested.nested.bool = false;
   expectedControls["nested.nested.bool"] = false;
@@ -193,7 +193,7 @@ test("supports checking and unchecking deep nested boolean control", async ({pag
 
 test("supports resetting controls", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--enabled");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--enabled");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.actualConfigMatches(createDefaultOutputConfig());
@@ -203,7 +203,7 @@ test("supports resetting controls", async ({page}) => {
   const expectedControls = createExpectedDefaultVisibleControls();
 
   // uncheck root control
-  let controlInput = storyPage.getLocatorForControlInput("bool");
+  let controlInput = storyPage.argsTable.getLocatorForControlInput("bool");
   await controlInput.click();
   expectedConfig.bool = false;
   expectedControls.bool = false;
@@ -213,7 +213,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // change root string control
-  controlInput = storyPage.getLocatorForControlInput("string");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("string");
   await controlInput.fill("new string");
   expectedConfig.string = "new string";
   expectedControls.string = "new string";
@@ -223,7 +223,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // change root number control
-  controlInput = storyPage.getLocatorForControlInput("number");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("number");
   await controlInput.fill("905");
   expectedConfig.number = 905;
   expectedControls.number = 905;
@@ -233,7 +233,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // uncheck deeply nested boolean control
-  controlInput = storyPage.getLocatorForControlInput("nested.nested.bool");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("nested.nested.bool");
   await controlInput.click();
   expectedConfig.nested.nested.bool = false;
   expectedControls["nested.nested.bool"] = false;
@@ -243,7 +243,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested string control
-  controlInput = storyPage.getLocatorForControlInput("nested.nested.string");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("nested.nested.string");
   await controlInput.fill("new deeply nested string");
   expectedConfig.nested.nested.string = "new deeply nested string";
   expectedControls["nested.nested.string"] = "new deeply nested string";
@@ -253,7 +253,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested number control
-  controlInput = storyPage.getLocatorForControlInput("nested.nested.number");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("nested.nested.number");
   await controlInput.fill("-99");
   expectedConfig.nested.nested.number = -99;
   expectedControls["nested.nested.number"] = -99;
@@ -263,7 +263,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested number control with infinity value (make sure we can restore this)
-  controlInput = storyPage.getLocatorForControlInput("nested.nested.infinity");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("nested.nested.infinity");
   await controlInput.fill("-42");
   expectedConfig.nested.nested.infinity = -42;
   expectedControls["nested.nested.infinity"] = -42;
@@ -273,7 +273,7 @@ test("supports resetting controls", async ({page}) => {
   await storyPage.assert.controlsMatch(expectedControls);
 
   // change deeply nested number control with NaN value (make sure we can restore this)
-  controlInput = storyPage.getLocatorForControlInput("nested.nested.NaNValue");
+  controlInput = storyPage.argsTable.getLocatorForControlInput("nested.nested.NaNValue");
   await controlInput.fill("-82");
   expectedConfig.nested.nested.NaNValue = -82;
   expectedControls["nested.nested.NaNValue"] = -82;
@@ -295,7 +295,7 @@ test("supports customising existing property control with initial primitive valu
   page,
 }) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--with-custom-controls");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-custom-controls");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.controlsMatch({
@@ -319,7 +319,7 @@ test("supports customising existing property control with initial primitive valu
 // also tests it handles objects with non-existing properties partially defined by argTypes
 test("supports customising non-existing property control without initial value", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById(
+  await storybookPage.action.openStoriesTreeItemById("story",
     "stories-dev--with-custom-controls-for-non-existing-property",
   );
 
@@ -345,7 +345,7 @@ test("supports customising non-existing property control without initial value",
 
 test("supports control matchers", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--with-control-matchers");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-control-matchers");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.controlsMatch({
@@ -368,7 +368,7 @@ test("supports control matchers", async ({page}) => {
 
 test("shows empty object and array controls", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--with-empty-initial-args");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-empty-initial-args");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.controlsMatch({
@@ -384,7 +384,7 @@ test("shows empty object and array controls", async ({page}) => {
 
 test("handles object arg value overridden by argType", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
-  await storybookPage.action.clickStoryById("stories-dev--with-overridden-object-arg");
+  await storybookPage.action.openStoriesTreeItemById("story", "stories-dev--with-overridden-object-arg");
 
   const storyPage = storybookPage.activeStoryPage;
   await storyPage.assert.controlsMatch({
