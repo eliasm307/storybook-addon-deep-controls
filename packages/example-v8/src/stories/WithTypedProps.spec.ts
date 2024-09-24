@@ -13,7 +13,9 @@ test.beforeEach(async ({page}) => {
 test("shows default controls when initial values are not defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--default-enabled");
-  await storybookPage.assert.controlsMatch({
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.assert.controlsMatch({
     someString: {
       type: "set-value-button",
       valueType: "string",
@@ -27,13 +29,15 @@ test("shows default controls when initial values are not defined", async ({page}
       valueType: "object",
     },
   });
-  await storybookPage.assert.actualConfigMatches({});
+  await storyPage.assert.actualConfigMatches({});
 });
 
 test("shows deep controls when initial values are defined", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--with-args");
-  await storybookPage.assert.controlsMatch({
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.assert.controlsMatch({
     someString: {
       type: "set-value-button",
       valueType: "string",
@@ -46,7 +50,7 @@ test("shows deep controls when initial values are defined", async ({page}) => {
     },
   });
 
-  await storybookPage.assert.actualConfigMatches({
+  await storyPage.assert.actualConfigMatches({
     someArray: ["string1", "string2"],
     someObject: {
       anyString: "anyString",
@@ -58,7 +62,9 @@ test("shows deep controls when initial values are defined", async ({page}) => {
 test("supports customising controls with initial values", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withtypedprops--with-custom-controls");
-  await storybookPage.assert.controlsMatch({
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.assert.controlsMatch({
     someString: {
       type: "radio",
       options: ["string1", "string2", "string3"],
@@ -77,7 +83,7 @@ test("supports customising controls with initial values", async ({page}) => {
   });
 
   // initial value not affected by custom controls
-  await storybookPage.assert.actualConfigMatches({
+  await storyPage.assert.actualConfigMatches({
     someArray: ["string1", "string2"],
     someObject: {
       anyString: "anyString",

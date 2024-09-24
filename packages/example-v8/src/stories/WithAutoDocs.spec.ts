@@ -13,7 +13,9 @@ test.beforeEach(async ({page}) => {
 test("shows story with merged arg types correctly", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withautodocs--with-merged-arg-types");
-  await storybookPage.assert.controlsMatch({
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.assert.controlsMatch({
     "object.requiredNumberProp": {
       type: "number",
       value: 5,
@@ -21,7 +23,7 @@ test("shows story with merged arg types correctly", async ({page}) => {
     },
     "object.booleanPropWithCustomDescription": true,
   });
-  await storybookPage.assert.actualConfigMatches({
+  await storyPage.assert.actualConfigMatches({
     object: {
       booleanPropWithCustomDescription: true,
       requiredNumberProp: 5,
@@ -32,7 +34,9 @@ test("shows story with merged arg types correctly", async ({page}) => {
 test("shows docs page with merged arg types correctly", async ({page}) => {
   const storybookPage = new StorybookPageObject(page);
   await storybookPage.action.clickStoryById("stories-withautodocs--with-merged-arg-types");
-  await storybookPage.assert.controlsMatch({
+
+  const storyPage = storybookPage.activeStoryPage;
+  await storyPage.assert.controlsMatch({
     "object.requiredNumberProp": {
       type: "number",
       value: 5,
@@ -40,7 +44,7 @@ test("shows docs page with merged arg types correctly", async ({page}) => {
     },
     "object.booleanPropWithCustomDescription": true,
   });
-  await storybookPage.assert.actualConfigMatches({
+  await storyPage.assert.actualConfigMatches({
     object: {
       booleanPropWithCustomDescription: true,
       requiredNumberProp: 5,
