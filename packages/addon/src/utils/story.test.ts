@@ -395,6 +395,40 @@ describe("Story utils", function () {
       );
     });
 
+    it("shows empty objects", () => {
+      assert.deepStrictEqual(
+        createFlattenedArgTypes({
+          initialArgs: {
+            emptyObj: {},
+          },
+          parameters: {deepControls: {}},
+        }),
+        {
+          emptyObj: {
+            name: "emptyObj",
+            control: {type: "object"},
+          },
+        },
+      );
+    });
+
+    it("shows empty arrays", () => {
+      assert.deepStrictEqual(
+        createFlattenedArgTypes({
+          initialArgs: {
+            emptyArray: [],
+          },
+          parameters: {deepControls: {}},
+        }),
+        {
+          emptyArray: {
+            name: "emptyArray",
+            control: {type: "object"},
+          },
+        },
+      );
+    });
+
     it("does not mutate the input object when creating output with new argTypes", function () {
       function createOriginalContext(): DeepControlsStorybookContext {
         return {
@@ -814,7 +848,7 @@ describe("Story utils", function () {
               control: "object",
               type: {
                 name: "object",
-                value: {}, // NOTE: tests it can keep empty objects
+                value: {}, // NOTE: tests it can keep empty objects properties
               },
             },
             // NOTE: still flattens other deep values without custom argTypes

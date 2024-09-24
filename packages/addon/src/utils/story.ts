@@ -271,7 +271,7 @@ function createFlattenedValueArgType(
     return matcherArgType;
   }
 
-  if (Array.isArray(argValue)) {
+  if (Array.isArray(argValue) || (isPojo(argValue) && !Object.keys(argValue).length)) {
     return createObjectArgType(argPath);
   }
 
