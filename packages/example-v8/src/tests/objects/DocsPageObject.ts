@@ -1,5 +1,3 @@
-// todo move objects to objects folder
-
 import {expect, type Page} from "playwright/test";
 import type {ControlExpectation} from "../types";
 import {StorybookArgsTableObject} from "./ArgsTableObject";

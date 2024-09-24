@@ -1,6 +1,6 @@
 import type {Locator} from "playwright/test";
 
-export type BaseControlExpectation = {
+export type GeneralControlRowExpectation = {
   isRequired?: boolean;
   descriptionLines?: string[];
 };
@@ -18,38 +18,38 @@ export type ControlExpectation =
   | number
   | boolean;
 
-export type BooleanControlExpectation = BaseControlExpectation & {
+export type BooleanControlExpectation = GeneralControlRowExpectation & {
   type: "boolean";
   value: boolean;
 };
 
-export type StringControlExpectation = BaseControlExpectation & {
+export type StringControlExpectation = GeneralControlRowExpectation & {
   type: "string";
   value: string;
 };
 
-export type NumberControlExpectation = BaseControlExpectation & {
+export type NumberControlExpectation = GeneralControlRowExpectation & {
   type: "number";
   value: number;
 };
 
-export type SetValueButtonControlExpectation = BaseControlExpectation & {
+export type SetValueButtonControlExpectation = GeneralControlRowExpectation & {
   type: "set-value-button";
   valueType: "string" | "object";
 };
 
-export type RadioControlExpectation = BaseControlExpectation & {
+export type RadioControlExpectation = GeneralControlRowExpectation & {
   type: "radio";
   options: string[];
   value: string | null;
 };
 
-export type ColorControlExpectation = BaseControlExpectation & {
+export type ColorControlExpectation = GeneralControlRowExpectation & {
   type: "color";
   value: string;
 };
 
-export type JsonControlExpectation = BaseControlExpectation & {
+export type JsonControlExpectation = GeneralControlRowExpectation & {
   /**
    * @remark control cant be parsed as its string value is not valid JSON
    */

@@ -1,9 +1,9 @@
 import {expect, type Locator} from "playwright/test";
 import type {
-  BaseControlExpectation,
   BooleanControlExpectation,
   ControlDetails,
   ControlExpectation,
+  GeneralControlRowExpectation,
   NumberControlExpectation,
   StringControlExpectation,
 } from "../types";
@@ -168,7 +168,7 @@ class Assertions {
     await this.assertRow(control, expected);
   }
 
-  private async assertRow(control: ControlDetails, expected: BaseControlExpectation) {
+  private async assertRow(control: ControlDetails, expected: GeneralControlRowExpectation) {
     // assert is required
     const requiredMarkerLocator = control.rowLocator.locator("td span[title=Required]");
     const isRequiredMarkerVisible = await requiredMarkerLocator.isVisible();
@@ -176,7 +176,7 @@ class Assertions {
       expected.isRequired ?? false,
     );
 
-    if (typeof expected.descriptionLines) {
+    if (expected.descriptionLines) {
       if (typeof this.config.descriptionColumnIndex !== "number") {
         throw new Error("Cant assert description because column index is not defined");
       }

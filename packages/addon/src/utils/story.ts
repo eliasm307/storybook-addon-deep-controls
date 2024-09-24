@@ -289,7 +289,6 @@ function createFlattenedValueArgType(
  * @note This overwrites properties in the target argType with the source argType
  */
 // todo test it overwrites arrays completely instead of specific elements
-// todo test it supports overwriting generated argType properties
 function mergeArgTypes(
   target: PartialStrictInputType | undefined,
   overrides: PartialStrictInputType | undefined,

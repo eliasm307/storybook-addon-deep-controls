@@ -26,11 +26,7 @@ const preview: ProjectAnnotations<Renderer> = {
       if (!context.parameters.deepControls?.enabled) {
         return context.argTypes;
       }
-      // todo revert
-      debugger;
-      const flattenedArgTypes = createFlattenedArgTypes(context) as StrictArgTypes;
-      console.log("flattenedArgTypes", flattenedArgTypes);
-      return flattenedArgTypes;
+      return createFlattenedArgTypes(context) as StrictArgTypes;
     },
   ],
 

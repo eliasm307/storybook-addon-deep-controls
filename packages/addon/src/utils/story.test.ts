@@ -715,8 +715,7 @@ describe("Story utils", function () {
     // todo there is some test duplication here, could be refactored
     describe("merging/overriding generated flattened argTypes with custom argTypes", function () {
       // NOTE: doesn't test the following as there aren't any properties that are auto generated that can be merged
-      // test it doesn't overwrite existing properties
-      // test it overwrites arrays entirely instead of specific items
+      // todo test it overwrites arrays entirely instead of specific items
 
       it("supports overriding existing properties", () => {
         assert.deepStrictEqual(
