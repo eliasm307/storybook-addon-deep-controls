@@ -131,6 +131,39 @@ Which produces the following:
 
 See interactive [example here](https://storybook-addon-deep-controls-example.netlify.app/?path=/story/stories-dev--with-custom-controls).
 
+### Documentation
+
+The custom argTypes you provide are merged with the inferred argTypes from the `args` object, so you can add documentation or other properties to the argTypes for the deep properties, e.g.
+
+```ts
+export default {
+  ...
+  args: {
+    object: {
+      booleanPropWithCustomDescription: true,
+      requiredNumberProp: 5,
+    },
+  },
+  argTypes: {
+    "object.booleanPropWithCustomDescription": {
+      description: "Custom description",
+    },
+    "object.requiredNumberProp": {
+      type: {required: true},
+    },
+  },
+  ...
+}
+```
+
+Which produces the following docs page:
+
+![Example with customised docs page](https://raw.githubusercontent.com/eliasm307/storybook-addon-deep-controls/HEAD/public/media/example-with-customised-docs.png)
+
+See an interactive [example here](https://storybook-addon-deep-controls-example.netlify.app/?path=/story/stories-withautodocs--docs).
+
+**NOTE**: To avoid type errors when partially defining argTypes for documentation, you can use the `TypeWithDeepControls` utility type from this addon, see the Typescript section below.
+
 ### Control Type Matchers
 
 The `@storybook/addon-controls` addon supports selecting specific controls based on the name of properties, ie [control type matchers](https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers).
@@ -140,7 +173,7 @@ This behaviour is also supported with this addon and it only matches on the prop
 For example, if you have a story defined as follows, ie with a custom matcher that uses `color` controls for arg properties that contain the word "color":
 
 ```js
-export const WithControlMatchers: TypeWithDeepControls<Story> = {
+export const WithControlMatchers = {
   parameters: {
     controls: {
       matchers: {

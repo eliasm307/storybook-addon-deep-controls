@@ -32,11 +32,4 @@ export default meta;
 
 type Story = TypeWithDeepControls<StoryObj<typeof meta>>;
 
-export const WithMergedArgTypes: Story = {
-  // args: {
-  //   object: {
-  //     propWithCustomDescription: true,
-  //     propWithRequiredType: true,
-  //   },
-  // },
-};
+export const WithMergedArgTypes: Story = {};
