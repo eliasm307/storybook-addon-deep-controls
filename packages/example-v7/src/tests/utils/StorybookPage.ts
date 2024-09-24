@@ -142,7 +142,6 @@ function getEquivalentValueForInput(rawValue: unknown): string {
       return String(rawValue);
     }
 
-    // eslint-disable-next-line no-fallthrough
     default: {
       return String(rawValue);
     }
