@@ -22,6 +22,7 @@
     "dist/preview.js",
     "preset.js",
     "register.js",
+    "preview.js",
     "index.d.ts"
   ],
   "main": "index.js",
