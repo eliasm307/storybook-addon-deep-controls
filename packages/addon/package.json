@@ -28,6 +28,23 @@
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./index.mjs",
+      "types": "./index.d.ts"
+    },
+    "./preset.js": {
+      "default": "./preset.js"
+    },
+    "./register.js": {
+      "default": "./register.js"
+    },
+    "./preview.js": {
+      "require": "./preview.js",
+      "import": "./preview.mjs"
+    }
+  },
   "scripts": {
     "prepare": "npm run build",
     "build": "tsc -p tsconfig.build.json",
