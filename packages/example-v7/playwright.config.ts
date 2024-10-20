@@ -1,4 +1,5 @@
 import {defineConfig, devices} from "@playwright/test";
+import {STORYBOOK_V7_PORT} from "./src/tests/utils/constants";
 
 /**
  * Read environment variables from file.
@@ -69,10 +70,11 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  /** @see https://playwright.dev/docs/api/class-testconfig#test-config-web-server */
+  webServer: {
+    command: "npm run storybook",
+    url: `http://localhost:${STORYBOOK_V7_PORT}/`,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
 });

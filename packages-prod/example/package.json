@@ -11,6 +11,6 @@
     "hoistingLimits": "workspaces"
   },
   "dependencies": {
-    "storybook-addon-deep-controls": "^0.7.0"
+    "storybook-addon-deep-controls": "^0.8.1"
   }
 }
