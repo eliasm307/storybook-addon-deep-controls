@@ -1,4 +1,4 @@
-import {stringify} from "../../../../packages/addon/src/utils/general";
+import {stringify} from "@storybook-addon-deep-controls/common-internal";
 
 export function Dev(config: object) {
   return (

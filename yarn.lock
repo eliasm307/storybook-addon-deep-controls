@@ -6628,6 +6628,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook-addon-deep-controls/common-internal@workspace:*, @storybook-addon-deep-controls/common-internal@workspace:packages/common":
+  version: 0.0.0-use.local
+  resolution: "@storybook-addon-deep-controls/common-internal@workspace:packages/common"
+  languageName: unknown
+  linkType: soft
+
 "@storybook/addon-actions@npm:7.6.20":
   version: 7.6.20
   resolution: "@storybook/addon-actions@npm:7.6.20"
@@ -23822,6 +23828,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls-example-v8@workspace:packages/example-v8"
   dependencies:
+    "@storybook-addon-deep-controls/common-internal": "workspace:*"
     "@storybook/addon-essentials": 8.2.8
     "@storybook/nextjs": 8.2.8
     "@storybook/react": 8.2.8
@@ -23836,6 +23843,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls-example@workspace:packages/example-v7"
   dependencies:
+    "@storybook-addon-deep-controls/common-internal": "workspace:*"
     "@storybook/addon-essentials": 7.6.20
     "@storybook/nextjs": 7.6.20
     "@storybook/react": 7.6.20

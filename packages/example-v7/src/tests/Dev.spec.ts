@@ -1,12 +1,13 @@
 import {test} from "@playwright/test";
-import StorybookPageObject from "./utils/StorybookPage";
 import {clone, localHostPortIsInUse} from "./utils";
+import StorybookPageObject from "./utils/StorybookPage";
+import {STORYBOOK_V7_PORT} from "./utils/constants";
 
 test.beforeAll(async () => {
-  const isStorybookRunning = await localHostPortIsInUse(6006);
+  const isStorybookRunning = await localHostPortIsInUse(STORYBOOK_V7_PORT);
   if (!isStorybookRunning) {
     throw new Error(
-      "Storybook is not running (expected on localhost:6006), please run `npm run storybook` in a separate terminal",
+      `Storybook is not running (expected on localhost:${STORYBOOK_V7_PORT}), please run 'npm run storybook' in a separate terminal`,
     );
   }
 });
