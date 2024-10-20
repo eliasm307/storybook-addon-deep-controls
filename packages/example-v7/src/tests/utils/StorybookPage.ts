@@ -1,5 +1,6 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
+import {STORYBOOK_V7_PORT} from "./constants";
 
 type ControlExpectation =
   | string
@@ -158,7 +159,7 @@ export default class StorybookPageObject {
   constructor(public page: Page) {}
 
   async openPage() {
-    const STORYBOOK_URL = "http://localhost:6006/?path=/story/stories-dev--enabled";
+    const STORYBOOK_URL = `http://localhost:${STORYBOOK_V7_PORT}/?path=/story/stories-dev--enabled`;
     await this.page.goto(STORYBOOK_URL);
     await this.page.waitForSelector(this.PREVIEW_IFRAME_SELECTOR, {state: "visible"});
   }
