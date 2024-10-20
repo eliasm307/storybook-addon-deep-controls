@@ -15,6 +15,7 @@
     "deploy": "Need to run deploy locally as netlify cant handle symlinks in .github folder"
   },
   "devDependencies": {
+    "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/addon-essentials": "8.2.8",
     "@storybook/nextjs": "8.2.8",
     "@storybook/react": "8.2.8",

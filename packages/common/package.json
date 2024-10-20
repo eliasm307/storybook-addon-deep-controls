@@ -1,0 +1,6 @@
+{
+  "name": "@storybook-addon-deep-controls/common-internal",
+  "private": true,
+  "main": "src/index.ts",
+  "module": "src/index.ts"
+}
