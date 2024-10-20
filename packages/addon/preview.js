@@ -1,1 +1,1 @@
-export * from "./dist/preview";
+module.exports = require("./dist/preview");
