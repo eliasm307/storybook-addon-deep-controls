@@ -34,13 +34,13 @@
       "import": "./index.mjs",
       "types": "./index.d.ts"
     },
-    "./preset.js": {
+    "./preset": {
       "default": "./preset.js"
     },
-    "./register.js": {
+    "./register": {
       "default": "./register.js"
     },
-    "./preview.js": {
+    "./preview": {
       "require": "./preview.js",
       "import": "./preview.mjs"
     }
