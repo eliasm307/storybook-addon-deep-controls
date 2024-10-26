@@ -1,1 +1,1 @@
-export * from "./dist/preview";
+export { default } from './dist/preview';
