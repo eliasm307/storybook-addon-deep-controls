@@ -37,8 +37,9 @@
     "./preset.js": {
       "default": "./preset.js"
     },
-    "./preview.js": {
-      "require": "./preview.js"
+    "./preview": {
+      "require": "./preview.js",
+      "import": "./preview.mjs"
     }
   },
   "scripts": {
