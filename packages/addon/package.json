@@ -37,9 +37,6 @@
     "./preset.js": {
       "default": "./preset.js"
     },
-    "./register.js": {
-      "default": "./register.js"
-    },
     "./preview.js": {
       "require": "./preview.js"
     }
