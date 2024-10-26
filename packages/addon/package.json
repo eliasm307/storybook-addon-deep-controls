@@ -34,6 +34,9 @@
       "import": "./index.mjs",
       "types": "./index.d.ts"
     },
+    "./preset": {
+      "default": "./preset.js"
+    },
     "./preset.js": {
       "default": "./preset.js"
     },

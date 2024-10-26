@@ -1,1 +1,3 @@
-export { default } from './dist/preview';
+import preview from "./dist/preview";
+
+export default preview;
