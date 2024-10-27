@@ -21,6 +21,7 @@
     "dist/utils/",
     "dist/preview.js",
     "preset.js",
+    "register.js",
     "preview.js",
     "preview.mjs",
     "index.d.ts"
@@ -39,6 +40,10 @@
     },
     "./preset.js": {
       "default": "./preset.js"
+    },
+    "./register.js": {
+      "require": "./register.js",
+      "import": "./register.mjs"
     },
     "./preview": {
       "require": "./preview.js",
