@@ -9,13 +9,6 @@ const meta = {
       enabled: true,
     },
   },
-  argTypes: {
-    "deep.bool": {
-      control: "boolean",
-    },
-    // @ts-expect-error [values are typed]
-    foo: 1,
-  },
 } satisfies TypeWithDeepControls<Meta<typeof Basic>>;
 
 export default meta;
@@ -36,4 +29,14 @@ export const Enabled: Story = {
     // @ts-expect-error [values are typed]
     foo: 1,
   },
+};
+
+export const WithoutInitialArgTypes: Story = {
+  args: {
+    deep: {
+      bool: true,
+    },
+    num: 1,
+  },
+  argTypes: {},
 };

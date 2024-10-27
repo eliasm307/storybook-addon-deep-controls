@@ -1,3 +1,2 @@
-import preview from "./dist/preview";
-
-export default preview;
+// eslint-disable-next-line no-restricted-exports
+export {default} from "./dist/preview";
