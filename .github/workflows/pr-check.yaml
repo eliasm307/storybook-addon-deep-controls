@@ -11,7 +11,7 @@ on:
 jobs:
   # NOTE: its faster to run everything in one job for now rather than parallel jobs,
   # where the overhead of starting a new job and installing deps etc is not worth it
-  install:
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
