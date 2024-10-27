@@ -9,6 +9,8 @@ on:
   merge_group:
 
 jobs:
+  # NOTE: its faster to run everything in one job for now rather than parallel jobs,
+  # where the overhead of starting a new job and installing deps etc is not worth it
   install:
     runs-on: ubuntu-latest
     steps:
@@ -23,47 +25,8 @@ jobs:
           cache: "yarn"
 
       - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      # see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows
-      # - name: Cache node_modules
-      #   uses: actions/cache@v3
-      #   id: cache-node-modules
-      #   with:
-      #     path: |
-      #       node_modules
-      #       packages/common/node_modules
-      #       packages/addon/node_modules
-      #       packages/example-v7/node_modules
-      #       packages/example-v8/node_modules
-      #     key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Get installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version)" >> $GITHUB_ENV
-
-      # todo move this to separate job
-      # see https://dev.to/ayomiku222/how-to-cache-playwright-browser-on-github-actions-51o6
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-
-      # see https://playwright.dev/docs/ci-intro
-      - name: Install Playwright Browsers
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-  # NOTE: its faster for these quick tasks to run in one job rather than parallel jobs,
-  # where the overhead of starting a new job and installing deps etc is not worth it
-  quick-checks:
-    # see https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
 
@@ -75,7 +38,6 @@ jobs:
           cache: "yarn"
 
       - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
       - name: Run lint
@@ -90,58 +52,25 @@ jobs:
       - name: Run addon unit tests
         run: npm run --prefix packages/addon test
 
-  test-e2e-v7:
-    needs: quick-checks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version)" >> $GITHUB_ENV
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-          cache: "yarn"
-
-      - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
-
-      - name: Restore Playwright binaries from cache
+      # see https://dev.to/ayomiku222/how-to-cache-playwright-browser-on-github-actions-51o6
+      - name: Cache Playwright binaries
         uses: actions/cache@v3
+        id: cache-playwright
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-          restore-keys: ${{ runner.os }}-playwright-
 
-      - name: Run Storybook e2e tests
+      # see https://playwright.dev/docs/ci-intro
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Run Storybook V7 e2e tests
         run: npm run --prefix packages/example-v7 test
 
-  test-e2e-v8:
-    needs: quick-checks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-          cache: "yarn"
-
-      - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
-
-      - name: Restore Playwright binaries from cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-          restore-keys: ${{ runner.os }}-playwright-
-
-      - name: Run Storybook e2e tests
+      - name: Run Storybook V8 e2e tests
         run: npm run --prefix packages/example-v8 test
