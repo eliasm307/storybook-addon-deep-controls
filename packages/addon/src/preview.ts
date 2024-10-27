@@ -8,11 +8,10 @@ const preview: ProjectAnnotations<Renderer> = {
      * If enabled, adds initial args to fit the flattened controls
      */
     (context) => {
-      debugger;
       if (!context.parameters.deepControls?.enabled) {
         return context.initialArgs;
       }
-      console.log("argsEnhancer", context.initialArgs);
+
       return createFlattenedArgs(context);
     },
   ],
@@ -25,14 +24,10 @@ const preview: ProjectAnnotations<Renderer> = {
      * @remark Storybook still adds in the un-flattened args but these should be ignored
      */
     (context) => {
-      debugger;
       if (!context.parameters.deepControls?.enabled) {
         return context.argTypes;
       }
-      console.log("argTypesEnhancer", {
-        argTypes: context.argTypes,
-        initialArgs: context.initialArgs,
-      });
+
       return createFlattenedArgTypes(context) as StrictArgTypes;
     },
   ],
@@ -43,7 +38,6 @@ const preview: ProjectAnnotations<Renderer> = {
      * before passing them to the story component
      */
     (storyFn, context) => {
-      debugger;
       if (!context.parameters.deepControls?.enabled) {
         return storyFn(context);
       }
