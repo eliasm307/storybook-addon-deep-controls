@@ -1,6 +1,7 @@
 import type {StrictInputType} from "@storybook/types";
 import {assert, describe, expect, it} from "vitest";
 import type {
+  DeepControlsArgTypesMap,
   DeepControlsInternalState,
   InternalDeepControlsAddonParameters,
   InternalDeepControlsStorybookContext,
@@ -269,7 +270,6 @@ describe("Story utils", function () {
 
     // NOTE: Storybook can call argsEnhancers multiple times for the same story, so this tests that the behavior is consistent
     it("keeps objects that are overridden by user-defined argTypes, if flattened multiple times", function () {
-      // assume params can maintain state, so we provide the same object each time
       const deepControlsParameters: InternalDeepControlsAddonParameters = {
         [INTERNAL_STATE_SYMBOL]: createInternalState({
           userDefinedArgTypes: {
@@ -568,36 +568,22 @@ describe("Story utils", function () {
     // NOTE: Storybook can call argTypesEnhancers multiple times for the same story
     describe("multiple calls support", () => {
       // NOTE: should not provide a value for USER_DEFINED_ARG_TYPE_NAMES_SYMBOL before tests
+      // NOTE: assume params can maintain state, so provide the same object each time in tests
 
-      it("can flatten without user defined argTypes", function () {
-        // assume params can maintain state, so we provide the same object each time
-        const deepControlsParameters: InternalDeepControlsAddonParameters = {};
+      // assume no state is stored on initialArgs, so we provide a fresh object each time
+      function createInitialArgs() {
+        return {
+          nested: {
+            bool: true,
+            string: "string",
+          },
+        };
+      }
 
-        // assume no state is stored on initialArgs, so we provide a fresh object each time
-        function createInitialArgs() {
-          return {
-            nested: {
-              bool: true,
-              string: "string",
-            },
-          };
-        }
-
-        const argTypesAfterCall1 = createFlattenedArgTypes({
-          id: "test-story",
-          initialArgs: createInitialArgs(),
-          argTypes: {}, // no user defined argTypes
-          parameters: {deepControls: deepControlsParameters},
-        });
-
-        const argTypesAfterCall2 = createFlattenedArgTypes({
-          id: "test-story",
-          initialArgs: createInitialArgs(),
-          argTypes: argTypesAfterCall1,
-          parameters: {deepControls: deepControlsParameters},
-        });
-
-        assert.deepStrictEqual(argTypesAfterCall2, {
+      function createExpectedArgTypes(
+        config: DeepControlsArgTypesMap = {},
+      ): DeepControlsArgTypesMap {
+        return {
           nested: {
             name: "nested",
             table: {disable: true},
@@ -614,7 +600,161 @@ describe("Story utils", function () {
             name: "nested.string",
             type: {name: "string"},
           },
+          ...config,
+        };
+      }
+
+      it("flattens without user defined argTypes if story ids are different", function () {
+        const deepControlsParameters: InternalDeepControlsAddonParameters = {
+          [INTERNAL_STATE_SYMBOL]: createInternalState({
+            forStoryId: "test-story1",
+          }),
+        };
+
+        const actual = createFlattenedArgTypes({
+          id: "test-story2", // different story id
+          initialArgs: createInitialArgs(),
+          argTypes: {},
+          parameters: {
+            deepControls: deepControlsParameters,
+          },
         });
+
+        assert.deepStrictEqual(actual, createExpectedArgTypes());
+
+        // no user defined argTypes
+        assert.deepStrictEqual(deepControlsParameters[INTERNAL_STATE_SYMBOL], {
+          forStoryId: "test-story2", // state updated
+          userDefinedArgTypes: {},
+        });
+      });
+
+      it("does not flatten without user defined argTypes if story ids are the same", function () {
+        const deepControlsParameters: InternalDeepControlsAddonParameters = {
+          [INTERNAL_STATE_SYMBOL]: createInternalState({
+            forStoryId: "test-story1",
+          }),
+        };
+
+        const actual = createFlattenedArgTypes({
+          id: "test-story1",
+          initialArgs: createInitialArgs(),
+          argTypes: {},
+          parameters: {
+            deepControls: deepControlsParameters,
+          },
+        });
+
+        assert.deepStrictEqual(actual, {});
+
+        // no user defined argTypes
+        assert.deepStrictEqual(deepControlsParameters[INTERNAL_STATE_SYMBOL], {
+          forStoryId: "test-story1",
+          userDefinedArgTypes: {},
+        });
+      });
+
+      it("flattens with user defined argTypes if story ids are different", function () {
+        const deepControlsParameters: InternalDeepControlsAddonParameters = {
+          [INTERNAL_STATE_SYMBOL]: createInternalState({
+            forStoryId: "test-story1",
+          }),
+        };
+
+        const actual = createFlattenedArgTypes({
+          id: "test-story2", // different story id
+          initialArgs: createInitialArgs(),
+          argTypes: {
+            "nested.bool": {
+              description: "Custom description",
+              control: {type: "boolean"},
+            },
+          },
+          parameters: {
+            deepControls: deepControlsParameters,
+          },
+        });
+
+        assert.deepStrictEqual(
+          actual,
+          createExpectedArgTypes({
+            // just bool has user defined type
+            "nested.bool": {
+              description: "Custom description", // with custom description
+              control: {type: "boolean"},
+              name: "nested.bool",
+              type: {name: "boolean"},
+            },
+          }),
+        );
+
+        // no user defined argTypes
+        assert.deepStrictEqual(deepControlsParameters[INTERNAL_STATE_SYMBOL], {
+          forStoryId: "test-story2", // state updated
+          userDefinedArgTypes: {
+            // raw user argType stored
+            "nested.bool": {
+              description: "Custom description",
+              control: {type: "boolean"},
+            },
+          },
+        });
+      });
+
+      it("does not flatten with user defined argTypes if story ids are the same", function () {
+        const deepControlsParameters: InternalDeepControlsAddonParameters = {
+          [INTERNAL_STATE_SYMBOL]: createInternalState({
+            forStoryId: "test-story1",
+          }),
+        };
+
+        const actual = createFlattenedArgTypes({
+          id: "test-story1",
+          initialArgs: createInitialArgs(),
+          argTypes: {
+            "nested.bool": {
+              description: "Custom description",
+              control: {type: "boolean"},
+            },
+          },
+          parameters: {
+            deepControls: deepControlsParameters,
+          },
+        });
+
+        assert.deepStrictEqual(actual, {
+          // just bool has user defined type
+          "nested.bool": {
+            description: "Custom description", // with custom description
+            control: {type: "boolean"},
+          },
+        });
+
+        // no user defined argTypes
+        assert.deepStrictEqual(deepControlsParameters[INTERNAL_STATE_SYMBOL], {
+          forStoryId: "test-story1",
+          userDefinedArgTypes: {},
+        });
+      });
+
+      it("handles multiple calls for the same story, without user defined argTypes", function () {
+        const deepControlsParameters: InternalDeepControlsAddonParameters = {}; // ie initial state before any story is loaded
+
+        const argTypesAfterCall1 = createFlattenedArgTypes({
+          id: "test-story",
+          initialArgs: createInitialArgs(),
+          argTypes: {}, // no user defined argTypes
+          parameters: {deepControls: deepControlsParameters},
+        });
+
+        const argTypesAfterCall2 = createFlattenedArgTypes({
+          id: "test-story",
+          initialArgs: createInitialArgs(),
+          argTypes: argTypesAfterCall1,
+          parameters: {deepControls: deepControlsParameters},
+        });
+
+        assert.deepStrictEqual(argTypesAfterCall2, createExpectedArgTypes());
 
         // no user defined argTypes
         assert.deepStrictEqual(deepControlsParameters[INTERNAL_STATE_SYMBOL], {
@@ -623,19 +763,8 @@ describe("Story utils", function () {
         });
       });
 
-      it("can flatten with user defined argTypes", function () {
-        // assume params can maintain state, so we provide the same object each time
-        const deepControlsParameters: InternalDeepControlsAddonParameters = {};
-
-        // assume no state is stored on initialArgs, so we provide a fresh object each time
-        function createInitialArgs() {
-          return {
-            nested: {
-              bool: true,
-              string: "string",
-            },
-          };
-        }
+      it("handles multiple calls for the same story, with user defined argTypes", function () {
+        const deepControlsParameters: InternalDeepControlsAddonParameters = {}; // ie initial state before any story is loaded
 
         const argTypesAfterCall1 = createFlattenedArgTypes({
           id: "test-story",
@@ -656,30 +785,23 @@ describe("Story utils", function () {
           parameters: {deepControls: deepControlsParameters},
         });
 
-        assert.deepStrictEqual(argTypesAfterCall2, {
-          nested: {
-            name: "nested",
-            table: {disable: true},
-          },
-          // bool should have the user defined argType
-          "nested.bool": {
-            description: "Custom description",
-            control: {type: "boolean"},
-            name: "nested.bool",
-            type: {name: "boolean"},
-          },
-          // string is inferred as normal
-          "nested.string": {
-            control: {type: "text"},
-            name: "nested.string",
-            type: {name: "string"},
-          },
-        });
+        assert.deepStrictEqual(
+          argTypesAfterCall2,
+          createExpectedArgTypes({
+            // bool should have the user defined argType
+            "nested.bool": {
+              description: "Custom description",
+              control: {type: "boolean"},
+              name: "nested.bool",
+              type: {name: "boolean"},
+            },
+          }),
+        );
 
         assert.deepStrictEqual(deepControlsParameters[INTERNAL_STATE_SYMBOL], {
           forStoryId: "test-story",
           userDefinedArgTypes: {
-            // only nested bool is custom
+            // raw user argType stored
             "nested.bool": {
               control: {type: "boolean"},
               description: "Custom description",
