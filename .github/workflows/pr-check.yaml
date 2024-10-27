@@ -55,19 +55,19 @@ jobs:
     needs: [install, lint, type-check, format-check]
     runs-on: ubuntu-latest
     steps:
-      - name: Run Storybook e2e tests
-        run: npm run --cwd packages/example-v7 test
+      - name: Run addon unit tests
+        run: npm run --prefix packages/addon test
 
   test-e2e-v7:
     needs: test-unit
     runs-on: ubuntu-latest
     steps:
       - name: Run Storybook e2e tests
-        run: npm run --cwd packages/example-v7 test
+        run: npm run --prefix packages/example-v7 test
 
   test-e2e-v8:
     needs: test-unit
     runs-on: ubuntu-latest
     steps:
       - name: Run Storybook e2e tests
-        run: npm run --cwd packages/example-v8 test
+        run: npm run --prefix packages/example-v8 test
