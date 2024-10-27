@@ -3,9 +3,13 @@ import type {DeepControlsAddonParameters, PartialStrictInputType} from "../..";
 import {isPojo, setProperty} from "./general";
 
 /** @internal */
-export const USER_DEFINED_ARG_TYPE_NAMES_SYMBOL = Symbol("userDefinedArgTypeNames");
+export const INTERNAL_STATE_SYMBOL = Symbol("deepControlsInternalState");
 
-export type DeepControlsStorybookContext = Pick<StoryContextForEnhancers, "initialArgs"> & {
+/** @internal */
+export type InternalDeepControlsStorybookContext = Pick<
+  StoryContextForEnhancers,
+  "initialArgs" | "id"
+> & {
   argTypes?: DeepControlsArgTypesMap;
   parameters: {
     docs?: unknown;
@@ -15,19 +19,39 @@ export type DeepControlsStorybookContext = Pick<StoryContextForEnhancers, "initi
     };
     // NOTE: this needs to be defined for the addon to be enabled, so we can assume it will be defined
     // but type needs to be optional for compatibility
-    deepControls?: DeepControlsAddonParameters & {
-      /**
-       * Contains the argTypes that the user has defined, excludes the ones that were likely generated
-       * e.g. by the docs addon or by us
-       *
-       * @remark This is set in the ArgTypeEnhancer because it runs first and receives the original argTypes,
-       * then this will be available in the ArgsEnhancer which runs after it
-       */
-      [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]?: DeepControlsArgTypesMap;
-    };
+    deepControls?: InternalDeepControlsAddonParameters;
   };
 };
 
+/** @internal */
+export type InternalDeepControlsAddonParameters = DeepControlsAddonParameters & {
+  /**
+   * @note This is set in the ArgTypeEnhancer because it runs first and receives the original argTypes,
+   * then this will be available in the ArgsEnhancer which runs after it
+   *
+   * @note Any persistent state should only be stored here as it is the only place
+   * we can be more confident that Storybook or something else likely wont modify it,
+   * e.g. cant add state to argTypes we create as these arg types could be processed by some other
+   * addon that adds other argTypeEnhancer etc
+   */
+  [INTERNAL_STATE_SYMBOL]?: DeepControlsInternalState;
+};
+
+/** @internal */
+export type DeepControlsInternalState = {
+  /**
+   * The story id that this state applies to
+   */
+  forStoryId: string;
+
+  /**
+   * Contains the argTypes that the user has defined, excludes the ones that were likely generated
+   * e.g. by the docs addon or by us
+   */
+  userDefinedArgTypes: DeepControlsArgTypesMap;
+};
+
+/** @internal */
 export type DeepControlsArgTypesMap = Record<string, PartialStrictInputType>;
 
 type PrimitiveValue = bigint | boolean | number | string | undefined | null;
@@ -52,7 +76,7 @@ type FlattenObjectRecursionContext = {
 };
 
 export function createFlattenedArgs(
-  context: Pick<DeepControlsStorybookContext, "initialArgs" | "argTypes" | "parameters">,
+  context: Pick<InternalDeepControlsStorybookContext, "initialArgs" | "argTypes" | "parameters">,
 ): Record<string, unknown> {
   return flattenObjectRecursively(context.initialArgs, "", {
     flatObjectOut: {},
@@ -61,12 +85,13 @@ export function createFlattenedArgs(
     // this should be defined as argType enhancers run before args enhancers
     // but handling undefined for tests and also just incase for production
     userDefinedArgTypes:
-      context.parameters.deepControls?.[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL] ?? {},
+      // eslint-disable-next-line
+      context.parameters.deepControls?.[INTERNAL_STATE_SYMBOL]?.userDefinedArgTypes ?? {},
   });
 }
 
 /**
- * @remark When a key is flattened its key wont exist in the new object e.g.
+ * @note When a key is flattened its key wont exist in the new object e.g.
  * "{key: {nestedKey: value}}" becomes "{key.nestedKey: value}" ie the "key" key is removed
  */
 function flattenObjectRecursively(
@@ -120,10 +145,10 @@ function createObjectArgType(argName: string): StrictInputType {
 /**
  * Removes control from the UI
  *
- * @remark We do this instead of setting "parameters.controls.exclude"
+ * @note We do this instead of setting "parameters.controls.exclude"
  * as that would overwrite the default excluded controls config
  *
- * @remark Not having an argType defined does not mean a control is not shown,
+ * @note Not having an argType defined does not mean a control is not shown,
  * it just means the default one is used which could be a blank one
  * if the value doesn't have a relevant control
  *
@@ -193,11 +218,12 @@ function userAlreadyDefinedArgTypeForParentOfThisPath(
 }
 
 export function createFlattenedArgTypes(
-  context: DeepControlsStorybookContext,
+  context: InternalDeepControlsStorybookContext,
 ): DeepControlsArgTypesMap {
-  if (context.parameters.deepControls?.[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]) {
+  const internalState = context.parameters.deepControls?.[INTERNAL_STATE_SYMBOL];
+  if (internalState?.forStoryId === context.id) {
     // NOTE: Storybook can call argTypesEnhancers multiple times for the same story
-    // so we assume if we have the user defined arg types symbol property then we have already processed the arg types
+    // so if we have the same story id as the internal state symbol property then we have already processed the arg types
     // and dont need to do it again
     return context.argTypes ?? {};
   }
@@ -206,10 +232,13 @@ export function createFlattenedArgTypes(
 
   // save the result so the arg enhancer can access the accurate list
   // NOTE: this assumes nothing will change these parameters as they belong to us/this addon
-  Object.defineProperty(context.parameters.deepControls, USER_DEFINED_ARG_TYPE_NAMES_SYMBOL, {
+  Object.defineProperty(context.parameters.deepControls, INTERNAL_STATE_SYMBOL, {
     enumerable: false, // for easier test assertions
     writable: true, // might be kept on parameters between stories so needs to be re-assignable
-    value: userDefinedArgTypes,
+    value: {
+      userDefinedArgTypes,
+      forStoryId: context.id,
+    } satisfies DeepControlsInternalState,
   });
 
   const flatInitialArgs = flattenObjectRecursively(context.initialArgs ?? {}, "", {
@@ -347,7 +376,7 @@ function getArgTypeFromControlMatchers({
  * Gets the argType names that the user has defined, excludes the ones that were likely generated
  * e.g. by the docs addon or by us
  *
- * @remark This only works accurately in an ArgTypeEnhancer because it runs first and receives the original argTypes,
+ * @note This only works accurately in an ArgTypeEnhancer because it runs first and receives the original argTypes,
  * when the args enhancer runs it receives the arg types after they have gone through the flattening process, so its more
  * difficult to determine which argTypes were user defined and which were generated by us or the docs addon.
  * The solution chosen is to save the result of this in the context.parameters so the arg enhancer can access the accurate list
@@ -355,7 +384,7 @@ function getArgTypeFromControlMatchers({
 function getUserDefinedArgTypes({
   argTypes = {},
   parameters,
-}: DeepControlsStorybookContext): DeepControlsArgTypesMap {
+}: InternalDeepControlsStorybookContext): DeepControlsArgTypesMap {
   if (!parameters.docs) {
     // NOTE: we assume this being truthy means the docs addon is enabled
     // there are no generated argTypes to filter out so we assume all of them are user defined
@@ -383,10 +412,10 @@ const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
 /**
  * Tries to determine if the argTypes were likely generated by the docs addon
  *
- * @remark This determines if an argType was "likely" generated based on the amount of detail the argType has
+ * @note This determines if an argType was "likely" generated based on the amount of detail the argType has
  * We can't be 100% sure but we assume user's will have more minimal argType definitions than what typical users would have
  *
- * @remark See examples of the format users are instructed to use when defining argTypes: https://storybook.js.org/docs/api/arg-types#manually-specifying-argtypes
+ * @note See examples of the format users are instructed to use when defining argTypes: https://storybook.js.org/docs/api/arg-types#manually-specifying-argtypes
  *
  * @example
  * // object argType generated by docs addon
