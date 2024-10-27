@@ -5,7 +5,7 @@
     "yarn": "yarn",
     "upgrade": "yarn upgrade-interactive",
     "storybook": "echo 'Starting storybook' && storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build": "storybook build"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
