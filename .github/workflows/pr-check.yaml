@@ -5,69 +5,61 @@ name: pr-check
 
 on:
   pull_request:
+    branches: [main]
   merge_group:
 
 jobs:
-  install:
+  # NOTE: its faster to run everything in one job for now rather than parallel jobs,
+  # where the overhead of starting a new job and installing deps etc is not worth it
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
-        with:
-          ssh-key: ${{secrets.DEPLOY_KEY}}
 
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
 
-      # see https://playwright.dev/docs/ci-intro
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-  lint:
-    # see https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
       - name: Run lint
         run: npm run lint
 
-  type-check:
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
       - name: Run type check
         run: npm run check-types
 
-  format-check:
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
       - name: Run format check
         run: npm run format
 
-  test-unit:
-    needs: [install, lint, type-check, format-check]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Storybook e2e tests
-        run: npm run --cwd packages/example-v7 test
+      - name: Run addon unit tests
+        run: npm run --prefix packages/addon test
 
-  test-e2e-v7:
-    needs: test-unit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Storybook e2e tests
-        run: npm run --cwd packages/example-v7 test
+      # E2E TESTS
 
-  test-e2e-v8:
-    needs: test-unit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Storybook e2e tests
-        run: npm run --cwd packages/example-v8 test
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version)" >> $GITHUB_ENV
+
+      # see https://dev.to/ayomiku222/how-to-cache-playwright-browser-on-github-actions-51o6
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+
+      # see https://playwright.dev/docs/ci-intro
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Run Storybook V7 e2e tests
+        run: npm run --prefix packages/example-v7 test
+
+      - name: Run Storybook V8 e2e tests
+        run: npm run --prefix packages/example-v8 test
