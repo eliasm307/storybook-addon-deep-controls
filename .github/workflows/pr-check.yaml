@@ -57,7 +57,9 @@ jobs:
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-  lint:
+  # NOTE: its faster for these quick tasks to run in one job rather than parallel jobs,
+  # where the overhead of starting a new job and installing deps etc is not worth it
+  quick-checks:
     # see https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds
     needs: install
     runs-on: ubuntu-latest
@@ -79,71 +81,17 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-  type-check:
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-          cache: "yarn"
-
-      - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
-
       - name: Run type check
         run: npm run check-types
 
-  format-check:
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-          cache: "yarn"
-
-      - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
-
       - name: Run format check
         run: npm run format
-
-  test-unit:
-    needs: [install, lint, type-check, format-check]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-          cache: "yarn"
-
-      - name: Install dependencies
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
 
       - name: Run addon unit tests
         run: npm run --prefix packages/addon test
 
   test-e2e-v7:
-    needs: test-unit
+    needs: quick-checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -165,12 +113,13 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          restore-keys: ${{ runner.os }}-playwright-
 
       - name: Run Storybook e2e tests
         run: npm run --prefix packages/example-v7 test
 
   test-e2e-v8:
-    needs: test-unit
+    needs: quick-checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -192,6 +141,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          restore-keys: ${{ runner.os }}-playwright-
 
       - name: Run Storybook e2e tests
         run: npm run --prefix packages/example-v8 test
