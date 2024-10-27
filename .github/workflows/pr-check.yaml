@@ -23,7 +23,7 @@ jobs:
           cache: "yarn"
 
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
       # see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows
@@ -39,6 +39,10 @@ jobs:
       #       packages/example-v8/node_modules
       #     key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
 
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version)" >> $GITHUB_ENV
+
       # todo move this to separate job
       # see https://dev.to/ayomiku222/how-to-cache-playwright-browser-on-github-actions-51o6
       - name: Cache Playwright binaries
@@ -47,10 +51,6 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-
-      - name: Get installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
 
       # see https://playwright.dev/docs/ci-intro
       - name: Install Playwright Browsers
