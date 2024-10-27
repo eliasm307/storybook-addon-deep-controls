@@ -41,6 +41,10 @@
     "./preset.js": {
       "default": "./preset.js"
     },
+    "./register": {
+      "require": "./register.js",
+      "import": "./register.mjs"
+    },
     "./register.js": {
       "require": "./register.js",
       "import": "./register.mjs"
