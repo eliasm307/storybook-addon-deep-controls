@@ -1,3 +1,4 @@
-import preview from "./dist/preview";
+console.log("preview.mjs");
 
-export default preview;
+// eslint-disable-next-line no-restricted-exports
+export {default} from "./dist/preview";

@@ -43,6 +43,10 @@
     "./preview": {
       "require": "./preview.js",
       "import": "./preview.mjs"
+    },
+    "./preview.js": {
+      "require": "./preview.js",
+      "import": "./preview.mjs"
     }
   },
   "scripts": {
