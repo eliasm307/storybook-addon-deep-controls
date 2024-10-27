@@ -27,19 +27,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-          cache: "yarn"
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
       - name: Run lint
         run: npm run lint
 
@@ -51,6 +38,8 @@ jobs:
 
       - name: Run addon unit tests
         run: npm run --prefix packages/addon test
+
+      # E2E TESTS
 
       - name: Get installed Playwright version
         id: playwright-version
