@@ -9,7 +9,7 @@ export default defineConfig({
     },
     coverage: {
       enabled: true,
-      exclude: ["**/*.d.ts", "**/*.js"],
+      exclude: ["**/*.d.ts", "**/*.js", "**/*.test.ts", "**/*.spec.ts"],
     },
   },
 });

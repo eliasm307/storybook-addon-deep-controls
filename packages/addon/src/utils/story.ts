@@ -195,6 +195,13 @@ function userAlreadyDefinedArgTypeForParentOfThisPath(
 export function createFlattenedArgTypes(
   context: DeepControlsStorybookContext,
 ): DeepControlsArgTypesMap {
+  if (context.parameters.deepControls?.[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]) {
+    // NOTE: Storybook can call argTypesEnhancers multiple times for the same story
+    // so we assume if we have the user defined arg types symbol property then we have already processed the arg types
+    // and dont need to do it again
+    return context.argTypes ?? {};
+  }
+
   const userDefinedArgTypes = getUserDefinedArgTypes(context);
 
   // save the result so the arg enhancer can access the accurate list

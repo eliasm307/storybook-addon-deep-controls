@@ -251,6 +251,64 @@ describe("Story utils", function () {
       });
     });
 
+    // NOTE: Storybook can call argsEnhancers multiple times for the same story, so this tests that the behavior is consistent
+    it("keeps objects that are overridden by user-defined argTypes, if flattened multiple times", function () {
+      // assume params can maintain state, so we provide the same object each time
+      const deepControlsParameters = {
+        [USER_DEFINED_ARG_TYPE_NAMES_SYMBOL]: {
+          "someObject.obj2WithArgType": {},
+        },
+      };
+
+      // assume no state is stored on arg types, so we provide a fresh object each time
+      function createArgTypes() {
+        return {
+          "someObject.obj2WithArgType": {
+            name: "someObject.obj2WithArgType",
+            control: "object",
+          },
+        };
+      }
+
+      const flattenedArgsAfterCall1 = createFlattenedArgs({
+        // obj1 should be deep controlled
+        // obj2 should be shown with same value in json control
+        initialArgs: {
+          someObject: {
+            obj1: {
+              foo1: "foo1",
+              bar1: "bar1",
+            },
+            obj2WithArgType: {
+              foo2: "foo2",
+              bar2: "bar2",
+            },
+          },
+        },
+        argTypes: createArgTypes(),
+        parameters: {
+          deepControls: deepControlsParameters,
+        },
+      });
+
+      const flattenedArgsAfterCall2 = createFlattenedArgs({
+        initialArgs: flattenedArgsAfterCall1,
+        argTypes: createArgTypes(),
+        parameters: {
+          deepControls: deepControlsParameters,
+        },
+      });
+
+      expect(flattenedArgsAfterCall2).toEqual({
+        "someObject.obj1.foo1": "foo1",
+        "someObject.obj1.bar1": "bar1",
+        "someObject.obj2WithArgType": {
+          foo2: "foo2",
+          bar2: "bar2",
+        },
+      });
+    });
+
     it("flattens objects that are overridden by non-user-defined argTypes", function () {
       const flattenedArgs = createFlattenedArgs({
         initialArgs: {
@@ -478,6 +536,122 @@ describe("Story utils", function () {
           "nested.array": {name: "nested.array", control: {type: "object"}},
         },
       );
+    });
+
+    // NOTE: Storybook can call argTypesEnhancers multiple times for the same story
+    describe("multiple calls support", () => {
+      // NOTE: should not provide a value for USER_DEFINED_ARG_TYPE_NAMES_SYMBOL before tests
+
+      it("can flatten without user defined argTypes", function () {
+        // assume params can maintain state, so we provide the same object each time
+        const deepControlsParameters: DeepControlsStorybookContext["parameters"]["deepControls"] =
+          {};
+
+        // assume no state is stored on initialArgs, so we provide a fresh object each time
+        function createInitialArgs() {
+          return {
+            nested: {
+              bool: true,
+              string: "string",
+            },
+          };
+        }
+
+        const argTypesAfterCall1 = createFlattenedArgTypes({
+          initialArgs: createInitialArgs(),
+          argTypes: {}, // no user defined argTypes
+          parameters: {deepControls: deepControlsParameters},
+        });
+
+        const argTypesAfterCall2 = createFlattenedArgTypes({
+          initialArgs: createInitialArgs(),
+          argTypes: argTypesAfterCall1,
+          parameters: {deepControls: deepControlsParameters},
+        });
+
+        assert.deepStrictEqual(argTypesAfterCall2, {
+          nested: {
+            name: "nested",
+            table: {disable: true},
+          },
+          // bool inferred as normal
+          "nested.bool": {
+            control: {type: "boolean"},
+            name: "nested.bool",
+            type: {name: "boolean"},
+          },
+          // string is inferred as normal
+          "nested.string": {
+            control: {type: "text"},
+            name: "nested.string",
+            type: {name: "string"},
+          },
+        });
+
+        // no user defined argTypes
+        assert.deepStrictEqual(deepControlsParameters[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL], {});
+      });
+
+      it("can flatten with user defined argTypes", function () {
+        // assume params can maintain state, so we provide the same object each time
+        const deepControlsParameters: DeepControlsStorybookContext["parameters"]["deepControls"] =
+          {};
+
+        // assume no state is stored on initialArgs, so we provide a fresh object each time
+        function createInitialArgs() {
+          return {
+            nested: {
+              bool: true,
+              string: "string",
+            },
+          };
+        }
+
+        const argTypesAfterCall1 = createFlattenedArgTypes({
+          initialArgs: createInitialArgs(),
+          argTypes: {
+            "nested.bool": {
+              description: "Custom description",
+              control: {type: "boolean"}, // just bool has user defined type
+            },
+          },
+          parameters: {deepControls: deepControlsParameters},
+        });
+
+        const argTypesAfterCall2 = createFlattenedArgTypes({
+          initialArgs: createInitialArgs(),
+          argTypes: argTypesAfterCall1,
+          parameters: {deepControls: deepControlsParameters},
+        });
+
+        assert.deepStrictEqual(argTypesAfterCall2, {
+          nested: {
+            name: "nested",
+            table: {disable: true},
+          },
+          // bool should have the user defined argType
+          "nested.bool": {
+            description: "Custom description",
+            control: {type: "boolean"},
+            name: "nested.bool",
+            type: {name: "boolean"},
+          },
+          // string is inferred as normal
+          "nested.string": {
+            control: {type: "text"},
+            name: "nested.string",
+            type: {name: "string"},
+          },
+        });
+
+        assert.deepStrictEqual(deepControlsParameters[USER_DEFINED_ARG_TYPE_NAMES_SYMBOL], {
+          // only nested bool is custom
+          "nested.bool": {
+            control: {type: "boolean"},
+            description: "Custom description",
+          },
+        });
+      });
     });
 
     describe("docs addon", () => {
