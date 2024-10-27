@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -57,7 +57,6 @@ jobs:
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-
   lint:
     # see https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds
     needs: install
@@ -71,7 +70,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install dependencies
         # if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -92,7 +91,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install dependencies
         # if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -113,7 +112,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install dependencies
         # if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -134,7 +133,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install dependencies
         # if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -155,7 +154,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install dependencies
         # if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -164,8 +163,8 @@ jobs:
       - name: Restore Playwright binaries from cache
         uses: actions/cache@v3
         with:
-          path: **/node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
 
       - name: Run Storybook e2e tests
         run: npm run --prefix packages/example-v7 test
@@ -174,5 +173,25 @@ jobs:
     needs: test-unit
     runs-on: ubuntu-latest
     steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: "yarn"
+
+      - name: Install dependencies
+        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --prefer-offline
+
+      - name: Restore Playwright binaries from cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+
       - name: Run Storybook e2e tests
         run: npm run --prefix packages/example-v8 test
