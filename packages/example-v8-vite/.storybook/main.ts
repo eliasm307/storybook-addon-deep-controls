@@ -3,7 +3,7 @@ import {StorybookConfig} from "@storybook/react-vite";
 
 // todo wait for react native
 const config: StorybookConfig = {
-  stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: ["../../generic-v8/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     "@storybook/addon-essentials", // to get controls and docs addons and make sure we are compatible with any other essential addon
     "storybook-addon-deep-controls",
