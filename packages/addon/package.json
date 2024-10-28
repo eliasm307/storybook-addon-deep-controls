@@ -31,35 +31,33 @@
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
+  "exportsNotes": [
+    "The order of the keys matters and represents the order of preference e.g. if 'import' is first then it is the preferred import method",
+    "'types' needs to be first"
+  ],
   "exports": {
     ".": {
-      "require": "./index.js",
+      "types": "./index.d.ts",
       "import": "./index.mjs",
-      "types": "./index.d.ts"
+      "require": "./index.js"
     },
     "./package.json": {
       "default": "./package.json"
     },
-    "./preset": {
-      "default": "./preset.js"
-    },
-    "./preset.js": {
-      "default": "./preset.js"
-    },
     "./register": {
-      "require": "./register.js",
-      "import": "./register.mjs"
+      "import": "./register.mjs",
+      "require": "./register.js"
     },
     "./register.js": {
-      "require": "./register.js",
-      "import": "./register.mjs"
+      "import": "./register.mjs",
+      "require": "./register.js"
     },
     "./preview": "./preview.js",
     "./preview.js": "./preview.js"
   },
   "scripts": {
     "prepare": "npm run build",
-    "build": "tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json",
+    "build": "tsc -p tsconfig.build.esm.json ",
     "buildw": "tsc -p tsconfig.build.json -w",
     "test": "vitest run",
     "test:watch": "vitest"
