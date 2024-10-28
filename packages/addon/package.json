@@ -18,13 +18,15 @@
   },
   "homepage": "https://github.com/eliasm307/storybook-addon-deep-controls#readme",
   "files": [
-    "dist/utils/",
-    "dist/preview.js",
+    "dist",
     "preset.js",
     "register.js",
+    "register.mjs",
     "preview.js",
     "preview.mjs",
-    "index.d.ts"
+    "index.d.ts",
+    "index.js",
+    "index.mjs"
   ],
   "main": "index.js",
   "module": "index.mjs",
@@ -52,18 +54,12 @@
       "require": "./register.js",
       "import": "./register.mjs"
     },
-    "./preview": {
-      "require": "./preview.js",
-      "import": "./preview.mjs"
-    },
-    "./preview.js": {
-      "require": "./preview.js",
-      "import": "./preview.mjs"
-    }
+    "./preview": "./preview.js",
+    "./preview.js": "./preview.js"
   },
   "scripts": {
     "prepare": "npm run build",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json",
     "buildw": "tsc -p tsconfig.build.json -w",
     "test": "vitest run",
     "test:watch": "vitest"

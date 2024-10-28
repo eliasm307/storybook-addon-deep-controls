@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "dist/esm",
     "noEmit": false,
     "incremental": false,
     "stripInternal": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node"
   },
   "include": ["src"],
