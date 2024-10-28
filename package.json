@@ -22,9 +22,9 @@
   },
   "devDependencies": {
     "@eliasm307/config": "^0.51.1",
-    "@playwright/test": "^1.48.1",
-    "@types/node": "^20.16.13",
-    "@types/react": "^18.3.11",
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^20.17.2",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
@@ -35,9 +35,9 @@
     "eslint-plugin-storybook": "^0.9.0",
     "netlify-cli": "^17.37.1",
     "nodemon": "^3.1.7",
-    "playwright": "^1.48.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "playwright": "^1.48.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "typescript": "^5.6.3"
   },
   "packageManager": "yarn@3.4.1"
