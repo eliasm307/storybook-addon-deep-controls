@@ -1,5 +1,5 @@
 import {defineConfig, devices} from "@playwright/test";
-import {STORYBOOK_PORT} from "./src/utils/constants.js";
+import {CONFIG, STORYBOOK_PORT, TEST_TIMEOUT_MS} from "./src/utils/constants.js";
 
 /**
  * Read environment variables from file.
@@ -12,6 +12,7 @@ import {STORYBOOK_PORT} from "./src/utils/constants.js";
  */
 export default defineConfig({
   testDir: "./src/stories",
+  globalSetup: require.resolve("./global-setup"),
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -70,11 +71,13 @@ export default defineConfig({
     // },
   ],
 
+  quiet: false,
+
   /** @see https://playwright.dev/docs/api/class-testconfig#test-config-web-server */
   webServer: {
-    command: "npm run storybook",
+    command: CONFIG.devCommand,
     url: `http://localhost:${STORYBOOK_PORT}/`,
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: TEST_TIMEOUT_MS,
   },
 });
