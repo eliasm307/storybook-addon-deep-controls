@@ -1,8 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "target": "ESNext",
-    "moduleResolution": "NodeNext"
-  }
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve"
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

@@ -24946,6 +24946,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"storybook-addon-deep-controls-example-v7-webpack@workspace:packages/example-v7-webpack":
+  version: 0.0.0-use.local
+  resolution: "storybook-addon-deep-controls-example-v7-webpack@workspace:packages/example-v7-webpack"
+  dependencies:
+    "@storybook-addon-deep-controls/common-internal": "workspace:*"
+    "@storybook/addon-essentials": 7.6.20
+    "@storybook/nextjs": 7.6.20
+    "@storybook/react": 7.6.20
+    "@storybook/types": 7.6.20
+    next: 13.5.6
+    storybook: 7.6.20
+    storybook-addon-deep-controls: "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "storybook-addon-deep-controls-example-v8-vite@workspace:packages/example-v8-vite":
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls-example-v8-vite@workspace:packages/example-v8-vite"
@@ -24964,11 +24979,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"storybook-addon-deep-controls-example-v8@workspace:packages/example-v8":
+"storybook-addon-deep-controls-example-v8-webpack@workspace:packages/example-v8-webpack":
   version: 0.0.0-use.local
-  resolution: "storybook-addon-deep-controls-example-v8@workspace:packages/example-v8"
+  resolution: "storybook-addon-deep-controls-example-v8-webpack@workspace:packages/example-v8-webpack"
   dependencies:
-    "@storybook-addon-deep-controls/common-internal": "workspace:*"
     "@storybook/addon-essentials": 8.3.6
     "@storybook/nextjs": 8.3.6
     "@storybook/react": 8.3.6
@@ -24979,18 +24993,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"storybook-addon-deep-controls-example@workspace:packages/example-v7":
+"storybook-addon-deep-controls-generic-v8@workspace:packages/generic-v8":
   version: 0.0.0-use.local
-  resolution: "storybook-addon-deep-controls-example@workspace:packages/example-v7"
+  resolution: "storybook-addon-deep-controls-generic-v8@workspace:packages/generic-v8"
   dependencies:
     "@storybook-addon-deep-controls/common-internal": "workspace:*"
-    "@storybook/addon-essentials": 7.6.20
-    "@storybook/nextjs": 7.6.20
-    "@storybook/react": 7.6.20
-    "@storybook/types": 7.6.20
-    next: 13.5.6
-    storybook: 7.6.20
-    storybook-addon-deep-controls: "workspace:*"
   languageName: unknown
   linkType: soft
 

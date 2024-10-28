@@ -12,7 +12,6 @@
     "deploy": "npm run build && netlify deploy --prod"
   },
   "devDependencies": {
-    "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/addon-essentials": "8.3.6",
     "@storybook/nextjs": "8.3.6",
     "@storybook/react": "8.3.6",
