@@ -1,5 +1,5 @@
-import cloneDeep from "lodash/cloneDeep";
-import {STORYBOOK_PORT} from "./constants.js";
+import cloneDeep from "lodash/cloneDeep.js";
+import {STORYBOOK_PORT} from "./constants";
 
 export function clone<T extends Record<string, unknown>>(obj: T): T {
   return cloneDeep(obj); // maintains value as is, e.g. NaN, Infinity, etc. which JSON.stringify does not
