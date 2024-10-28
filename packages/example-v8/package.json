@@ -11,9 +11,6 @@
     "test:codegen": "playwright codegen http://localhost:6008/",
     "deploy": "npm run build && netlify deploy --prod"
   },
-  "scriptsNotes": {
-    "deploy": "Need to run deploy locally as netlify cant handle symlinks in .github folder"
-  },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/addon-essentials": "8.3.6",
