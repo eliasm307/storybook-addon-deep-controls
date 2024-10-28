@@ -1,6 +1,6 @@
 // import {StorybookConfig} from "@storybook/react-vite";
-import {mergeConfig} from "vite";
 // import {createRequire} from "node:module";
+// NOTE: dont import vite at top level: https://github.com/storybookjs/storybook/issues/26291#issuecomment-1978193283
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -21,8 +21,13 @@ const config = {
     name: getAbsolutePathToPackage("@storybook/react-vite"),
     options: {},
   },
-  viteFinal: (config) =>
-    mergeConfig(config, {
+  viteFinal: async (config) => {
+    const {mergeConfig} = await import("vite");
+
+    const react = (await import("@vitejs/plugin-react")).default;
+
+    return mergeConfig(config, {
+      plugins: [react()],
       // optimizeDeps: {
       //   include: ["storybook-addon-deep-controls"],
       // },
@@ -31,7 +36,8 @@ const config = {
       //     include: [/storybook-addon-deep-controls/],
       //   },
       // },
-    }),
+    });
+  },
 };
 
 export default config;
