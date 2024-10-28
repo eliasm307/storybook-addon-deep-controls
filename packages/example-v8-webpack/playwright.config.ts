@@ -1,5 +1,4 @@
 import {defineConfig, devices} from "@playwright/test";
-import {STORYBOOK_V8_PORT} from "./src/tests/utils/constants";
 
 /**
  * Read environment variables from file.
