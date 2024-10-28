@@ -1,9 +1,8 @@
-// import {StorybookConfig} from "@storybook/react-vite";
+import {StorybookConfig} from "@storybook/react-vite";
 // NOTE: dont import vite at top level: https://github.com/storybookjs/storybook/issues/26291#issuecomment-1978193283
 
 // todo wait for react native
-// todo convert to ts
-const config = {
+const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     "@storybook/addon-essentials", // to get controls and docs addons and make sure we are compatible with any other essential addon
