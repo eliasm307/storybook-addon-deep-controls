@@ -15,7 +15,6 @@
     "deploy": "Need to run deploy locally as netlify cant handle symlinks in .github folder"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "1.9.0",
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/addon-essentials": "8.3.6",
     "@storybook/builder-vite": "^8.3.6",
