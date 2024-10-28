@@ -1,7 +1,6 @@
 {
   "name": "storybook-addon-deep-controls-example-v8-vite",
   "private": true,
-  "type": "module",
   "scripts": {
     "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon --delay 5000ms --watch ./package.json --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
     "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6018 --no-open",
