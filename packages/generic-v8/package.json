@@ -2,15 +2,6 @@
   "name": "storybook-addon-deep-controls-generic-v8",
   "private": true,
   "type": "module",
-  "scripts": {
-    "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true  storybook dev -p 6018 --no-open",
-    "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon --delay 5000ms --watch ./package.json --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
-    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
-    "build": "npm run addon:build && storybook build",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:codegen": "playwright codegen http://localhost:6018/"
-  },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*"
   }
