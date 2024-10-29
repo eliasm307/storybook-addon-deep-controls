@@ -2,5 +2,5 @@
 # All paths configured in the netlify.toml should be absolute paths relative to the base directory, which is the root by default (/). I assume this takes the folder with the .git folder as the base directory.
 [build]
   # see https://docs.netlify.com/configure-builds/file-based-configuration/#build-settings
-  command = npm run build
+  command = "yarn run build"
   publish = "./packages/example-v8-vite/storybook-static"
