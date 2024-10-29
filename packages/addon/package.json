@@ -32,8 +32,10 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "exportsNotes": [
-    "The order of the keys matters and represents the order of preference e.g. if 'import' is first then it is the preferred import method",
-    "'types' needs to be first"
+    "- The order of the keys matters and represents the order of preference e.g. if 'import' is first then it is the preferred import method",
+    "'types' needs to be first",
+    "",
+    "- See example at https://github.com/storybookjs/addon-kit/blob/main/package.json"
   ],
   "exports": {
     ".": {
@@ -41,24 +43,23 @@
       "import": "./index.mjs",
       "require": "./index.js"
     },
-    "./package.json": {
-      "default": "./package.json"
+    "./preview": {
+      "types": "./index.d.ts",
+      "import": "./preview.mjs",
+      "require": "./preview.js"
     },
-    "./register": {
-      "import": "./register.mjs",
-      "require": "./register.js"
+    "./preview.js": {
+      "types": "./index.d.ts",
+      "import": "./preview.mjs",
+      "require": "./preview.js"
     },
-    "./register.js": {
-      "import": "./register.mjs",
-      "require": "./register.js"
-    },
-    "./preview": "./preview.js",
-    "./preview.js": "./preview.js"
+    "./package.json": "./package.json",
+    "./register": "./register.js",
+    "./register.js": "./register.js"
   },
   "scripts": {
     "prepare": "npm run build",
-    "build": "tsc -p tsconfig.build.esm.json ",
-    "buildw": "tsc -p tsconfig.build.json -w",
+    "build": "concurrently --timings --prefix-colors auto --kill-others-on-fail \"tsc -p tsconfig.build.esm.json\" \"tsc -p tsconfig.build.cjs.json\"",
     "test": "vitest run",
     "test:watch": "vitest"
   },
