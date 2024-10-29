@@ -1,5 +1,6 @@
-import cloneDeep from "lodash/cloneDeep";
-import {STORYBOOK_V8_PORT} from "./constants";
+import {createServer} from "http";
+import cloneDeep from "lodash/cloneDeep.js";
+import {STORYBOOK_PORT} from "./constants";
 
 export function clone<T extends Record<string, unknown>>(obj: T): T {
   return cloneDeep(obj); // maintains value as is, e.g. NaN, Infinity, etc. which JSON.stringify does not
@@ -7,7 +8,7 @@ export function clone<T extends Record<string, unknown>>(obj: T): T {
 
 function localHostPortIsInUse(port: number): Promise<boolean> {
   return new Promise((resolve) => {
-    const server = require("http").createServer();
+    const server = createServer();
     server.on("error", () => {
       server.close();
       resolve(true);
@@ -21,10 +22,10 @@ function localHostPortIsInUse(port: number): Promise<boolean> {
 }
 
 export async function assertStorybookIsRunning() {
-  const isStorybookRunning = await localHostPortIsInUse(STORYBOOK_V8_PORT);
+  const isStorybookRunning = await localHostPortIsInUse(STORYBOOK_PORT);
   if (!isStorybookRunning) {
     throw new Error(
-      `Storybook is not running (expected on localhost:${STORYBOOK_V8_PORT}), please run 'npm run storybook' in a separate terminal`,
+      `Storybook is not running (expected on localhost:${STORYBOOK_PORT}), please run 'npm run storybook' in a separate terminal`,
     );
   }
 }

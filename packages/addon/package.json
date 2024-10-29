@@ -18,53 +18,48 @@
   },
   "homepage": "https://github.com/eliasm307/storybook-addon-deep-controls#readme",
   "files": [
-    "dist/utils/",
-    "dist/preview.js",
+    "dist",
     "preset.js",
     "register.js",
+    "register.mjs",
     "preview.js",
     "preview.mjs",
-    "index.d.ts"
+    "index.d.ts",
+    "index.js",
+    "index.mjs"
   ],
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
+  "exportsNotes": [
+    "- The order of the keys matters and represents the order of preference e.g. if 'import' is first then it is the preferred import method",
+    "'types' needs to be first",
+    "",
+    "- See example at https://github.com/storybookjs/addon-kit/blob/main/package.json"
+  ],
   "exports": {
     ".": {
-      "require": "./index.js",
+      "types": "./index.d.ts",
       "import": "./index.mjs",
-      "types": "./index.d.ts"
-    },
-    "./package.json": {
-      "default": "./package.json"
-    },
-    "./preset": {
-      "default": "./preset.js"
-    },
-    "./preset.js": {
-      "default": "./preset.js"
-    },
-    "./register": {
-      "require": "./register.js",
-      "import": "./register.mjs"
-    },
-    "./register.js": {
-      "require": "./register.js",
-      "import": "./register.mjs"
+      "require": "./index.js"
     },
     "./preview": {
-      "require": "./preview.js",
-      "import": "./preview.mjs"
+      "types": "./index.d.ts",
+      "import": "./preview.mjs",
+      "require": "./preview.js"
     },
     "./preview.js": {
-      "require": "./preview.js",
-      "import": "./preview.mjs"
-    }
+      "types": "./index.d.ts",
+      "import": "./preview.mjs",
+      "require": "./preview.js"
+    },
+    "./package.json": "./package.json",
+    "./register": "./register.js",
+    "./register.js": "./register.js"
   },
   "scripts": {
     "prepare": "npm run build",
-    "build": "tsc -p tsconfig.build.json",
-    "buildw": "tsc -p tsconfig.build.json -w",
+    "build": "concurrently --timings --prefix-colors auto --kill-others-on-fail \"tsc -p tsconfig.build.esm.json\" \"tsc -p tsconfig.build.cjs.json\"",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -74,8 +69,8 @@
     "storybook": "7.x.x || 8.x.x"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^2.1.3",
-    "react": "18.2.0",
-    "vitest": "^2.1.3"
+    "@vitest/coverage-v8": "^2.1.4",
+    "react": "18.3.1",
+    "vitest": "^2.1.4"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "storybook-addon-deep-controls-example",
+  "name": "storybook-addon-deep-controls-example-v7-webpack",
   "private": true,
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6007 --no-open",
@@ -9,9 +9,6 @@
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:codegen": "playwright codegen http://localhost:6007/"
-  },
-  "scriptsNotes": {
-    "deploy": "Need to run deploy locally as netlify cant handle symlinks in .github folder"
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",

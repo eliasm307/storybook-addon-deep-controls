@@ -1,6 +1,6 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
-import {STORYBOOK_V8_PORT} from "../utils/constants";
+import {STORYBOOK_PORT} from "../../utils/constants";
 import {DocsPageObject} from "./DocsPageObject";
 import {StoryPageObject} from "./StoryPageObject";
 
@@ -75,7 +75,7 @@ export class AppObject {
   constructor(public page: Page) {}
 
   async openDefaultPage() {
-    const STORYBOOK_URL = `http://localhost:${STORYBOOK_V8_PORT}/?path=/story/stories-dev--enabled`;
+    const STORYBOOK_URL = `http://localhost:${STORYBOOK_PORT}/?path=/story/stories-dev--enabled`;
 
     try {
       await this.page.goto(STORYBOOK_URL, {timeout: 5000});

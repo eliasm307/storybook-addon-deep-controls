@@ -1,8 +1,8 @@
 import {test} from "@playwright/test";
 import {AppObject} from "../tests/objects/AppObject";
 import type {ControlExpectation} from "../tests/types";
-import {assertStorybookIsRunning} from "../tests/utils";
-import {TEST_TIMEOUT_MS} from "../tests/utils/constants";
+import {assertStorybookIsRunning} from "../utils";
+import {TEST_TIMEOUT_MS} from "../utils/constants";
 
 test.beforeAll(assertStorybookIsRunning);
 
@@ -77,6 +77,7 @@ function createExpectedDefaultVisibleControls(): Record<string, ControlExpectati
     "nested.nested.numberArray": {type: "json", valueText: "[0 : 11 : 22 : 3]"},
     "nested.nested.complexArray": {
       type: "json",
+      // for vite with esbuild: https://esbuild.github.io/content-types/#function-tostring
       valueText:
         '[0 : {bool : truestring : "string3"number : -3}1 : {}2 : null3 : Symbol(symbol)4 : null5 : null]',
     },

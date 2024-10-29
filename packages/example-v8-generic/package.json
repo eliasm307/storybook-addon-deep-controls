@@ -1,0 +1,7 @@
+{
+  "name": "storybook-addon-deep-controls-example-v8-generic",
+  "private": true,
+  "devDependencies": {
+    "@storybook-addon-deep-controls/common-internal": "workspace:*"
+  }
+}

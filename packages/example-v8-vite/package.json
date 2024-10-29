@@ -1,0 +1,26 @@
+{
+  "name": "storybook-addon-deep-controls-example-v8-vite",
+  "private": true,
+  "scripts": {
+    "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon --delay 5000ms --watch ./package.json --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
+    "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6018 --no-open",
+    "test": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite playwright test",
+    "test:ui": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite playwright test --ui",
+    "test:codegen": "cd ../example-v8-generic && playwright codegen http://localhost:6018/",
+    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
+    "build": "npm run addon:build && storybook build"
+  },
+  "devDependencies": {
+    "@storybook-addon-deep-controls/common-internal": "workspace:*",
+    "@storybook/addon-essentials": "8.3.6",
+    "@storybook/builder-vite": "^8.3.6",
+    "@storybook/react": "8.3.6",
+    "@storybook/react-vite": "^8.3.6",
+    "@storybook/types": "8.3.6",
+    "@vitejs/plugin-react": "^4.3.3",
+    "cross-env": "^7.0.3",
+    "storybook": "8.3.6",
+    "storybook-addon-deep-controls": "workspace:*",
+    "vite": "^5.4.10"
+  }
+}

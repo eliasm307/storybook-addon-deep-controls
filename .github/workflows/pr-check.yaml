@@ -11,7 +11,7 @@ on:
 jobs:
   # NOTE: its faster to run everything in one job for now rather than parallel jobs,
   # where the overhead of starting a new job and installing deps etc is not worth it
-  main:
+  pr-check-main-job:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -58,8 +58,11 @@ jobs:
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Run Storybook V7 e2e tests
-        run: npm run --prefix packages/example-v7 test
+      - name: Run Storybook v8-vite e2e tests
+        run: npm run --prefix packages/example-v8-vite test
 
-      - name: Run Storybook V8 e2e tests
-        run: npm run --prefix packages/example-v8 test
+      - name: Run Storybook v8-webpack e2e tests
+        run: npm run --prefix packages/example-v8-webpack test
+
+      - name: Run Storybook v7-webpack e2e tests
+        run: npm run --prefix packages/example-v7-webpack test

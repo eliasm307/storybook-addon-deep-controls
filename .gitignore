@@ -131,3 +131,19 @@ dist
 .netlify
 
 **/playwright-report/
+*storybook.log
+
+# local env files
+**/.env*.local
+
+# vercel
+**/.vercel
+
+# typescript
+**/*.tsbuildinfo
+
+**/next-env.d.ts
+
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
