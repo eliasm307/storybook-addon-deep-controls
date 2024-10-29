@@ -26,7 +26,6 @@ export const CONFIG = (function getStorybookConfig(): StorybookExampleConfig {
     throw new Error(`Unknown storybook type ${value}`);
   }
 
-  // eslint-disable-next-line no-console
   // console.log(`Storybook config is ${JSON.stringify(config, null, 2)}`);
   return config;
 })();
