@@ -5,6 +5,7 @@
     "noEmit": false,
     "incremental": false,
     "stripInternal": true,
+    "target": "ES2020",
     "module": "Node16",
     "moduleResolution": "Node16"
   },
