@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Run exports check
+        run: npm run --prefix packages/addon check-exports
+
       - name: Run lint
         run: npm run lint
 
