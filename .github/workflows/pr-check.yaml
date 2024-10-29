@@ -58,7 +58,6 @@ jobs:
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      # fastest tests first
       - name: Run Storybook v8-vite e2e tests
         run: npm run --prefix packages/example-v8-vite test
 

@@ -9,7 +9,7 @@
     "test": "npm --prefix packages/addon run test && npm --prefix packages/example-v8 run test",
     "lint": "eslint --report-unused-disable-directives --cache --fix --quiet --ext .ts,.tsx --ignore-path .gitignore .",
     "check-types": "tsc --noEmit",
-    "format": "prettier --write --ignore-path .gitignore . \"!**/.yarn/**\"",
+    "format": "prettier --write --cache --ignore-path .gitignore . \"!**/.yarn/**\"",
     "check": "concurrently --timings --prefix-colors auto --kill-others-on-fail \"npm run lint\" \"npm run check-types\" \"yarn format\"",
     "build:addon": "npm --prefix packages/addon run build",
     "example:deploy": "npm --prefix packages/example-v8 run deploy",
