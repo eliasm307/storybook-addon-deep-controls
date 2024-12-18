@@ -16,7 +16,7 @@
     "@storybook/nextjs": "8.3.6",
     "@storybook/react": "8.3.6",
     "@storybook/types": "8.3.6",
-    "next": "13.5.6",
+    "next": "14.2.15",
     "storybook": "8.3.6",
     "storybook-addon-deep-controls": "workspace:*"
   }
