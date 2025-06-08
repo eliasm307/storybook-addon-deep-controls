@@ -240,6 +240,14 @@ export const SomeStory: Story = {
 };
 ```
 
+## Compatibility
+
+Compatibility of this addon is tested with different versions of Storybook and the following are the supported version ranges:
+
+- Addon version: 0.9.2 supports Storybook versions: 7.0.0 - 8.3.6
+
+Using Storybook versions outside of this range may work, but is not guaranteed and may result in unexpected behaviour.
+
 ## Notes
 
 Some notes about the functionality of this addon:

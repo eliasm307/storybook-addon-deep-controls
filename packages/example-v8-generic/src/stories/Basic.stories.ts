@@ -26,7 +26,6 @@ export const Enabled: Story = {
     "deep.bool": {
       control: "boolean",
     },
-    // @ts-expect-error [values are typed]
     foo: 1,
   },
 };

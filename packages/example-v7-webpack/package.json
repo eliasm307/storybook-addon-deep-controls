@@ -1,14 +1,18 @@
 {
   "name": "storybook-addon-deep-controls-example-v7-webpack",
   "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6007 --no-open",
-    "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/",
+    "storybook:watch": "nodemon",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:codegen": "playwright codegen http://localhost:6007/"
+    "playwright": "node ../../node_modules/playwright/cli.js",
+    "test": "npm run playwright -- test",
+    "test:ui": "npm run playwright -- test --ui",
+    "test:codegen": "npm run playwright -- codegen http://localhost:6007/"
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
@@ -17,6 +21,7 @@
     "@storybook/react": "7.6.20",
     "@storybook/types": "7.6.20",
     "next": "13.5.6",
+    "nodemon": "3.1.10",
     "storybook": "7.6.20",
     "storybook-addon-deep-controls": "workspace:*"
   }

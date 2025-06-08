@@ -70,9 +70,13 @@
     "storybook": "7.x.x || 8.x.x"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.16.4",
-    "@vitest/coverage-v8": "^2.1.4",
+    "@arethetypeswrong/cli": "^0.18.1",
+    "@storybook/types": "7.6.20",
+    "@vitest/coverage-v8": "^3.2.2",
     "react": "18.3.1",
-    "vitest": "^2.1.4"
+    "vitest": "^3.2.2"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   }
 }

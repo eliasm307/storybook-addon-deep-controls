@@ -20,22 +20,22 @@ const STORYBOOK_CONFIGS: Record<"v8-vite" | "v8-webpack", StorybookExampleConfig
 
 // eslint-disable-next-line wrap-iife
 export const CONFIG = (function getStorybookConfig(): StorybookExampleConfig {
-  const value = getEnvironmentVariable("STORYBOOK_EXAMPLE_TYPE") as StorybookType;
-  const config = STORYBOOK_CONFIGS[value];
+  const storybookType: StorybookType = getEnvironmentVariable("STORYBOOK_EXAMPLE_TYPE");
+  const config = STORYBOOK_CONFIGS[storybookType];
   if (!config) {
-    throw new Error(`Unknown storybook type ${value}`);
+    throw new Error(`Unknown storybook type ${storybookType}`);
   }
 
-  // console.log(`Storybook config is ${JSON.stringify(config, null, 2)}`);
+  // console.log(`Storybook config: ${JSON.stringify(config, null, 2)}`);
   return config;
 })();
 
 export const STORYBOOK_PORT: number = CONFIG.port;
 
-function getEnvironmentVariable(name: "STORYBOOK_EXAMPLE_TYPE"): string {
+function getEnvironmentVariable<T extends string>(name: "STORYBOOK_EXAMPLE_TYPE"): T {
   const value = process.env[name];
   if (!value) {
     throw new Error(`Environment variable ${name} is not set`);
   }
-  return value;
+  return value as T;
 }
