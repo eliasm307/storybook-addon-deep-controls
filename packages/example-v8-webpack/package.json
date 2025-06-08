@@ -1,6 +1,9 @@
 {
   "name": "storybook-addon-deep-controls-example-v8-webpack",
   "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6008 --no-open",
