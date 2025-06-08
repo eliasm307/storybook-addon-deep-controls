@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/nodemon.json",
+  "delay": 5000,
+  "colours": true,
+  "verbose": true,
+  "exec": "npm run storybook",
+  "watch": ["./.storybook", "../addon"],
+  "ext": "ts,tsx,js,jsx,json",
+  "ignore": ["**/dist/", "**/coverage/", "**/node_modules/", "**/*.test.*"]
+}

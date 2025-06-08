@@ -6,7 +6,7 @@
   },
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6007 --no-open",
-    "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/",
+    "storybook:watch": "nodemon",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
     "test": "yarn --top-level playwright -- test",
@@ -20,6 +20,7 @@
     "@storybook/react": "7.6.20",
     "@storybook/types": "7.6.20",
     "next": "13.5.6",
+    "nodemon": "3.1.10",
     "storybook": "7.6.20",
     "storybook-addon-deep-controls": "workspace:*"
   }
