@@ -12,12 +12,12 @@
     "deploy": "npm run build && netlify deploy --prod"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "8.3.6",
-    "@storybook/nextjs": "8.3.6",
-    "@storybook/react": "8.3.6",
-    "@storybook/types": "8.3.6",
+    "@storybook/addon-essentials": "8.6.14",
+    "@storybook/nextjs": "8.6.14",
+    "@storybook/react": "8.6.14",
+    "@storybook/types": "8.6.14",
     "next": "13.5.6",
-    "storybook": "8.3.6",
+    "storybook": "8.6.14",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }

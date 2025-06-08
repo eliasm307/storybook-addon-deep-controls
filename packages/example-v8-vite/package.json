@@ -12,15 +12,15 @@
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
-    "@storybook/addon-essentials": "8.3.6",
-    "@storybook/builder-vite": "^8.3.6",
-    "@storybook/react": "8.3.6",
-    "@storybook/react-vite": "^8.3.6",
-    "@storybook/types": "8.3.6",
-    "@vitejs/plugin-react": "^4.3.3",
+    "@storybook/addon-essentials": "8.6.14",
+    "@storybook/builder-vite": "^8.6.14",
+    "@storybook/react": "8.6.14",
+    "@storybook/react-vite": "^8.6.14",
+    "@storybook/types": "8.6.14",
+    "@vitejs/plugin-react": "^4.5.1",
     "cross-env": "^7.0.3",
-    "storybook": "8.3.6",
+    "storybook": "8.6.14",
     "storybook-addon-deep-controls": "workspace:*",
-    "vite": "^5.4.10"
+    "vite": "^5.4.19"
   }
 }

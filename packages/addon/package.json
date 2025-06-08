@@ -70,9 +70,9 @@
     "storybook": "7.x.x || 8.x.x"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.16.4",
-    "@vitest/coverage-v8": "^2.1.4",
+    "@arethetypeswrong/cli": "^0.18.1",
+    "@vitest/coverage-v8": "^2.1.9",
     "react": "18.3.1",
-    "vitest": "^2.1.4"
+    "vitest": "^2.1.9"
   }
 }
