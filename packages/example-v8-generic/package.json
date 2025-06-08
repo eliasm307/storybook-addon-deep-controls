@@ -2,9 +2,12 @@
   "name": "storybook-addon-deep-controls-example-v8-generic",
   "private": true,
   "scripts": {
-    "playwright": "node ../../node_modules/playwright/cli.js"
+    "playwright": "node ../../node_modules/playwright/cli.js",
+    "playwright:v8-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite npm run playwright",
+    "playwright:v8-webpack": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright"
   },
   "devDependencies": {
-    "@storybook-addon-deep-controls/common-internal": "workspace:*"
+    "@storybook-addon-deep-controls/common-internal": "workspace:*",
+    "cross-env": "7.0.3"
   }
 }

@@ -6,22 +6,22 @@
   },
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6008 --no-open",
-    "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
-    "playwright": "node ../../node_modules/playwright/cli.js",
-    "test": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright test",
-    "test:ui": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright test --ui",
-    "test:codegen": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright codegen http://localhost:6008/",
+    "storybook:watch": "nodemon",
+    "test": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- test",
+    "test:ui": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- test --ui",
+    "test:codegen": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- codegen http://localhost:6008/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
     "deploy": "npm run build && netlify deploy --prod"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "8.6.14",
-    "@storybook/nextjs": "8.6.14",
-    "@storybook/react": "8.6.14",
-    "@storybook/types": "8.6.14",
+    "@storybook/addon-essentials": "8.3.6",
+    "@storybook/nextjs": "8.3.6",
+    "@storybook/react": "8.3.6",
+    "@storybook/types": "8.3.6",
     "next": "13.5.6",
-    "storybook": "8.6.14",
+    "nodemon": "3.1.10",
+    "storybook": "8.3.6",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }
