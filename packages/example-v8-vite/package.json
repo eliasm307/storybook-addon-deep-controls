@@ -15,15 +15,15 @@
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
-    "@storybook/addon-essentials": "8.3.6",
-    "@storybook/builder-vite": "8.3.6",
-    "@storybook/react": "8.3.6",
-    "@storybook/react-vite": "8.3.6",
-    "@storybook/types": "8.3.6",
+    "@storybook/addon-essentials": "8.5.0",
+    "@storybook/builder-vite": "8.5.0",
+    "@storybook/react": "8.5.0",
+    "@storybook/react-vite": "8.5.0",
+    "@storybook/types": "8.5.0",
     "@vitejs/plugin-react": "4.5.1",
     "cross-env": "7.0.3",
     "nodemon": "3.1.10",
-    "storybook": "8.3.6",
+    "storybook": "8.5.0",
     "storybook-addon-deep-controls": "workspace:*",
     "vite": "6.3.5"
   }
