@@ -10,7 +10,6 @@
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/react": "8.3.6",
     "cross-env": "7.0.3",
-    "lodash.clonedeep": "4.5.0",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }
