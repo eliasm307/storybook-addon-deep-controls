@@ -9,9 +9,10 @@
     "storybook:watch": "nodemon",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
-    "test": "yarn --top-level playwright -- test",
-    "test:ui": "yarn --top-level playwright -- test --ui",
-    "test:codegen": "yarn --top-level playwright -- codegen http://localhost:6007/"
+    "playwright": "node ../../node_modules/playwright/cli.js",
+    "test": "npm run playwright -- test",
+    "test:ui": "npm run playwright -- test --ui",
+    "test:codegen": "npm run playwright -- codegen http://localhost:6007/"
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
