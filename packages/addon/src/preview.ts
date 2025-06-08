@@ -12,11 +12,14 @@ const preview: ProjectAnnotations<Renderer> = {
      * @note Might be called multiple times during render for the same story
      */
     (context) => {
+      console.log("argEnhancer start", {context});
       if (!context.parameters.deepControls?.enabled) {
         return context.initialArgs;
       }
 
-      return createFlattenedArgs(context);
+      const flattenedArgs = createFlattenedArgs(context);
+      console.log("argEnhancer end", {flattenedArgs});
+      return flattenedArgs;
     },
   ],
 
@@ -32,11 +35,15 @@ const preview: ProjectAnnotations<Renderer> = {
      * @note Might be called multiple times during render for the same story
      */
     (context) => {
+      console.log("argTypesEnhancer start", {context});
       if (!context.parameters.deepControls?.enabled) {
+        console.log("argTypesEnhancer end, no deepControls enabled");
         return context.argTypes;
       }
 
-      return createFlattenedArgTypes(context) as StrictArgTypes;
+      const flattenedArgTypes = createFlattenedArgTypes(context) as StrictArgTypes;
+      console.log("argTypesEnhancer end", {flattenedArgTypes});
+      return flattenedArgTypes;
     },
   ],
 
@@ -46,15 +53,17 @@ const preview: ProjectAnnotations<Renderer> = {
      * before passing them to the story component
      */
     (storyFn, context) => {
+      console.log("decorator start", {context});
       if (!context.parameters.deepControls?.enabled) {
+        console.log("decorator end, no deepControls enabled");
         return storyFn(context);
       }
 
-      return storyFn({
-        ...context,
-        args: expandObject(context.args),
-        initialArgs: expandObject(context.initialArgs),
-      });
+      const args = expandObject(context.args);
+      const initialArgs = expandObject(context.initialArgs);
+      console.log("decorator end", {args, initialArgs});
+
+      return storyFn({...context, args, initialArgs});
     },
   ],
 };

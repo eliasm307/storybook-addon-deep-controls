@@ -1,0 +1,28 @@
+{
+  "name": "storybook-addon-deep-controls-example-v8.5-vite-plain",
+  "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "scripts": {
+    "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6086 --no-open",
+    "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon",
+    "test": "npm --prefix ../example-v8-generic run playwright:v8.5-vite-plain -- test",
+    "test:ui": "npm --prefix ../example-v8-generic run playwright:v8.5-vite-plain -- test --ui",
+    "test:codegen": "npm --prefix ../example-v8-generic run playwright:v8.5-vite-plain -- codegen http://localhost:6086/",
+    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
+    "build": "npm run addon:build && storybook build"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "8.5.0",
+    "@storybook/builder-vite": "8.5.0",
+    "@storybook/react": "8.5.0",
+    "@storybook/react-vite": "8.5.0",
+    "@storybook/types": "8.5.0",
+    "@vitejs/plugin-react": "4.5.1",
+    "cross-env": "7.0.3",
+    "nodemon": "3.1.10",
+    "storybook": "8.5.0",
+    "vite": "6.3.5"
+  }
+}

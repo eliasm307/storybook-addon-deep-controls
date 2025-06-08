@@ -1,13 +1,13 @@
 export const TEST_TIMEOUT_MS = 120_000;
 
-type StorybookType = "v8-vite" | "v8-webpack";
+type StorybookType = "v8-vite" | "v8-webpack" | "v8.5-vite";
 
 type StorybookExampleConfig = {
   port: number;
   devCommand: string;
 };
 
-const STORYBOOK_CONFIGS: Record<"v8-vite" | "v8-webpack", StorybookExampleConfig> = {
+const STORYBOOK_CONFIGS: Record<StorybookType, StorybookExampleConfig> = {
   "v8-webpack": {
     port: 6008,
     devCommand: "npm run --prefix ../example-v8-webpack storybook",
@@ -15,6 +15,10 @@ const STORYBOOK_CONFIGS: Record<"v8-vite" | "v8-webpack", StorybookExampleConfig
   "v8-vite": {
     port: 6018,
     devCommand: "npm run --prefix ../example-v8-vite storybook",
+  },
+  "v8.5-vite": {
+    port: 6085,
+    devCommand: "npm run --prefix ../example-v8.5-vite storybook",
   },
 };
 

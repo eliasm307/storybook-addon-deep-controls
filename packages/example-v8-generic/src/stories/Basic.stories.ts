@@ -19,8 +19,33 @@ export const Enabled: Story = {
   args: {
     deep: {
       bool: true,
+      text: "Hello, world!",
+    },
+    bool: true,
+    num: 1,
+    text: "t1",
+  },
+  argTypes: {
+    "deep.bool": {
+      control: "boolean",
+    },
+    foo: 1,
+  },
+};
+
+export const Disabled: Story = {
+  parameters: {
+    deepControls: {
+      enabled: false,
+    },
+  },
+  args: {
+    deep: {
+      bool: true,
+      text: "Hello, world!",
     },
     num: 1,
+    text: "t1",
   },
   argTypes: {
     "deep.bool": {

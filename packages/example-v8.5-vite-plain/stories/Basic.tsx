@@ -1,8 +1,7 @@
 import React from "react";
-import {stringify} from "@storybook-addon-deep-controls/common-internal";
 
 export default function Basic(config: {
-  deep: {
+  obj: {
     bool: boolean;
     text: string;
   };
@@ -20,7 +19,7 @@ export default function Basic(config: {
           wordWrap: "normal",
         }}
       >
-        {stringify(config)}
+        {JSON.stringify(config, null, 2)}
       </pre>
     </div>
   );

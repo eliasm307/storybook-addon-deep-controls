@@ -4,6 +4,7 @@
   "scripts": {
     "playwright": "node ../../node_modules/playwright/cli.js",
     "playwright:v8-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite npm run playwright -- ",
+    "playwright:v8.5-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8.5-vite npm run playwright -- ",
     "playwright:v8-webpack": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright -- "
   },
   "devDependencies": {
