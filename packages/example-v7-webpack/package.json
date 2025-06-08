@@ -6,9 +6,10 @@
     "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:codegen": "playwright codegen http://localhost:6007/"
+    "playwright": "node ../../node_modules/playwright/cli.js",
+    "test": "yarn playwright test",
+    "test:ui": "yarn playwright test --ui",
+    "test:codegen": "yarn playwright codegen http://localhost:6007/"
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
