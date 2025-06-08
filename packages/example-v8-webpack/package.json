@@ -15,13 +15,13 @@
     "deploy": "npm run build && netlify deploy --prod"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "8.5.0",
-    "@storybook/nextjs": "8.5.0",
-    "@storybook/react": "8.5.0",
-    "@storybook/types": "8.5.0",
+    "@storybook/addon-essentials": "8.4.7",
+    "@storybook/nextjs": "8.4.7",
+    "@storybook/react": "8.4.7",
+    "@storybook/types": "8.4.7",
     "next": "13.5.6",
     "nodemon": "3.1.10",
-    "storybook": "8.5.0",
+    "storybook": "8.4.7",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }

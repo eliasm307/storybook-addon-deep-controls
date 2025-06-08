@@ -3,12 +3,12 @@
   "private": true,
   "scripts": {
     "playwright": "node ../../node_modules/playwright/cli.js",
-    "playwright:v8-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite npm run playwright",
-    "playwright:v8-webpack": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright"
+    "playwright:v8-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite npm run playwright -- ",
+    "playwright:v8-webpack": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright -- "
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
-    "@storybook/react": "8.5.0",
+    "@storybook/react": "8.4.7",
     "cross-env": "7.0.3",
     "storybook-addon-deep-controls": "workspace:*"
   }
