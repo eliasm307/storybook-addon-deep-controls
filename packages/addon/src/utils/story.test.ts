@@ -1314,7 +1314,7 @@ describe("Story utils", function () {
             },
             argTypes: {
               "object.prop1": {description: "Custom description"},
-              "object.prop2": {type: {name: "Foo"}},
+              "object.prop2": {type: {name: "boolean"}},
             },
             parameters: {
               deepControls: {},
@@ -1338,7 +1338,7 @@ describe("Story utils", function () {
             "object.prop2": {
               name: "object.prop2",
               control: {type: "boolean"},
-              type: {name: "Foo"}, // overridden by custom arg type
+              type: {name: "boolean"}, // overridden by custom arg type
             },
           },
         );
