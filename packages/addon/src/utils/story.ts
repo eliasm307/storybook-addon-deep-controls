@@ -1,6 +1,7 @@
 import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
 import type {DeepControlsAddonParameters, PartialStrictInputType} from "../..";
 import {isPojo, setProperty} from "./general";
+import type {ControlType} from "../types";
 
 /** @internal */
 export const INTERNAL_STATE_SYMBOL = Symbol("deepControlsInternalState");
@@ -15,7 +16,7 @@ export type InternalDeepControlsStorybookContext = Pick<
     docs?: unknown;
     controls?: {
       /** @see https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers */
-      matchers?: Record<string, RegExp>;
+      matchers?: Record<ControlType, RegExp>;
     };
     // NOTE: this needs to be defined for the addon to be enabled, so we can assume it will be defined
     // but type needs to be optional for compatibility
@@ -295,7 +296,7 @@ export function createFlattenedArgTypes(
 function createFlattenedValueArgType(
   argPath: string,
   argValue: unknown,
-  controlMatcherEntries: [string, RegExp][],
+  controlMatcherEntries: [ControlType, RegExp][],
   userDefinedArgTypes: DeepControlsArgTypesMap,
 ): StrictInputType | undefined {
   if (userAlreadyDefinedArgTypeForParentOfThisPath(argPath, userDefinedArgTypes)) {
@@ -358,7 +359,7 @@ function getArgTypeFromControlMatchers({
   controlMatcherEntries,
 }: {
   argPath: string;
-  controlMatcherEntries: [string, RegExp][];
+  controlMatcherEntries: [ControlType, RegExp][];
 }): StrictInputType | undefined {
   const lastSegment = argPath.substring(argPath.lastIndexOf(".") + 1);
   for (const [controlType, matcherRegex] of controlMatcherEntries) {
@@ -366,7 +367,10 @@ function getArgTypeFromControlMatchers({
     if (matcherRegex.test(lastSegment)) {
       return {
         name: argPath,
-        control: {type: controlType},
+        control: {
+          // ControlType type is not exported from @storybook/csf, so we ignore type error here
+          type: controlType as any,
+        },
       };
     }
   }
