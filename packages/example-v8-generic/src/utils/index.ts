@@ -1,5 +1,5 @@
 import {createServer} from "http";
-import cloneDeep from "lodash/cloneDeep.js";
+import cloneDeep from "lodash.cloneDeep";
 import {STORYBOOK_PORT} from "./constants";
 
 export function clone<T extends Record<string, unknown>>(obj: T): T {

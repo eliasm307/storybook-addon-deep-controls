@@ -26,7 +26,7 @@ export const CONFIG = (function getStorybookConfig(): StorybookExampleConfig {
     throw new Error(`Unknown storybook type ${storybookType}`);
   }
 
-  console.log(`Storybook config: ${JSON.stringify(config, null, 2)}`);
+  // console.log(`Storybook config: ${JSON.stringify(config, null, 2)}`);
   return config;
 })();
 

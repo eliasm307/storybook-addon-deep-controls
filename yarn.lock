@@ -18942,6 +18942,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.clonedeep@npm:4.5.0":
+  version: 4.5.0
+  resolution: "lodash.clonedeep@npm:4.5.0"
+  checksum: 10c0/2caf0e4808f319d761d2939ee0642fa6867a4bbf2cfce43276698828380756b99d4c4fa226d881655e6ac298dd453fe12a5ec8ba49861777759494c534936985
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -24297,7 +24304,10 @@ __metadata:
   resolution: "storybook-addon-deep-controls-example-v8-generic@workspace:packages/example-v8-generic"
   dependencies:
     "@storybook-addon-deep-controls/common-internal": "workspace:*"
+    "@storybook/react": "npm:8.3.6"
     cross-env: "npm:7.0.3"
+    lodash.clonedeep: "npm:4.5.0"
+    storybook-addon-deep-controls: "workspace:*"
   languageName: unknown
   linkType: soft
 

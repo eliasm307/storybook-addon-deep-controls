@@ -13,7 +13,6 @@ const meta = {
     "deep.bool": {
       control: "boolean",
     },
-    // @ts-expect-error [values are typed]
     foo: 1,
   },
 } satisfies TypeWithDeepControls<Meta<typeof Basic>>;
@@ -33,7 +32,6 @@ export const Enabled: Story = {
     "deep.bool": {
       control: "boolean",
     },
-    // @ts-expect-error [values are typed]
     foo: 1,
   },
 };
