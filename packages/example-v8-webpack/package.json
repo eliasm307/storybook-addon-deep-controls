@@ -5,9 +5,9 @@
     "storybook:watch": "nodemon --delay 5000ms --watch ./.storybook --watch ../addon --exec \"npm run storybook\" --ext ts,tsx,js,jsx,json --ignore **/dist/ --ignore **/coverage/ --ignore **/node_modules/ --ignore **/*.test.*",
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6008 --no-open",
     "playwright": "node ../../node_modules/playwright/cli.js",
-    "test": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack yarn playwright test",
-    "test:ui": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack yarn playwright test --ui",
-    "test:codegen": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack yarn playwright codegen http://localhost:6008/",
+    "test": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright test",
+    "test:ui": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright test --ui",
+    "test:codegen": "cd ../example-v8-generic && cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright codegen http://localhost:6008/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
     "deploy": "npm run build && netlify deploy --prod"
