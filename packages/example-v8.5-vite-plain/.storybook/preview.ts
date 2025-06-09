@@ -3,42 +3,44 @@ import type {StrictArgTypes} from "@storybook/types";
 
 const preview: Preview = {
   argTypesEnhancers: [
-    (context): StrictArgTypes => {
-      return {
-        ...context.argTypes,
-        newBool: {
-          name: "newBool",
-          control: {type: "boolean"},
-          type: {name: "boolean", required: true},
-        },
-        newString: {
-          name: "newString",
-          control: {type: "text"},
-          type: {name: "string", required: true},
-        },
-      };
-    },
+    (context): StrictArgTypes => ({
+      ...context.argTypes,
+      "new.bool": {
+        name: "new.bool",
+        control: {type: "boolean"},
+        type: {name: "boolean"},
+      },
+      "new.string": {
+        name: "new.string",
+        control: {type: "text"},
+        type: {name: "string"},
+      },
+    }),
   ],
   argsEnhancers: [
-    (context) => {
-      return {
-        ...context.initialArgs,
-        newBool: true,
-        newString: "New String Value",
-      };
-    },
+    (context) => ({
+      ...context.initialArgs,
+      "new.bool": true,
+      "new.string": "New String",
+    }),
   ],
   decorators: [
     (storyFn, context) => {
-      console.log("Decorator called with context:", context);
-
       const args = {...context.args};
-      delete args.newBool;
-      delete args.newString;
+      args.new = {
+        bool: args["new.bool"],
+        string: args["new.string"],
+      };
+      delete args["new.bool"];
+      delete args["new.string"];
 
       const initialArgs = {...context.initialArgs};
-      delete initialArgs.newBool;
-      delete initialArgs.newString;
+      initialArgs.new = {
+        bool: initialArgs["new.bool"],
+        string: initialArgs["new.string"],
+      };
+      delete initialArgs["new.bool"];
+      delete initialArgs["new.string"];
 
       return storyFn({...context, args, initialArgs});
     },

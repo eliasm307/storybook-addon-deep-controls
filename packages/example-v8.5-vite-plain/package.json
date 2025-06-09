@@ -14,15 +14,15 @@
     "build": "npm run addon:build && storybook build"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "8.5.0",
-    "@storybook/builder-vite": "8.5.0",
-    "@storybook/react": "8.5.0",
-    "@storybook/react-vite": "8.5.0",
-    "@storybook/types": "8.5.0",
+    "@storybook/addon-essentials": "8.5.0-beta.10",
+    "@storybook/builder-vite": "8.5.0-beta.10",
+    "@storybook/react": "8.5.0-beta.10",
+    "@storybook/react-vite": "8.5.0-beta.10",
+    "@storybook/types": "8.5.0-beta.10",
     "@vitejs/plugin-react": "4.5.1",
     "cross-env": "7.0.3",
     "nodemon": "3.1.10",
-    "storybook": "8.5.0",
+    "storybook": "8.5.0-beta.10",
     "vite": "6.3.5"
   }
 }
