@@ -66,7 +66,7 @@ export const DisabledWithSimpleObject: Story = {
   args: {
     someObject: {
       anyString: "anyString",
-      enumString: "enumString",
+      enumString: "value2",
     },
   },
   parameters: {
