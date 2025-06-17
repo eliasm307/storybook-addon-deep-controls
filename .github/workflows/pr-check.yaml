@@ -65,6 +65,9 @@ jobs:
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
+      - name: Run Storybook v9-vite e2e tests
+        run: npm run --prefix packages/example-v9-vite test
+
       - name: Run Storybook v8-vite e2e tests
         run: npm run --prefix packages/example-v8-vite test
 
