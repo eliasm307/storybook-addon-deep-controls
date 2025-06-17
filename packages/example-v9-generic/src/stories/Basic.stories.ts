@@ -5,6 +5,8 @@ import Basic from "./Basic";
 const meta = {
   component: Basic,
   parameters: {
+    // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/react/configure/story-layout
+    layout: "centered",
     deepControls: {
       enabled: true,
     },
@@ -15,27 +17,35 @@ export default meta;
 
 type Story = TypeWithDeepControls<StoryObj<typeof meta>>;
 
-export const Enabled: Story = {
+export const Disabled: Story = {
   args: {
-    deep: {
-      bool: true,
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
+      number: 42,
+      boolean: true,
     },
-    num: 1,
   },
-  argTypes: {
-    "deep.bool": {
-      control: "boolean",
+  parameters: {
+    deepControls: {
+      enabled: false,
     },
-    foo: 1,
   },
 };
 
-export const WithoutInitialArgTypes: Story = {
+export const Enabled: Story = {
   args: {
-    deep: {
-      bool: true,
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
+      number: 42,
+      boolean: true,
     },
-    num: 1,
   },
-  argTypes: {},
+  argTypes: {
+    "someObject.enumString": {
+      control: "radio",
+      options: ["value1", "value2", "value3"],
+    },
+  },
 };

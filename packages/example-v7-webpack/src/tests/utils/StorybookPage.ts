@@ -1,6 +1,7 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
 import {STORYBOOK_V7_PORT} from "./constants";
+import {setTimeout} from "timers/promises";
 
 type ControlExpectation =
   | string
@@ -21,6 +22,7 @@ class Assertions {
   constructor(private object: StorybookPageObject) {}
 
   async actualConfigMatches(expectedConfig: Record<string, unknown>) {
+    await setTimeout(1000); // wait for changes to be applied, reduces flakiness
     const actualConfigText = await this.object.previewIframeLocator
       .locator("#actual-config-json")
       .innerText();

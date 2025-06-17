@@ -1,12 +1,14 @@
 import {type Page, expect} from "playwright/test";
 import type {ControlExpectation} from "../types";
 import {StorybookArgsTableObject} from "./ArgsTableObject";
+import {setTimeout} from "node:timers/promises";
 
 // todo extract magic storybook id/class etc selectors to constants
 class Assertions {
   constructor(private object: StoryPageObject) {}
 
   async actualConfigMatches(expectedConfig: Record<string, unknown>) {
+    await setTimeout(1000); // wait for change to be applied, reduces flakiness
     const actualConfigText = await this.object.previewIframeLocator
       .locator("#storybook-root") // docs are rendered but not visible, so here we are specifying the main story root
       .locator("#actual-config-json")

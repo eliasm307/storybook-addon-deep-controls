@@ -5,11 +5,11 @@
     "hoistingLimits": "workspaces"
   },
   "scripts": {
-    "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6018 --no-open",
+    "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6100 --no-open",
     "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon",
     "test": "npm --prefix ../example-v9-generic run playwright:vite -- test",
     "test:ui": "npm --prefix ../example-v9-generic run playwright:vite -- test --ui",
-    "test:codegen": "npm --prefix ../example-v9-generic run playwright:vite -- codegen http://localhost:6018/",
+    "test:codegen": "npm --prefix ../example-v9-generic run playwright:vite -- codegen http://localhost:6100/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build",
     "deploy": "npm run build && netlify deploy --prod"
