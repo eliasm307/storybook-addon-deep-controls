@@ -1,19 +1,15 @@
 export const TEST_TIMEOUT_MS = 120_000;
 
-type StorybookType = "vite" | "webpack";
+type StorybookType = "vite";
 
 type StorybookExampleConfig = {
   port: number;
   devCommand: string;
 };
 
-const STORYBOOK_CONFIGS: Record<"vite" | "webpack", StorybookExampleConfig> = {
-  webpack: {
-    port: 6008,
-    devCommand: "npm run --prefix ../example-v9-webpack storybook",
-  },
+const STORYBOOK_CONFIGS: Record<StorybookType, StorybookExampleConfig> = {
   vite: {
-    port: 6018,
+    port: 6100,
     devCommand: "npm run --prefix ../example-v9-vite storybook",
   },
 };
