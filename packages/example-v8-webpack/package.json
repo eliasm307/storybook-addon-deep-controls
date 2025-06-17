@@ -11,8 +11,7 @@
     "test:ui": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- test --ui",
     "test:codegen": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- codegen http://localhost:6008/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
-    "build": "npm run addon:build && storybook build",
-    "deploy": "npm run build && netlify deploy --prod"
+    "build": "npm run addon:build && storybook build"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "8.3.6",
