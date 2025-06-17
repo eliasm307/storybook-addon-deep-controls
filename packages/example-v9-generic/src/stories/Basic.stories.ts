@@ -33,7 +33,7 @@ export const Disabled: Story = {
   },
 };
 
-export const WithCustomControls: Story = {
+export const Enabled: Story = {
   args: {
     someObject: {
       anyString: "anyString",
@@ -48,14 +48,4 @@ export const WithCustomControls: Story = {
       options: ["value1", "value2", "value3"],
     },
   },
-};
-
-export const WithoutInitialArgTypes: Story = {
-  args: {
-    deep: {
-      bool: true,
-    },
-    num: 1,
-  },
-  argTypes: {},
 };
