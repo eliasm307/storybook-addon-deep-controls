@@ -1,7 +1,7 @@
 import {type Page, expect} from "playwright/test";
+import {setTimeout} from "node:timers/promises";
 import type {ControlExpectation} from "../types";
 import {StorybookArgsTableObject} from "./ArgsTableObject";
-import {setTimeout} from "node:timers/promises";
 
 // todo extract magic storybook id/class etc selectors to constants
 class Assertions {

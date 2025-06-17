@@ -1,7 +1,7 @@
 import type {Page} from "@playwright/test";
 import {expect} from "@playwright/test";
-import {STORYBOOK_V7_PORT} from "./constants";
 import {setTimeout} from "timers/promises";
+import {STORYBOOK_V7_PORT} from "./constants";
 
 type ControlExpectation =
   | string
