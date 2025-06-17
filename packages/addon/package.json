@@ -65,9 +65,9 @@
     "check-exports": "attw --pack . --ignore-rules untyped-resolution false-cjs"
   },
   "peerDependencies": {
-    "@storybook/addon-controls": "7.x.x || 8.x.x",
-    "@storybook/types": "7.x.x || 8.x.x",
-    "storybook": "7.x.x || 8.x.x"
+    "@storybook/addon-controls": "7.x.x || >= 8.0.0 < 8.5.0",
+    "@storybook/types": "7.x.x || >= 8.0.0 < 8.5.0",
+    "storybook": "7.x.x || >= 8.0.0 < 8.5.0 || 9.x.x"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.1",
