@@ -26,7 +26,6 @@ export const Enabled: Story = {
     "deep.bool": {
       control: "boolean",
     },
-    foo: 1,
   },
 };
 

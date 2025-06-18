@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
 import Basic from "./Basic";
 
-const meta = {
+const meta: TypeWithDeepControls<Meta<typeof Basic>> = {
   component: Basic,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/react/configure/story-layout
@@ -11,7 +11,7 @@ const meta = {
       enabled: true,
     },
   },
-} satisfies TypeWithDeepControls<Meta<typeof Basic>>;
+};
 
 export default meta;
 

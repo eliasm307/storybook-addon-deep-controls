@@ -1,5 +1,5 @@
-import type {StoryContextForEnhancers, StrictInputType} from "@storybook/types";
-import type {DeepControlsAddonParameters, PartialStrictInputType} from "../..";
+import type {InputType, StoryContextForEnhancers} from "storybook/internal/types";
+import type {DeepControlsAddonParameters} from "../..";
 import {isPojo, setProperty} from "./general";
 
 /** @internal */
@@ -51,8 +51,12 @@ export type DeepControlsInternalState = {
   userDefinedArgTypes: DeepControlsArgTypesMap;
 };
 
-/** @internal */
-export type DeepControlsArgTypesMap = Record<string, PartialStrictInputType>;
+/**
+ *  @note Using `InputType` instead of `StrictInputType` here as that is what is exposed to users in meta/story config
+ *
+ *   @internal
+ */
+export type DeepControlsArgTypesMap = Record<string, InputType>;
 
 type PrimitiveValue = bigint | boolean | number | string | undefined | null;
 
@@ -135,7 +139,7 @@ function flattenObjectRecursively(
   return context.flatObjectOut;
 }
 
-function createObjectArgType(argName: string): StrictInputType {
+function createObjectArgType(argName: string): InputType {
   return {
     name: argName,
     control: {type: "object"},
@@ -154,17 +158,14 @@ function createObjectArgType(argName: string): StrictInputType {
  *
  * @see https://storybook.js.org/docs/react/essentials/controls#disable-controls-for-specific-properties
  */
-function createHiddenArgType(argPath: string): StrictInputType {
+function createHiddenArgType(argPath: string): InputType {
   return {
     name: argPath,
     table: {disable: true},
   };
 }
 
-function createPrimitiveArgInputTypeConfig(arg: {
-  name: string;
-  value: PrimitiveValue;
-}): StrictInputType {
+function createPrimitiveArgInputTypeConfig(arg: {name: string; value: PrimitiveValue}): InputType {
   const commonConfig = {name: arg.name};
   switch (typeof arg.value) {
     case "string":
@@ -297,7 +298,7 @@ function createFlattenedValueArgType(
   argValue: unknown,
   controlMatcherEntries: [string, RegExp][],
   userDefinedArgTypes: DeepControlsArgTypesMap,
-): StrictInputType | undefined {
+): InputType | undefined {
   if (userAlreadyDefinedArgTypeForParentOfThisPath(argPath, userDefinedArgTypes)) {
     return; // user has defined an argType for a parent object so we don't create controls for its children
   }
@@ -326,9 +327,9 @@ function createFlattenedValueArgType(
  */
 // todo test it overwrites arrays completely instead of specific elements
 function mergeArgTypes(
-  target: PartialStrictInputType | undefined,
-  overrides: PartialStrictInputType | undefined,
-): PartialStrictInputType | undefined {
+  target: InputType | undefined,
+  overrides: InputType | undefined,
+): InputType | undefined {
   if (!target) {
     return overrides;
   }
@@ -359,14 +360,14 @@ function getArgTypeFromControlMatchers({
 }: {
   argPath: string;
   controlMatcherEntries: [string, RegExp][];
-}): StrictInputType | undefined {
+}): InputType | undefined {
   const lastSegment = argPath.substring(argPath.lastIndexOf(".") + 1);
   for (const [controlType, matcherRegex] of controlMatcherEntries) {
     // we only want to match on the last segment of the argPath, ie the actual property name
     if (matcherRegex.test(lastSegment)) {
       return {
         name: argPath,
-        control: {type: controlType},
+        control: {type: controlType as any}, // ControlType not exported
       };
     }
   }
@@ -456,7 +457,7 @@ const ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON = new Set([
     }
   },
  */
-function isArgTypeLikelyGeneratedByDocs(argName: string, argType: PartialStrictInputType): boolean {
+function isArgTypeLikelyGeneratedByDocs(argName: string, argType: InputType): boolean {
   // check argType only has the properties the docs addon would add
   if (Object.keys(argType).length !== ARG_TYPE_PROPERTIES_ALWAYS_INCLUDED_BY_DOCS_ADDON.size) {
     return false; // likely be a customised argType because it has a different number of properties than a generated argType

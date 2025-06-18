@@ -1,4 +1,4 @@
-import type {ProjectAnnotations, Renderer, StrictArgTypes} from "@storybook/types";
+import type {ProjectAnnotations, Renderer, StrictArgTypes} from "storybook/internal/types";
 import {createFlattenedArgTypes, createFlattenedArgs, expandObject} from "./utils/story";
 
 // todo test it does not do anything custom if deepControls is not enabled
