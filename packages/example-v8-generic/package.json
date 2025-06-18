@@ -1,6 +1,9 @@
 {
   "name": "storybook-addon-deep-controls-example-v8-generic",
   "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "playwright": "node ../../node_modules/playwright/cli.js",
     "playwright:v8-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite npm run playwright",
