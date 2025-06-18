@@ -1,9 +1,10 @@
 import type {Meta, StoryObj} from "@storybook/react";
-import {Dev} from "./Dev";
+import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
+import Dev from "./Dev";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
-const meta = {
+const meta: Meta<typeof Dev> = {
   component: Dev,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/react/configure/story-layout
@@ -12,10 +13,11 @@ const meta = {
       enabled: true,
     },
   },
-} satisfies Meta<typeof Dev>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+
+type Story = TypeWithDeepControls<StoryObj<typeof meta>>;
 
 export const Enabled: Story = {
   args: createNestedObject(),
@@ -33,8 +35,8 @@ export const Disabled: Story = {
 export const WithCustomControls: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "value2",
     },
   },
   argTypes: {
@@ -45,11 +47,26 @@ export const WithCustomControls: Story = {
   },
 };
 
-export const RawObject: Story = {
+export const WithCustomControlsForNonExistingProperty: Story = {
   args: {
     someObject: {
-      anyString: "string",
-      enumString: "string",
+      anyString: "anyString",
+      enumString: "value2",
+    },
+  },
+  argTypes: {
+    "someObject.unknown": {
+      control: "radio",
+      options: ["value1", "value2", "value3"],
+    },
+  },
+};
+
+export const DisabledWithSimpleObject: Story = {
+  args: {
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
     },
   },
   parameters: {
@@ -65,7 +82,9 @@ function createNestedObject() {
     bool: true,
     string: "string1234",
     number: 1234,
+    jsx: <div />,
     nested: {
+      jsx: <div />,
       bool: false,
       string: "string2",
       number: 2,
@@ -103,3 +122,47 @@ function createNestedObject() {
     },
   };
 }
+
+export const WithControlMatchers: Story = {
+  parameters: {
+    controls: {
+      // see https://storybook.js.org/docs/essentials/controls#custom-control-type-matchers
+      matchers: {
+        color: /color/i,
+      },
+    },
+  },
+  args: {
+    color: {
+      color: "#f00",
+      description: "Very red",
+    },
+  },
+};
+
+export const WithEmptyInitialArgs: Story = {
+  args: {
+    emptyObj: {},
+    emptyArray: [],
+  },
+};
+
+export const WithOverriddenObjectArg: Story = {
+  args: {
+    someObject: {
+      obj1: {
+        foo1: "foo1",
+        bar1: "bar1",
+      },
+      obj2WithArgType: {
+        foo2: "foo2",
+        bar2: "bar2",
+      },
+    },
+  },
+  argTypes: {
+    // obj1 should be deep controlled
+    // obj2 should be shown with same value in json control
+    "someObject.obj2WithArgType": {control: "object"},
+  },
+};

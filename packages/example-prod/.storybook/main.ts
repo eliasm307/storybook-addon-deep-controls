@@ -1,22 +1,27 @@
-import type {StorybookConfig} from "@storybook/nextjs";
-import {join, dirname} from "path";
+import {StorybookConfig} from "@storybook/react-vite";
+import type {InlineConfig} from "vite";
+// NOTE: dont import vite at top level: https://github.com/storybookjs/storybook/issues/26291#issuecomment-1978193283
 
-/**
- * This function is used to resolve the absolute path of a package.
- * It is needed in projects that use Yarn PnP or are set up within a monorepo.
- */
-function getAbsolutePathToPackage(value: string): any {
-  return dirname(require.resolve(join(value, "package.json")));
-}
+// todo wait for react native
 const config: StorybookConfig = {
-  stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: [
-    getAbsolutePathToPackage("@storybook/addon-controls"),
-    getAbsolutePathToPackage("storybook-addon-deep-controls"),
-  ],
+  stories: ["../../example-v9-generic/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  addons: ["@storybook/addon-docs", "storybook-addon-deep-controls"],
   framework: {
-    name: getAbsolutePathToPackage("@storybook/nextjs"),
+    name: "@storybook/react-vite",
     options: {},
   },
+  viteFinal: async (config) => {
+    // NOTE: dont import vite at top level: https://github.com/storybookjs/storybook/issues/26291#issuecomment-1978193283
+    const [{mergeConfig}, react] = await Promise.all([
+      import("vite"),
+      // to prevent "React is not defined" error without explicit react import
+      import("@vitejs/plugin-react").then((m) => m.default),
+    ]);
+
+    return mergeConfig(config, {
+      plugins: [react()],
+    } satisfies InlineConfig);
+  },
 };
+
 export default config;

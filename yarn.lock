@@ -8098,17 +8098,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react-dom-shim@npm:9.0.12":
-  version: 9.0.12
-  resolution: "@storybook/react-dom-shim@npm:9.0.12"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.0.12
-  checksum: 10c0/95b5dc7debeb10a2224141c7e8753606604b4a0ec77f0cd6668e2cb0c403e69e2a2c7ac0a73343dc917bb4ab266f5758f9908a001d14d462c00d1344749ed677
-  languageName: node
-  linkType: hard
-
 "@storybook/react-vite@npm:8.3.6":
   version: 8.3.6
   resolution: "@storybook/react-vite@npm:8.3.6"
@@ -8243,24 +8232,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/d03db5d7bf772c74a51cb54363c7743030f7689738dc9b972115bbecb58e3c24d2367fb57a9f053feca28d55ec434e08365214bb3b59d35ef3863dbbcc7eaa45
-  languageName: node
-  linkType: hard
-
-"@storybook/react@npm:9.0.12":
-  version: 9.0.12
-  resolution: "@storybook/react@npm:9.0.12"
-  dependencies:
-    "@storybook/global": "npm:^5.0.0"
-    "@storybook/react-dom-shim": "npm:9.0.12"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.0.12
-    typescript: ">= 4.9.x"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/fb8441757cb2f3fb99a27ebda1dede8a71f12f807610edfe90a669f4206c2ded468cbbb189322670ae36aa59d6fb6c2a913617a1ef8c7077cfe8cf317a89b095
   languageName: node
   linkType: hard
 
@@ -15404,6 +15375,24 @@ __metadata:
   checksum: 10c0/77fbe2d94a902a80e9b8f5a73dcd695d9c14899c5e82967a61b1fc6cbbb28c46552d9b127cff47c45fcf684748bdbcfa0a50410349109de87ceb4b199ef6ee99
   languageName: node
   linkType: hard
+
+"example-app-prod@workspace:packages/example-prod":
+  version: 0.0.0-use.local
+  resolution: "example-app-prod@workspace:packages/example-prod"
+  dependencies:
+    "@storybook-addon-deep-controls/common-internal": "workspace:*"
+    "@storybook/addon-docs": "npm:9.0.11"
+    "@storybook/builder-vite": "npm:9.0.11"
+    "@storybook/react": "npm:9.0.11"
+    "@storybook/react-vite": "npm:9.0.11"
+    "@vitejs/plugin-react": "npm:4.5.2"
+    cross-env: "npm:7.0.3"
+    nodemon: "npm:3.1.10"
+    storybook: "npm:9.0.11"
+    storybook-addon-deep-controls: "npm:^0.8.1"
+    vite: "npm:6.3.5"
+  languageName: unknown
+  linkType: soft
 
 "execa@npm:5.1.1, execa@npm:^5.0.0, execa@npm:^5.1.1":
   version: 5.1.1
@@ -24625,12 +24614,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"storybook-addon-deep-controls@npm:^0.8.1":
+  version: 0.8.2
+  resolution: "storybook-addon-deep-controls@npm:0.8.2"
+  peerDependencies:
+    "@storybook/addon-controls": 7.x.x || 8.x.x
+    "@storybook/types": 7.x.x || 8.x.x
+    storybook: 7.x.x || 8.x.x
+  checksum: 10c0/a8fdbfd971752b57ad0ef1d584d0bbe10a8bf7cb1d4277a016e5742c735fef286b369f1829a2b22c6ee2558ae61bebf27c9ab493a94168dff166d109c4d4e765
+  languageName: node
+  linkType: hard
+
 "storybook-addon-deep-controls@workspace:*, storybook-addon-deep-controls@workspace:packages/addon":
   version: 0.0.0-use.local
   resolution: "storybook-addon-deep-controls@workspace:packages/addon"
   dependencies:
     "@arethetypeswrong/cli": "npm:^0.18.2"
-    "@storybook/react": "npm:9.0.12"
     "@vitest/coverage-v8": "npm:^3.2.3"
     react: "npm:18.3.1"
     storybook: "npm:9.0.12"
