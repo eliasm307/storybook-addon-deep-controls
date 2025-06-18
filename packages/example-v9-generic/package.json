@@ -13,6 +13,7 @@
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/react": "9.0.11",
     "cross-env": "7.0.3",
+    "storybook": "9.0.11",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }
