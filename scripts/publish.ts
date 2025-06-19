@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
-import { spawn } from "child_process";
+import {spawn} from "child_process";
 import fs from "fs";
 import path from "path";
+
+throw Error("todo setup changelog handling"); // ie before making any changes, make sure the changelog contains notes for the upcoming version
 
 /**
  * Can include:
@@ -39,21 +41,17 @@ function parseConfig(): Config {
   const config = argv.reduce<Partial<Config>>((acc, arg) => {
     const [key, value] = arg.split("=");
     if (!key || !value) {
-      throw new Error(
-        `Invalid argument '${arg}'. Must be in the form key=value`,
-      );
+      throw new Error(`Invalid argument '${arg}'. Must be in the form key=value`);
     }
-    return { ...acc, [key]: value ?? null };
+    return {...acc, [key]: value ?? null};
   }, {});
 
   console.log("raw args", argv);
   console.log("parsed args", config);
 
   // legacy support for env vars
-  config.relativeGitPath =
-    config.relativeGitPath ?? process.env.GIT_RELATIVE_CWD;
-  config.relativeNpmPath =
-    config.relativeNpmPath ?? process.env.NPM_RELATIVE_CWD;
+  config.relativeGitPath = config.relativeGitPath ?? process.env.GIT_RELATIVE_CWD;
+  config.relativeNpmPath = config.relativeNpmPath ?? process.env.NPM_RELATIVE_CWD;
   console.log("parsed args with env variables", config);
 
   if (!config.relativeGitPath) {
@@ -83,42 +81,29 @@ function parseConfig(): Config {
   return config as Config;
 }
 
-const {
-  level: levelName,
-  relativeGitPath,
-  relativeNpmPath,
-  commitChanges,
-} = parseConfig();
+const {level: levelName, relativeGitPath, relativeNpmPath, commitChanges} = parseConfig();
 
 const gitDir = path.resolve(process.cwd(), relativeGitPath);
 const gitDirContainsGit = fs.existsSync(path.resolve(gitDir, ".git"));
 if (!gitDirContainsGit) {
-  throw new Error(
-    `Invalid git directory ${gitDir}. Must contain a .git directory`,
-  );
+  throw new Error(`Invalid git directory ${gitDir}. Must contain a .git directory`);
 }
 
 const npmDir = path.resolve(process.cwd(), relativeNpmPath);
-const npmDirContainsPackageJson = fs.existsSync(
-  path.resolve(npmDir, "package.json"),
-);
+const npmDirContainsPackageJson = fs.existsSync(path.resolve(npmDir, "package.json"));
 if (!npmDirContainsPackageJson) {
-  throw new Error(
-    `Invalid npm directory ${npmDir}. Must contain a package.json file`,
-  );
+  throw new Error(`Invalid npm directory ${npmDir}. Must contain a package.json file`);
 }
 const packageJsonPath = path.resolve(npmDir, "package.json");
 
 // Note: Git commands are run from the root directory and npm commands are run from the plugin directory
 
-console.log("START: Publish script", { argv, gitDir, npmDir });
+console.log("START: Publish script", {argv, gitDir, npmDir});
 
 function assertPartsAreAllNumbers(parts: number[], version: string) {
   parts.forEach((part, i) => {
     if (isNaN(part)) {
-      throw new Error(
-        `Invalid version ${UPDATE_TYPE_LEVELS[i]} part ${part} in ${version}`,
-      );
+      throw new Error(`Invalid version ${UPDATE_TYPE_LEVELS[i]} part ${part} in ${version}`);
     }
   });
 }
@@ -141,18 +126,10 @@ function createUpdatedVersion(currentVersion: string): string {
   return newVersion;
 }
 
-async function run({
-  cmd,
-  args,
-  cwd,
-}: {
-  cmd: "npm" | "git";
-  args: string[];
-  cwd: string;
-}) {
+async function run({cmd, args, cwd}: {cmd: "npm" | "git"; args: string[]; cwd: string}) {
   return new Promise<void>((resolve, reject) => {
     const isWindows = process.platform === "win32";
-    console.log("platform", process.platform, { isWindows });
+    console.log("platform", process.platform, {isWindows});
     const spawnedProcess = spawn(cmd, args, {
       cwd,
       shell: isWindows && cmd === "npm", // due to node issue https://github.com/nodejs/node/issues/52554#issuecomment-2060026269
@@ -182,11 +159,11 @@ async function run({
 }
 
 async function cmdGit(args: string[]) {
-  return run({ cmd: "git", args, cwd: gitDir });
+  return run({cmd: "git", args, cwd: gitDir});
 }
 
 async function cmdNpm(args: string[]) {
-  return run({ cmd: "npm", args, cwd: npmDir });
+  return run({cmd: "npm", args, cwd: npmDir});
 }
 
 async function main() {
@@ -211,25 +188,19 @@ async function main() {
     if (commitChanges) {
       console.log("Git is not clean, committing changes...");
       await cmdGit(["add", "."]);
-      await cmdGit([
-        "commit",
-        "-am",
-        `[Publish script] Commit changes before publishing`,
-      ]);
+      await cmdGit(["commit", "-am", `[Publish script] Commit changes before publishing`]);
       console.log("Pushing changes...");
       await cmdGit(["push"]);
       console.log("✅ Pushed changes");
     } else {
-      throw new Error(
-        "Git is not clean, please commit all changes before publishing",
-      );
+      throw new Error("Git is not clean, please commit all changes before publishing");
     }
   }
 
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
   const currentVersion = packageJson.version;
   const newVersion = createUpdatedVersion(currentVersion);
-  const newPackageJson = { ...packageJson, version: newVersion };
+  const newPackageJson = {...packageJson, version: newVersion};
   const newPackageJsonString = JSON.stringify(newPackageJson, null, 2);
   fs.writeFileSync(packageJsonPath, newPackageJsonString);
 
