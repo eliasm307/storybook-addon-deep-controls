@@ -1,4 +1,4 @@
-import type {InputType, StoryContextForEnhancers} from "storybook/internal/types";
+import type {InputType, StoryContextForEnhancers} from "storybook/internal/types" with { 'resolution-mode': 'import' };
 import type {DeepControlsAddonParameters} from "../..";
 import {isPojo, setProperty} from "./general";
 
