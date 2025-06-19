@@ -62,7 +62,8 @@
     "build": "concurrently --timings --prefix-colors auto --kill-others-on-fail \"tsc -p tsconfig.build.esm.json\" \"tsc -p tsconfig.build.cjs.json\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check-exports": "attw --pack . --ignore-rules untyped-resolution false-cjs"
+    "check-exports": "attw --pack . --ignore-rules untyped-resolution false-cjs",
+    "build-pack": "npm run build && npm pack --pack-destination=dist"
   },
   "peerDependencies": {
     "storybook": "7.x.x || >= 8.0.0 < 8.5.0 || 9.x.x"
