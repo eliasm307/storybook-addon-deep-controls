@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
 import type {Meta, StoryObj} from "@storybook/react";
 import type React from "react";

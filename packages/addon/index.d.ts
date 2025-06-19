@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 // NOTE: we dont import from storybook here so types are version agnostic
 
 type DeepControlsAddonParameters = {
