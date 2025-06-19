@@ -1,4 +1,4 @@
-import type {StrictInputType} from "@storybook/types";
+import type {StrictInputType} from "storybook/internal/types";
 import {assert, describe, expect, it} from "vitest";
 import type {
   DeepControlsArgTypesMap,
@@ -279,7 +279,7 @@ describe("Story utils", function () {
       };
 
       // assume no state is stored on arg types, so we provide a fresh object each time
-      function createArgTypes() {
+      function createArgTypes(): DeepControlsArgTypesMap {
         return {
           "someObject.obj2WithArgType": {
             name: "someObject.obj2WithArgType",
@@ -835,7 +835,7 @@ describe("Story utils", function () {
               summary: "unknown",
             },
             jsDocTags: undefined, // key atleast included by the docs addon
-            defaultValue: null,
+            defaultValue: undefined,
           },
         };
       }
@@ -1027,7 +1027,7 @@ describe("Story utils", function () {
             },
             argTypes: {
               "color.color": {
-                control: {type: "string"},
+                control: {type: "text"},
               },
             },
             parameters: {
@@ -1042,7 +1042,7 @@ describe("Story utils", function () {
             color: {name: "color", table: {disable: true}},
             "color.color": {
               name: "color.color", // merged in from generated argType
-              control: {type: "string"}, // overridden by user defined argType
+              control: {type: "text"}, // overridden by user defined argType
             },
           },
         );
@@ -1092,7 +1092,7 @@ describe("Story utils", function () {
             },
             argTypes: {
               "nested.array": {
-                control: {type: "string"},
+                control: {type: "text"},
               },
             },
             parameters: {deepControls: {}},
@@ -1101,7 +1101,7 @@ describe("Story utils", function () {
             nested: {name: "nested", table: {disable: true}},
             "nested.array": {
               name: "nested.array", // merged in from generated argType
-              control: {type: "string"}, // overridden by user defined argType
+              control: {type: "text"}, // overridden by user defined argType
             },
           },
         );
@@ -1118,7 +1118,7 @@ describe("Story utils", function () {
             },
             argTypes: {
               "nested.null": {
-                control: {type: "string"},
+                control: {type: "text"},
               },
             },
             parameters: {deepControls: {}},
@@ -1127,7 +1127,7 @@ describe("Story utils", function () {
             nested: {name: "nested", table: {disable: true}},
             "nested.null": {
               name: "nested.null", // merged in from generated argType
-              control: {type: "string"}, // overridden by user defined argType
+              control: {type: "text"}, // overridden by user defined argType
             },
           },
         );

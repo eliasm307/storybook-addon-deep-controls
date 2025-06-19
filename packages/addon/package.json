@@ -62,19 +62,18 @@
     "build": "concurrently --timings --prefix-colors auto --kill-others-on-fail \"tsc -p tsconfig.build.esm.json\" \"tsc -p tsconfig.build.cjs.json\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check-exports": "attw --pack . --ignore-rules untyped-resolution false-cjs"
+    "check-exports": "attw --pack . --ignore-rules untyped-resolution false-cjs",
+    "build-pack": "npm run build && npm pack --pack-destination=dist"
   },
   "peerDependencies": {
-    "@storybook/addon-controls": "7.x.x || >= 8.0.0 < 8.5.0 || 9.x.x",
-    "@storybook/types": "7.x.x || >= 8.0.0 < 8.5.0 || 9.x.x",
     "storybook": "7.x.x || >= 8.0.0 < 8.5.0 || 9.x.x"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
-    "@storybook/types": "7.6.20",
-    "@vitest/coverage-v8": "^3.2.3",
+    "@vitest/coverage-v8": "^3.2.4",
     "react": "18.3.1",
-    "vitest": "^3.2.3"
+    "storybook": "9.0.12",
+    "vitest": "^3.2.4"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
