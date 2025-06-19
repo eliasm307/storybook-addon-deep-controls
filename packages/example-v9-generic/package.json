@@ -1,6 +1,9 @@
 {
   "name": "storybook-addon-deep-controls-example-v9-generic",
   "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "playwright": "node ../../node_modules/playwright/cli.js",
     "playwright:vite": "cross-env STORYBOOK_EXAMPLE_TYPE=vite npm run playwright -- ",
@@ -8,8 +11,9 @@
   },
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
-    "@storybook/react": "9.0.11",
+    "@storybook/react": "9.0.12",
     "cross-env": "7.0.3",
+    "storybook": "9.0.12",
     "storybook-addon-deep-controls": "workspace:*"
   }
 }

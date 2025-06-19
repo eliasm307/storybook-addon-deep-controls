@@ -210,7 +210,7 @@ If you are using Typescript, defining the `argTypes` for deep properties as abov
 ```ts
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
 
-export default {
+const meta: TypeWithDeepControls<MetaType> = {
   argTypes: {
     // no type error
     "someObject.enumString": {
@@ -218,7 +218,9 @@ export default {
     },
   },
   // Type is wrapped over the MetaType
-} satisfies TypeWithDeepControls<MetaType>;
+};
+
+export default meta;
 
 // Type is wrapped over the StoryType
 type Story = TypeWithDeepControls<StoryType>;

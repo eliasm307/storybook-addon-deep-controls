@@ -1,6 +1,9 @@
 {
   "name": "@storybook-addon-deep-controls/common-internal",
   "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "main": "src/index.ts",
   "module": "src/index.ts"
 }
