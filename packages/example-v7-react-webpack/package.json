@@ -1,5 +1,5 @@
 {
-  "name": "storybook-addon-deep-controls-example-v7-webpack",
+  "name": "storybook-addon-deep-controls-example-v7-react-webpack",
   "private": true,
   "installConfig": {
     "hoistingLimits": "workspaces"

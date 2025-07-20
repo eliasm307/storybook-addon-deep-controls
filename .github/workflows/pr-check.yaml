@@ -66,13 +66,13 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Storybook v9-vite e2e tests
-        run: npm run --prefix packages/example-v9-vite test
+        run: npm run --prefix packages/example-v9-react-vite test
 
       - name: Run Storybook v8-vite e2e tests
-        run: npm run --prefix packages/example-v8-vite test
+        run: npm run --prefix packages/example-v8-react-vite test
 
       - name: Run Storybook v8-webpack e2e tests
-        run: npm run --prefix packages/example-v8-webpack test
+        run: npm run --prefix packages/example-v8-react-webpack test
 
       - name: Run Storybook v7-webpack e2e tests
-        run: npm run --prefix packages/example-v7-webpack test
+        run: npm run --prefix packages/example-v7-react-webpack test

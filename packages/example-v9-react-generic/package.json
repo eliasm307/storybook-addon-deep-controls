@@ -1,5 +1,5 @@
 {
-  "name": "storybook-addon-deep-controls-example-v9-generic",
+  "name": "storybook-addon-deep-controls-example-v9-react-generic",
   "private": true,
   "installConfig": {
     "hoistingLimits": "workspaces"

@@ -8,7 +8,7 @@ function getAbsolutePathToPackage(value: string): any {
 }
 
 const config: StorybookConfig = {
-  stories: ["../../example-v8-generic/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: ["../../example-v8-react-generic/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     "@storybook/addon-essentials", // to get controls and docs addons and make sure we are compatible with any other essential addon
     "storybook-addon-deep-controls",

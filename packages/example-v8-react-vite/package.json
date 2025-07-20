@@ -1,5 +1,5 @@
 {
-  "name": "storybook-addon-deep-controls-example-v8-vite",
+  "name": "storybook-addon-deep-controls-example-v8-react-vite",
   "private": true,
   "installConfig": {
     "hoistingLimits": "workspaces"
@@ -7,9 +7,9 @@
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6018 --no-open",
     "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon",
-    "test": "npm --prefix ../example-v8-generic run playwright:v8-vite -- test",
-    "test:ui": "npm --prefix ../example-v8-generic run playwright:v8-vite -- test --ui",
-    "test:codegen": "npm --prefix ../example-v8-generic run playwright:v8-vite -- codegen http://localhost:6018/",
+    "test": "npm --prefix ../example-v8-react-generic run playwright:v8-vite -- test",
+    "test:ui": "npm --prefix ../example-v8-react-generic run playwright:v8-vite -- test --ui",
+    "test:codegen": "npm --prefix ../example-v8-react-generic run playwright:v8-vite -- codegen http://localhost:6018/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build"
   },

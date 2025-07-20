@@ -1,20 +1,16 @@
 export const TEST_TIMEOUT_MS = 120_000;
 
-type StorybookType = "v8-vite" | "v8-webpack";
+type StorybookType = "vite";
 
 type StorybookExampleConfig = {
   port: number;
   devCommand: string;
 };
 
-const STORYBOOK_CONFIGS: Record<"v8-vite" | "v8-webpack", StorybookExampleConfig> = {
-  "v8-webpack": {
-    port: 6008,
-    devCommand: "npm run --prefix ../example-v8-webpack storybook",
-  },
-  "v8-vite": {
-    port: 6018,
-    devCommand: "npm run --prefix ../example-v8-vite storybook",
+const STORYBOOK_CONFIGS: Record<StorybookType, StorybookExampleConfig> = {
+  vite: {
+    port: 6100,
+    devCommand: "npm run --prefix ../example-v9-react-vite storybook",
   },
 };
 

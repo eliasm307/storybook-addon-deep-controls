@@ -1,5 +1,5 @@
 {
-  "name": "storybook-addon-deep-controls-example-v8-webpack",
+  "name": "storybook-addon-deep-controls-example-v8-react-webpack",
   "private": true,
   "installConfig": {
     "hoistingLimits": "workspaces"
@@ -7,9 +7,9 @@
   "scripts": {
     "storybook": "echo 'Starting storybook' && npm run addon:build && storybook dev -p 6008 --no-open",
     "storybook:watch": "nodemon",
-    "test": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- test",
-    "test:ui": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- test --ui",
-    "test:codegen": "npm --prefix ../example-v8-generic run playwright:v8-webpack -- codegen http://localhost:6008/",
+    "test": "npm --prefix ../example-v8-react-generic run playwright:v8-webpack -- test",
+    "test:ui": "npm --prefix ../example-v8-react-generic run playwright:v8-webpack -- test --ui",
+    "test:codegen": "npm --prefix ../example-v8-react-generic run playwright:v8-webpack -- codegen http://localhost:6008/",
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build"
   },

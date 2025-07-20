@@ -22,4 +22,4 @@ The example apps have scripts to run Storybook with the local addon (ie `yarn st
 
 ## Production Example
 
-For testing end-to-end integration of the published addon with Storybook use the app in the `packages/example-prod` directory.
+For testing end-to-end integration of the published addon with Storybook use the app in the `packages/example-prod-react` directory.

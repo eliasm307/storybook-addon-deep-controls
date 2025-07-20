@@ -4,7 +4,7 @@ import type {InlineConfig} from "vite";
 
 // todo wait for react native
 const config: StorybookConfig = {
-  stories: ["../../example-v9-generic/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: ["../../example-v9-react-generic/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: ["@storybook/addon-docs", "storybook-addon-deep-controls"],
   framework: {
     name: "@storybook/react-vite",
