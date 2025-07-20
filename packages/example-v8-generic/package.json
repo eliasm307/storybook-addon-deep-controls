@@ -9,6 +9,9 @@
     "playwright:v8-vite": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-vite npm run playwright",
     "playwright:v8-webpack": "cross-env STORYBOOK_EXAMPLE_TYPE=v8-webpack npm run playwright"
   },
+  "devDependenciesNotes": [
+    "Storybook version(s) fixed to 8.3.6 as versions after this have an issue that affects the addon, which is fixed in v9"
+  ],
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/react": "8.3.6",

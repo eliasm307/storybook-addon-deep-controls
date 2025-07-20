@@ -13,6 +13,9 @@
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build"
   },
+  "devDependenciesNotes": [
+    "Storybook version(s) fixed to 8.3.6 as versions after this have an issue that affects the addon, which is fixed in v9"
+  ],
   "devDependencies": {
     "@storybook/addon-essentials": "8.3.6",
     "@storybook/nextjs": "8.3.6",

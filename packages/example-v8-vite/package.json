@@ -13,6 +13,9 @@
     "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
     "build": "npm run addon:build && storybook build"
   },
+  "devDependenciesNotes": [
+    "Storybook version(s) fixed to 8.3.6 as versions after this have an issue that affects the addon, which is fixed in v9"
+  ],
   "devDependencies": {
     "@storybook-addon-deep-controls/common-internal": "workspace:*",
     "@storybook/addon-essentials": "8.3.6",
@@ -20,7 +23,7 @@
     "@storybook/react": "8.3.6",
     "@storybook/react-vite": "8.3.6",
     "@storybook/types": "8.3.6",
-    "@vitejs/plugin-react": "4.5.2",
+    "@vitejs/plugin-react": "4.7.0",
     "cross-env": "7.0.3",
     "nodemon": "3.1.10",
     "storybook": "8.3.6",
