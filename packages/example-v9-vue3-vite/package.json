@@ -1,0 +1,31 @@
+{
+  "name": "storybook-addon-deep-controls-example-v9-vue3-vite",
+  "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "scripts": {
+    "storybook": "echo 'Starting storybook' && npm run addon:build && cross-env VITE_CJS_TRACE=true storybook dev -p 6100 --no-open",
+    "storybook:watch": "cross-env VITE_CJS_TRACE=true nodemon",
+    "test": "npm --prefix ../example-v9-react-generic run playwright:vite -- test",
+    "test:ui": "npm --prefix ../example-v9-react-generic run playwright:vite -- test --ui",
+    "test:codegen": "npm --prefix ../example-v9-react-generic run playwright:vite -- codegen http://localhost:6100/",
+    "addon:build": "echo 'Building addon...' && npm --prefix ../addon run build",
+    "build": "npm run addon:build && storybook build",
+    "deploy": "npm run build && netlify deploy --prod"
+  },
+  "devDependencies": {
+    "@storybook-addon-deep-controls/common-internal": "workspace:*",
+    "@storybook/addon-docs": "9.0.16",
+    "@storybook/builder-vite": "9.0.16",
+    "@storybook/vue3-vite": "9.0.16",
+    "cross-env": "7.0.3",
+    "nodemon": "3.1.10",
+    "storybook": "9.0.16",
+    "storybook-addon-deep-controls": "workspace:*",
+    "vite": "6.3.5",
+    "vue": "3.5.16",
+    "vue-component-type-helpers": "2.2.10",
+    "vue-tsc": "2.2.10"
+  }
+}
