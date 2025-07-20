@@ -1,6 +1,6 @@
-import type {Meta, StoryObj} from "@storybook/react";
+import type {Meta, StoryObj} from "@storybook/vue3";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
-import Basic from "./Basic";
+import Basic from "./Basic.vue";
 
 const meta: TypeWithDeepControls<Meta<typeof Basic>> = {
   component: Basic,

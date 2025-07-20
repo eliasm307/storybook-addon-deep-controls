@@ -1,6 +1,6 @@
-import type {Meta, StoryObj} from "@storybook/react";
+import type {Meta, StoryObj} from "@storybook/vue3-vite";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
-import WithAutoDocs from "./WithAutoDocs";
+import WithAutoDocs from "./WithAutoDocs.vue";
 
 const meta = {
   component: WithAutoDocs,
@@ -23,10 +23,10 @@ const meta = {
       description: "Custom description",
     },
     "object.requiredNumberProp": {
-      type: {required: true},
+      type: {required: true, name: "number"},
     },
   },
-} satisfies Meta<typeof WithAutoDocs>;
+} satisfies TypeWithDeepControls<Meta<typeof WithAutoDocs>>;
 
 export default meta;
 

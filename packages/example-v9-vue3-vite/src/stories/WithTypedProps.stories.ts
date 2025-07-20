@@ -1,6 +1,6 @@
-import type {Meta, StoryObj} from "@storybook/react";
+import type {Meta, StoryObj} from "@storybook/vue3-vite";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
-import WithTypedProps from "./WithTypedProps";
+import WithTypedProps from "./WithTypedProps.vue";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export

@@ -1,6 +1,6 @@
-import type {Meta, StoryObj} from "@storybook/react";
+import type {Meta, StoryObj} from "@storybook/vue3-vite";
 import type {TypeWithDeepControls} from "storybook-addon-deep-controls";
-import Dev from "./Dev";
+import Dev from "./Dev.vue";
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
@@ -82,9 +82,7 @@ function createNestedObject() {
     bool: true,
     string: "string1234",
     number: 1234,
-    jsx: <div />,
     nested: {
-      jsx: <div />,
       bool: false,
       string: "string2",
       number: 2,

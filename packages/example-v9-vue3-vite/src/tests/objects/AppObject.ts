@@ -68,9 +68,9 @@ export class AppObject {
 
   waitUntil = new Waits(this);
 
-  activeStoryPage = new StoryPageObject(this.page);
+  activeStoryPage: StoryPageObject = new StoryPageObject(this.page);
 
-  activeDocsPage = new DocsPageObject(this.page);
+  activeDocsPage: DocsPageObject = new DocsPageObject(this.page);
 
   constructor(public page: Page) {}
 
