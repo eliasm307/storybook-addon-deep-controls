@@ -3,8 +3,6 @@ import {spawn} from "child_process";
 import fs from "fs";
 import path from "path";
 
-// throw Error("todo setup changelog handling"); // ie before making any changes, make sure the changelog contains notes for the upcoming version
-
 /**
  * Can include:
  * - level: (major | minor | patch) - the level of the update
@@ -36,6 +34,100 @@ type Config = {
 /** In the order shown in the string ie [MAJOR].[MINOR].[PATCH] */
 const UPDATE_TYPE_LEVELS = ["MAJOR", "MINOR", "PATCH"] as const;
 type UpdateTypeName = (typeof UPDATE_TYPE_LEVELS)[number];
+
+const {level: levelName, relativeGitPath, relativeNpmPath, commitChanges} = parseConfig();
+
+const gitDir = path.resolve(process.cwd(), relativeGitPath);
+const gitDirContainsGit = fs.existsSync(path.resolve(gitDir, ".git"));
+if (!gitDirContainsGit) {
+  throw new Error(`Invalid git directory ${gitDir}. Must contain a .git directory`);
+}
+
+const npmDir = path.resolve(process.cwd(), relativeNpmPath);
+const npmDirContainsPackageJson = fs.existsSync(path.resolve(npmDir, "package.json"));
+if (!npmDirContainsPackageJson) {
+  throw new Error(`Invalid npm directory ${npmDir}. Must contain a package.json file`);
+}
+const packageJsonPath = path.resolve(npmDir, "package.json");
+
+// Note: Git commands are run from the root directory and npm commands are run from the plugin directory
+
+console.log("START: Publish script", {argv, gitDir, npmDir});
+
+main()
+  .then(() => {
+    console.log("END: Publish script");
+  })
+  .catch((err: unknown) => {
+    console.error("ERROR: Publish script", err);
+    process.exit(1);
+  });
+
+async function main() {
+  if (process.env.CI_COMMIT_AUTHOR_NAME) {
+    console.log("Setting git user.name from env...");
+    await cmdGit(["config", "user.name", process.env.CI_COMMIT_AUTHOR_NAME]);
+  } else {
+    console.log("No git user.name provided");
+  }
+  if (process.env.CI_COMMIT_AUTHOR_EMAIL) {
+    console.log("Setting git user.email from env...");
+    await cmdGit(["config", "user.email", process.env.CI_COMMIT_AUTHOR_EMAIL]);
+  } else {
+    console.log("No git user.email provided");
+  }
+
+  // git is clean
+  console.log("Checking git is clean...");
+  try {
+    await cmdGit(["diff", "--quiet", "--exit-code"]);
+  } catch {
+    if (commitChanges) {
+      console.log("Git is not clean, committing changes...");
+      await cmdGit(["add", "."]);
+      await cmdGit(["commit", "-am", `[Publish script] Commit changes before publishing`]);
+      console.log("Pushing changes...");
+      await cmdGit(["push"]);
+      console.log("✅ Pushed changes");
+    } else {
+      throw new Error("Git is not clean, please commit all changes before publishing");
+    }
+  }
+
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const currentVersion = packageJson.version;
+  const newVersion = createUpdatedVersion(currentVersion);
+  ensureChangelogHasNotes(newVersion);
+
+  const newPackageJson = {...packageJson, version: newVersion};
+  const newPackageJsonString = JSON.stringify(newPackageJson, null, 2);
+  fs.writeFileSync(packageJsonPath, newPackageJsonString);
+
+  console.log("Publishing version", newVersion, "...");
+  await cmdNpm(["publish"]);
+  console.log("✅ Published version", newVersion);
+
+  console.log("Adding...");
+  await cmdGit(["add", "."]);
+
+  console.log("Committing...");
+  await cmdGit(["commit", "-am", `Publish version ${newVersion}`]);
+
+  console.log("Tagging...");
+  await cmdGit(["tag", `v${newVersion}`]);
+
+  try {
+    console.log("Pushing...");
+    await cmdGit(["push"]);
+
+    console.log("Pushing tags...");
+    await cmdGit(["push", "--tags"]);
+  } catch {
+    console.error("Failed to push to git");
+  }
+
+  console.log("✅ Done");
+}
 
 function parseConfig(): Config {
   const config = argv.reduce<Partial<Config>>((acc, arg) => {
@@ -80,25 +172,6 @@ function parseConfig(): Config {
   console.log("Final config", config);
   return config as Config;
 }
-
-const {level: levelName, relativeGitPath, relativeNpmPath, commitChanges} = parseConfig();
-
-const gitDir = path.resolve(process.cwd(), relativeGitPath);
-const gitDirContainsGit = fs.existsSync(path.resolve(gitDir, ".git"));
-if (!gitDirContainsGit) {
-  throw new Error(`Invalid git directory ${gitDir}. Must contain a .git directory`);
-}
-
-const npmDir = path.resolve(process.cwd(), relativeNpmPath);
-const npmDirContainsPackageJson = fs.existsSync(path.resolve(npmDir, "package.json"));
-if (!npmDirContainsPackageJson) {
-  throw new Error(`Invalid npm directory ${npmDir}. Must contain a package.json file`);
-}
-const packageJsonPath = path.resolve(npmDir, "package.json");
-
-// Note: Git commands are run from the root directory and npm commands are run from the plugin directory
-
-console.log("START: Publish script", {argv, gitDir, npmDir});
 
 function assertPartsAreAllNumbers(parts: number[], version: string) {
   parts.forEach((part, i) => {
@@ -166,75 +239,26 @@ async function cmdNpm(args: string[]) {
   return run({cmd: "npm", args, cwd: npmDir});
 }
 
-async function main() {
-  if (process.env.CI_COMMIT_AUTHOR_NAME) {
-    console.log("Setting git user.name from env...");
-    await cmdGit(["config", "user.name", process.env.CI_COMMIT_AUTHOR_NAME]);
-  } else {
-    console.log("No git user.name provided");
+const changelogVersionHeaderRegex = /^## (\d+\.\d+\.\d+)$/;
+
+function ensureChangelogHasNotes(newVersion: string) {
+  const changelogPath = path.resolve(gitDir, "CHANGELOG.md");
+  if (!fs.existsSync(changelogPath)) {
+    throw new Error(`Changelog file not found at ${changelogPath}`);
   }
-  if (process.env.CI_COMMIT_AUTHOR_EMAIL) {
-    console.log("Setting git user.email from env...");
-    await cmdGit(["config", "user.email", process.env.CI_COMMIT_AUTHOR_EMAIL]);
-  } else {
-    console.log("No git user.email provided");
+  const changelogContent = fs.readFileSync(changelogPath, "utf8");
+  const latestVersionHeader = changelogContent
+    .split("\n")
+    .find((line) => changelogVersionHeaderRegex.test(line.trim()))
+    ?.trim();
+  if (!latestVersionHeader) {
+    throw new Error(`Changelog (${changelogPath}) does not have a version header`);
   }
-
-  // git is clean
-  console.log("Checking git is clean...");
-  try {
-    await cmdGit(["diff", "--quiet", "--exit-code"]);
-  } catch {
-    if (commitChanges) {
-      console.log("Git is not clean, committing changes...");
-      await cmdGit(["add", "."]);
-      await cmdGit(["commit", "-am", `[Publish script] Commit changes before publishing`]);
-      console.log("Pushing changes...");
-      await cmdGit(["push"]);
-      console.log("✅ Pushed changes");
-    } else {
-      throw new Error("Git is not clean, please commit all changes before publishing");
-    }
+  if (latestVersionHeader !== `## ${newVersion}`) {
+    throw new Error(
+      `Changelog (${changelogPath}) does not have notes for new version ${newVersion}. ` +
+        `Latest version header is ${latestVersionHeader}`,
+    );
   }
-
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-  const currentVersion = packageJson.version;
-  const newVersion = createUpdatedVersion(currentVersion);
-  const newPackageJson = {...packageJson, version: newVersion};
-  const newPackageJsonString = JSON.stringify(newPackageJson, null, 2);
-  fs.writeFileSync(packageJsonPath, newPackageJsonString);
-
-  console.log("Publishing version", newVersion, "...");
-  await cmdNpm(["publish"]);
-  console.log("✅ Published version", newVersion);
-
-  console.log("Adding...");
-  await cmdGit(["add", "."]);
-
-  console.log("Committing...");
-  await cmdGit(["commit", "-am", `Publish version ${newVersion}`]);
-
-  console.log("Tagging...");
-  await cmdGit(["tag", `v${newVersion}`]);
-
-  try {
-    console.log("Pushing...");
-    await cmdGit(["push"]);
-
-    console.log("Pushing tags...");
-    await cmdGit(["push", "--tags"]);
-  } catch {
-    console.error("Failed to push to git");
-  }
-
-  console.log("✅ Done");
+  console.log(`Changelog has version header for version ${newVersion}`);
 }
-
-main()
-  .then(() => {
-    console.log("END: Publish script");
-  })
-  .catch((err: unknown) => {
-    console.error("ERROR: Publish script", err);
-    process.exit(1);
-  });
