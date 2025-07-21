@@ -3,7 +3,7 @@ import {spawn} from "child_process";
 import fs from "fs";
 import path from "path";
 
-throw Error("todo setup changelog handling"); // ie before making any changes, make sure the changelog contains notes for the upcoming version
+// throw Error("todo setup changelog handling"); // ie before making any changes, make sure the changelog contains notes for the upcoming version
 
 /**
  * Can include:
