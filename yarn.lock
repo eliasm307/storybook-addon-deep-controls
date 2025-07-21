@@ -24622,7 +24622,7 @@ __metadata:
     storybook: "npm:9.0.12"
     vitest: "npm:^3.2.4"
   peerDependencies:
-    storybook: 7.x.x || >= 8.0.0 < 8.5.0 || 9.x.x
+    storybook: ">= 7.0.0 < 8.5.0 || >= 9.0.0 < 10.0.0"
   languageName: unknown
   linkType: soft
 
