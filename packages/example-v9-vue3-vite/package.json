@@ -19,6 +19,7 @@
     "@storybook/addon-docs": "9.0.16",
     "@storybook/builder-vite": "9.0.16",
     "@storybook/vue3-vite": "9.0.16",
+    "@vitejs/plugin-vue": "5.2.4",
     "cross-env": "7.0.3",
     "nodemon": "3.1.10",
     "storybook": "9.0.16",

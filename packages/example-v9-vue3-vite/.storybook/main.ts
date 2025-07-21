@@ -1,16 +1,20 @@
-import {StorybookConfig} from "@storybook/vue3-vite";
-// NOTE: dont import vite at top level: https://github.com/storybookjs/storybook/issues/26291#issuecomment-1978193283
+import type {StorybookConfig} from "@storybook/vue3-vite";
+import vue from "@vitejs/plugin-vue";
 
-// todo wait for react native
 const config: StorybookConfig = {
-  stories: ["../../example-v9-react-generic/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: ["@storybook/addon-docs", "storybook-addon-deep-controls"],
+  stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  addons: ["storybook-addon-deep-controls"],
   framework: {
     name: "@storybook/vue3-vite",
     options: {
+      // https://storybook.js.org/docs/get-started/frameworks/vue3-vite#using-vue-component-meta
       docgen: "vue-component-meta",
     },
   },
+  viteFinal: async (config) => ({
+    ...config,
+    plugins: [...(config.plugins ?? []), vue()],
+  }),
 };
 
 export default config;

@@ -7888,6 +7888,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vitejs/plugin-vue@npm:5.2.4":
+  version: 5.2.4
+  resolution: "@vitejs/plugin-vue@npm:5.2.4"
+  peerDependencies:
+    vite: ^5.0.0 || ^6.0.0
+    vue: ^3.2.25
+  checksum: 10c0/9559224f178daf35e3a665410d09089b0ce7c0402981f8757481c24c22f29df377f96cc6161d92f74d16c37c6e32ac19fea99086f75338ad6ceb9b5ee8375509
+  languageName: node
+  linkType: hard
+
 "@vitest/coverage-v8@npm:^3.2.4":
   version: 3.2.4
   resolution: "@vitest/coverage-v8@npm:3.2.4"
@@ -21587,6 +21597,7 @@ __metadata:
     "@storybook/addon-docs": "npm:9.0.16"
     "@storybook/builder-vite": "npm:9.0.16"
     "@storybook/vue3-vite": "npm:9.0.16"
+    "@vitejs/plugin-vue": "npm:5.2.4"
     cross-env: "npm:7.0.3"
     nodemon: "npm:3.1.10"
     storybook: "npm:9.0.16"

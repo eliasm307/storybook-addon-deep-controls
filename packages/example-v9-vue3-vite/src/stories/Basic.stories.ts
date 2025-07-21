@@ -7,9 +7,7 @@ const meta: TypeWithDeepControls<Meta<typeof Basic>> = {
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/react/configure/story-layout
     layout: "centered",
-    deepControls: {
-      enabled: true,
-    },
+    deepControls: {enabled: true},
   },
 };
 
@@ -34,6 +32,17 @@ export const Disabled: Story = {
 };
 
 export const Enabled: Story = {
+  args: {
+    someObject: {
+      anyString: "anyString",
+      enumString: "value2",
+      number: 42,
+      boolean: true,
+    },
+  },
+};
+
+export const EnabledWithArgTypes: Story = {
   args: {
     someObject: {
       anyString: "anyString",

@@ -12,9 +12,15 @@ import {computed} from "vue";
 import {stringify} from "@storybook-addon-deep-controls/common-internal";
 
 const props = defineProps<{
-  someObject: any;
+  someObject: {
+    anyString: string;
+    enumString: string;
+    number: number;
+    boolean: boolean;
+    optionalString?: string;
+  };
 }>();
 
 // Computed properties
-const configString = computed(() => stringify(props));
+const configString = computed((): string => stringify(props));
 </script>

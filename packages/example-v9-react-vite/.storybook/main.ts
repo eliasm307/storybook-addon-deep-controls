@@ -1,6 +1,5 @@
-import {StorybookConfig} from "@storybook/react-vite";
+import type {StorybookConfig} from "@storybook/react-vite";
 import type {InlineConfig} from "vite";
-// NOTE: dont import vite at top level: https://github.com/storybookjs/storybook/issues/26291#issuecomment-1978193283
 
 // todo wait for react native
 const config: StorybookConfig = {

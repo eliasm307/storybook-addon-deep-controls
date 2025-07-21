@@ -14,5 +14,5 @@ import {stringify} from "@storybook-addon-deep-controls/common-internal";
 const props = defineProps<{object: any}>();
 
 // Computed properties
-const configString = computed(() => stringify(props));
+const configString = computed((): string => stringify(props));
 </script>

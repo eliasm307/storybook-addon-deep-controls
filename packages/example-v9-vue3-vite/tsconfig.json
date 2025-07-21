@@ -6,15 +6,17 @@
     "module": "ES2022",
     "moduleResolution": "bundler",
     "strict": true,
-    "noErrorTruncation": false,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
-    "useDefineForClassFields": false,
-    "lib": ["ES2022", "DOM"]
+    "lib": ["ES2022", "DOM"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"],
+    "useDefineForClassFields": false
   },
   "vueCompilerOptions": {
     "strictTemplates": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": ["src"]
 }

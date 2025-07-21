@@ -24,5 +24,5 @@ type Props = {
 const props = defineProps<Props>();
 
 // Computed properties
-const configString = computed(() => stringify(props));
+const configString = computed((): string => stringify(props));
 </script>
