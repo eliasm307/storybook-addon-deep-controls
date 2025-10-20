@@ -246,15 +246,12 @@ export const SomeStory: Story = {
 
 Compatibility of this addon is tested with different versions of Storybook and the following are the supported version ranges:
 
-- For Storybook versions: `>= 7.0.0 < 8.5.0` supported addon version: `< 1.0.0` (e.g. `0.9.x`)
+- For Storybook versions: `>= 7.0.0 < 8.5.0` supported addon version: `>= 0.9.x`
 - For Storybook versions: `>= 8.5.0 < 9.0.0` supported addon version: None
   - This Storybook version range is not supported due to the Storybook issue: https://github.com/storybookjs/storybook/issues/31707
-- For Storybook versions: `>= 9.0.0 < 10.0.0` supported addon version: `< 1.0.0` (e.g. `0.9.x`)
-- For Storybook versions: `>= 10.0.0` supported addon version: `>= 1.0.0`
+- For Storybook versions: `>= 9.0.0` supported addon version: `>= 0.9.x`
 
 Using Storybook versions outside of the ranges above may work, but is not guaranteed and may result in unexpected behaviour.
-
-**Note**: Version 1.0.0 and above of this addon are ESM-only and require Storybook 10+. If you need CommonJS support, use version 0.9.x with Storybook 7 or 9.
 
 ## Notes
 
