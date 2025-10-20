@@ -7752,6 +7752,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/icons@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@storybook/icons@npm:1.6.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+  checksum: 10c0/bbec9201a78a730195f9cf377b15856dc414a54d04e30d16c379d062425cc617bfd0d6586ba1716012cfbdab461f0c9693a6a52920f9bd09c7b4291fb116f59c
+  languageName: node
+  linkType: hard
+
 "@storybook/instrumenter@npm:8.3.6":
   version: 8.3.6
   resolution: "@storybook/instrumenter@npm:8.3.6"
@@ -24619,10 +24629,10 @@ __metadata:
     "@arethetypeswrong/cli": "npm:^0.18.2"
     "@vitest/coverage-v8": "npm:^3.2.4"
     react: "npm:18.3.1"
-    storybook: "npm:9.0.12"
+    storybook: "npm:^10.0.0-beta.13"
     vitest: "npm:^3.2.4"
   peerDependencies:
-    storybook: ">= 7.0.0 < 8.5.0 || >= 9.0.0 < 10.0.0"
+    storybook: ^10.0.0
   languageName: unknown
   linkType: soft
 
@@ -24674,6 +24684,32 @@ __metadata:
   bin:
     storybook: ./bin/index.cjs
   checksum: 10c0/6a849eaa9f8394ec0460a736cf781c63c1ab3acebaf1d464b92fc33ef986d53d3ad98e25146edad4410849b3d315e2a76c5f31c59d109a496d58b2896f712790
+  languageName: node
+  linkType: hard
+
+"storybook@npm:^10.0.0-beta.13":
+  version: 10.0.0-beta.13
+  resolution: "storybook@npm:10.0.0-beta.13"
+  dependencies:
+    "@storybook/global": "npm:^5.0.0"
+    "@storybook/icons": "npm:^1.6.0"
+    "@testing-library/jest-dom": "npm:^6.6.3"
+    "@testing-library/user-event": "npm:^14.6.1"
+    "@vitest/expect": "npm:3.2.4"
+    "@vitest/mocker": "npm:3.2.4"
+    "@vitest/spy": "npm:3.2.4"
+    esbuild: "npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0"
+    recast: "npm:^0.23.5"
+    semver: "npm:^7.6.2"
+    ws: "npm:^8.18.0"
+  peerDependencies:
+    prettier: ^2 || ^3
+  peerDependenciesMeta:
+    prettier:
+      optional: true
+  bin:
+    storybook: ./dist/bin/dispatcher.js
+  checksum: 10c0/08ebd5efea114b4288891e9005e9a1374b309bf8ed06aff4e8c60c2ad22705c9c3c06a001cf5668ff1c1a7258c33bf2073b023950eae8f29ad92a589af09ceb1
   languageName: node
   linkType: hard
 
