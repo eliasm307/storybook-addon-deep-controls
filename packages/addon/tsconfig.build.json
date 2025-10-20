@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist/esm",
+    "outDir": "dist",
     "noEmit": false,
     "incremental": false,
     "stripInternal": true,
     "target": "ES2020",
     "module": "ES2020",
-    "moduleResolution": "node"
+    "moduleResolution": "bundler"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

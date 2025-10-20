@@ -1,1 +1,1 @@
-module.exports = require("./dist/cjs/preview");
+export {default} from "./dist/preview.js";
