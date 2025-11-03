@@ -249,7 +249,8 @@ Compatibility of this addon is tested with different versions of Storybook and t
 - For Storybook versions: `>= 7.0.0 < 8.5.0` supported addon version: `>= 0.9.x`
 - For Storybook versions: `>= 8.5.0 < 9.0.0` supported addon version: None
   - This Storybook version range is not supported due to the Storybook issue: https://github.com/storybookjs/storybook/issues/31707
-- For Storybook versions: `>= 9.0.0` supported addon version: `>= 0.9.x`
+- For Storybook versions: `>= 9.0.0 < 10.0.0` supported addon version: `>= 0.9.x`
+- For Storybook versions: `>= 10.0.0` supported addon version: `>= 0.10.x`
 
 Using Storybook versions outside of the ranges above may work, but is not guaranteed and may result in unexpected behaviour.
 
