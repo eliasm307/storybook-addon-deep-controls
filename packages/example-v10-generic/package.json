@@ -1,0 +1,19 @@
+{
+  "name": "storybook-addon-deep-controls-example-v10-generic",
+  "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "scripts": {
+    "playwright": "node ../../node_modules/playwright/cli.js",
+    "playwright:vite": "cross-env STORYBOOK_EXAMPLE_TYPE=vite npm run playwright -- ",
+    "playwright:webpack": "cross-env STORYBOOK_EXAMPLE_TYPE=webpack npm run playwright -- "
+  },
+  "devDependencies": {
+    "@storybook-addon-deep-controls/common-internal": "workspace:*",
+    "@storybook/react": "10.0.2",
+    "cross-env": "7.0.3",
+    "storybook": "10.0.2",
+    "storybook-addon-deep-controls": "workspace:*"
+  }
+}
