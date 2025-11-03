@@ -25,7 +25,7 @@ class Actions {
    * @param id Story id, e.g. "stories-dev--enabled"
    *
    * @note This is the ID shown in the URL when you click on a story in the Storybook UI e.g.
-   * `http://localhost:${STORYBOOK_V9_PORT}/?path=/story/stories-dev--enabled`
+   * `http://localhost:${STORYBOOK_PORT}/?path=/story/stories-dev--enabled`
    */
   async openStoriesTreeItemById(type: "story" | "docs", id: `stories-${string}--${string}`) {
     await this.clickStoryTreeItemById(id);

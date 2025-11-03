@@ -1,6 +1,6 @@
-# Storybook V9 Generic Example
+# Storybook V10 Generic Example
 
-This package is meant to contain generic stories and tests for Storybook V9.
+This package is meant to contain generic stories and tests for Storybook V10.
 
 Specific configurations for this Storybook version can be defined as separate packages that use the stories in this package (ie all packages have the same stories).
 
