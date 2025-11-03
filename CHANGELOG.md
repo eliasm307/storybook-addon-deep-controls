@@ -1,6 +1,7 @@
 ## 0.9.6
 
 - Add `storybook` v10 to supported versions and add tests, to resolve [#68](https://github.com/eliasm307/storybook-addon-deep-controls/issues/68)
+- Update module and moduleResolution to NodeNext for ESM build tsconfig.json
 
 ## 0.9.5
 
