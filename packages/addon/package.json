@@ -46,12 +46,14 @@
     "./preview": {
       "types": "./index.d.ts",
       "import": "./preview.mjs",
-      "require": "./preview.js"
+      "require": "./preview.js",
+      "default": "./preview.mjs"
     },
     "./preview.js": {
       "types": "./index.d.ts",
       "import": "./preview.mjs",
-      "require": "./preview.js"
+      "require": "./preview.js",
+      "default": "./preview.mjs"
     },
     "./package.json": "./package.json",
     "./register": "./register.js",
