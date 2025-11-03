@@ -9,7 +9,8 @@
   "keywords": [
     "storybook",
     "addon",
-    "controls"
+    "controls",
+    "storybook-addon"
   ],
   "author": "Elias Mangoro",
   "license": "MIT",
