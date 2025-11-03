@@ -1,3 +1,7 @@
+## 0.9.6
+
+- Add `storybook` v10 to supported versions and add tests, to resolve [#68](https://github.com/eliasm307/storybook-addon-deep-controls/issues/68)
+
 ## 0.9.5
 
 - Update `storybook` peer dependency version range to prevent `npm install` error, to resolve [#66](https://github.com/eliasm307/storybook-addon-deep-controls/issues/66)
